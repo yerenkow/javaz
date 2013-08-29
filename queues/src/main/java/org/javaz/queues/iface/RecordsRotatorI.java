@@ -20,26 +20,34 @@ public interface RecordsRotatorI extends Runnable
     public String getFetcherDescriptiveName();
 
     public int getMaxLogsCount();
+
     public void setMaxLogsCount(int logsCount);
 
     public int getMinSize();
+
     public void setMinSize(int minSize);
 
     public int getFetchSize();
+
     public void setFetchSize(int fetchSize);
 
     public int getFetchDelay();
+
     public void setFetchDelay(int fetchDelay);
 
     public int getFillTries();
+
     public void setFillTries(int fillTries);
 
     public int getNoDataDelay();
+
     public void setNoDataDelay(int noDataDelay);
 
     public int getInsufficientDataDelay();
+
     public void setInsufficientDataDelay(int insufficientDataDelay);
 
     public int getMaxBulksCount();
+
     public void setMaxBulksCount(int maxBulksCount);
 }

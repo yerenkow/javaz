@@ -19,37 +19,33 @@ public interface PartialSenderI extends Runnable
 
 
     /**
-     *
      * @param senderFeedI - feed, to which all data is pushed
      */
     public void setSenderFeedI(PartialSenderFeedI senderFeedI);
+
     public PartialSenderFeedI getSenderFeedI();
 
     /**
-     *
      * @param o - to be added
      * @return if object allowed to be added
-     *
-     * Used to prevent data doubling, for example
+     *         <p/>
+     *         Used to prevent data doubling, for example
      */
     public boolean canBeAdded(Object o);
 
     /**
-     *
      * @param o - Object to calculate its hashCode
      * @return hashcode of object. If you adding complex data to sender
-     *  like Arrays or Collections, you should override hash calculation for them.
+     *         like Arrays or Collections, you should override hash calculation for them.
      */
     public Object getObjectHashCode(Object o);
 
     /**
-     *
      * @param o - object to be added to Sender's queue
      */
     public void addToQueue(Object o);
 
     /**
-     *
      * @param c - objects to be added to Sender's queue
      */
     public void addToQueueAll(Collection c);
@@ -63,7 +59,6 @@ public interface PartialSenderI extends Runnable
     public void preSendPartially(ArrayList toSend);
 
     /**
-     *
      * @param allData - data to be chunked and pushed to real send method
      * @return - results, if any
      */
@@ -71,40 +66,50 @@ public interface PartialSenderI extends Runnable
 
     /**
      * Tuning part
-     *
      */
 
     public int getChunkSize();
+
     public void setChunkSize(int byHowMany);
 
     public int getSendPeriod();
+
     public void setSendPeriod(int sendPeriod);
 
     public int getSmallDelayPeriod();
+
     public void setSmallDelayPeriod(int smallDelayPeriod);
 
     public boolean isOnlyUniqueAllowed();
+
     public void setOnlyUniqueAllowed(boolean onlyUnique);
 
     public int getMaxLogsCount();
+
     public void setMaxLogsCount(int logsCount);
 
     public int getWaitDelayForMinimalSize();
+
     public void setWaitDelayForMinimalSize(int waitDelayForMinimalSize);
 
     public boolean isRepeatFailedSend();
+
     public void setRepeatFailedSend(boolean repeatFailedSend);
 
     /**
      * Methods useful for debugging/monitoring
-     *
      */
 
     public ArrayList getLogs();
+
     public int getSteps();
+
     public int getCurrentStep();
+
     public int getQueueLength();
+
     public int getSendingQueueLength();
+
     public long getStartWhenIteration();
 
 }

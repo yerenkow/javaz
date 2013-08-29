@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * 
+ *
  */
 public class SimpleRecordsRotator implements RecordsRotatorI
 {
@@ -66,16 +66,16 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void run()
     {
-        while(running)
+        while (running)
         {
-            if(queue.size() < minSize)
+            if (queue.size() < minSize)
             {
                 runRefill();
             }
             Thread.yield();
             try
             {
-                if(runThroughNotFilled)
+                if (runThroughNotFilled)
                 {
                     runThroughNotFilled = false;
                     Thread.sleep(insufficientDataDelay);
@@ -96,13 +96,13 @@ public class SimpleRecordsRotator implements RecordsRotatorI
     {
         boolean completedRound = (current != null && max != null && current > max);
         boolean needGetMinMax = (min == null || completedRound);
-        if(needGetMinMax)
+        if (needGetMinMax)
         {
             //get min & max
             fetchAll = false;
-            if(startWhenIteration != 0)
+            if (startWhenIteration != 0)
             {
-                if(logs.size() > maxLogsCount)
+                if (logs.size() > maxLogsCount)
                 {
                     logs.remove(0);
                 }
@@ -112,11 +112,11 @@ public class SimpleRecordsRotator implements RecordsRotatorI
             startWhenIteration = System.currentTimeMillis();
 
             Object[] minMaxBounds = objectFetcher.getMinMaxBounds();
-            if(minMaxBounds != null && minMaxBounds.length >= 2)
+            if (minMaxBounds != null && minMaxBounds.length >= 2)
             {
                 Object minBound = minMaxBounds[0];
                 Object maxBound = minMaxBounds[1];
-                if(minBound == null || maxBound == null)
+                if (minBound == null || maxBound == null)
                 {
                     min = null;
                 }
@@ -127,32 +127,32 @@ public class SimpleRecordsRotator implements RecordsRotatorI
                     if (minMaxBounds.length == 3)
                     {
                         Number count = (Number) minMaxBounds[2];
-                        if(count != null && count.longValue() <= minSize)
+                        if (count != null && count.longValue() <= minSize)
                         {
                             fetchAll = true;
                         }
                     }
                     current = min;
-                    if(!fetchAll)
+                    if (!fetchAll)
                     {
                         //try to autoScale
-                        try {
-                            long bulks = (max - min) / fetchSize;
-                            if(maxBulksCount > 1 && bulks > maxBulksCount)
+                        try
+                        {
+                            long bulks = Math.abs(max - min) / fetchSize;
+                            if (maxBulksCount > 1 && bulks > maxBulksCount)
                             {
-                                fetchSize = (int) ((max - min) / maxBulksCount);
-                                if(fetchSize < 1)
-                                {
-                                    fetchSize = 1;
-                                }
+                                //guaranteed to be 1 or more by condition above
+                                fetchSize = (int) (Math.abs(max - min) / maxBulksCount);
                             }
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e)
+                        {
                             e.printStackTrace();
                         }
                     }
                 }
             }
-            if(completedRound && runThroughDataSize <= minSize)
+            if (completedRound && runThroughDataSize <= minSize)
             {
                 //we are in situation, when running through all queue didn't satisfy us.
                 //in this case we need some delay, before try to fill it all again.
@@ -161,13 +161,13 @@ public class SimpleRecordsRotator implements RecordsRotatorI
             runThroughDataSize = 0;
         }
 
-        if(!runThroughNotFilled && min != null)
+        if (!runThroughNotFilled && min != null)
         {
             try
             {
                 boolean needEnd = false;
 
-                HashMap<Integer, Integer> hashCodes = new HashMap<Integer, Integer>((int) (ROUGH_HASH_SIZE*queue.size()));
+                HashMap<Integer, Integer> hashCodes = new HashMap<Integer, Integer>((int) (ROUGH_HASH_SIZE * queue.size()));
                 Iterator it = queue.iterator();
                 while (it.hasNext())
                 {
@@ -176,10 +176,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
                 }
 
                 int tries = fillTries;
-                while(!needEnd && tries-- > 0)
+                while (!needEnd && tries-- > 0)
                 {
                     Collection collection = null;
-                    if(fetchAll)
+                    if (fetchAll)
                     {
                         //don't forget +1 here
                         collection = objectFetcher.getRecordsCollection(min, max - min + 1);
@@ -188,14 +188,14 @@ public class SimpleRecordsRotator implements RecordsRotatorI
                     {
                         collection = objectFetcher.getRecordsCollection(current, fetchSize);
                     }
-                    if(collection != null && !collection.isEmpty())
+                    if (collection != null && !collection.isEmpty())
                     {
                         for (Iterator iterator = collection.iterator(); iterator.hasNext(); )
                         {
                             Object o = iterator.next();
                             try
                             {
-                                if(o != null && !hashCodes.containsKey(o.hashCode()))
+                                if (o != null && !hashCodes.containsKey(o.hashCode()))
                                 {
                                     queue.offer(o);
                                     runThroughDataSize++;
@@ -254,7 +254,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void setFetchSize(int fetchSize)
     {
-        this.fetchSize = fetchSize;
+        if(fetchSize > 0)
+        {
+            this.fetchSize = fetchSize;
+        }
     }
 
     public int getFetchDelay()
@@ -264,7 +267,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void setFetchDelay(int fetchDelay)
     {
-        this.fetchDelay = fetchDelay;
+        if(fetchDelay > 0)
+        {
+            this.fetchDelay = fetchDelay;
+        }
     }
 
     public int getFillTries()
@@ -274,7 +280,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void setFillTries(int fillTries)
     {
-        this.fillTries = fillTries;
+        if(fillTries > 0)
+        {
+            this.fillTries = fillTries;
+        }
     }
 
     public int getNoDataDelay()
@@ -284,7 +293,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void setNoDataDelay(int noDataDelay)
     {
-        this.noDataDelay = noDataDelay;
+        if(fillTries > 0)
+        {
+            this.noDataDelay = noDataDelay;
+        }
     }
 
     public int getInsufficientDataDelay()
@@ -304,12 +316,15 @@ public class SimpleRecordsRotator implements RecordsRotatorI
 
     public void setMaxBulksCount(int maxBulksCount)
     {
-        this.maxBulksCount = maxBulksCount;
+        if(maxBulksCount > 0)
+        {
+            this.maxBulksCount = maxBulksCount;
+        }
     }
 
     public Object getNextElement()
     {
-        if(!queue.isEmpty())
+        if (!queue.isEmpty())
         {
             return queue.poll();
         }
@@ -324,10 +339,10 @@ public class SimpleRecordsRotator implements RecordsRotatorI
     public Collection getManyElements(int size)
     {
         ArrayList l = new ArrayList();
-        for(int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
         {
             Object poll = queue.poll();
-            if(poll == null)
+            if (poll == null)
             {
                 return l;
             }
@@ -336,7 +351,8 @@ public class SimpleRecordsRotator implements RecordsRotatorI
         return l;
     }
 
-    public String toString() {
+    public String toString()
+    {
         return "RecordsRotator{" +
                 "startWhenIteration=" + startWhenIteration +
                 ", min=" + min +

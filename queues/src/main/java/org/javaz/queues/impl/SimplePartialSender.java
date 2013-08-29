@@ -10,9 +10,9 @@ import java.util.*;
  */
 public class SimplePartialSender implements PartialSenderI
 {
-	protected int sendPeriod = DEFAULT_SEND_PERIOD;
-	protected int smallDelayPeriod = DEFAULT_SMALL_DELAY_PERIOD;
-	protected int chunkSize = DEFAULT_SEND_SIZE;
+    protected int sendPeriod = DEFAULT_SEND_PERIOD;
+    protected int smallDelayPeriod = DEFAULT_SMALL_DELAY_PERIOD;
+    protected int chunkSize = DEFAULT_SEND_SIZE;
     protected int maxLogsCount = DEFAULT_LOGS_COUNT;
 
     protected boolean onlyUniqueAllowed = false;
@@ -31,9 +31,14 @@ public class SimplePartialSender implements PartialSenderI
     protected ArrayList<Object[]> logs = new ArrayList<Object[]>();
     protected PartialSenderFeedI senderFeedI = null;
 
+    public SimplePartialSender()
+    {
+    }
+
     public SimplePartialSender(PartialSenderFeedI senderFeedI)
     {
         this.senderFeedI = senderFeedI;
+        new Thread(this).start();
     }
 
     public PartialSenderFeedI getSenderFeedI()
@@ -48,13 +53,13 @@ public class SimplePartialSender implements PartialSenderI
 
     public boolean canBeAdded(Object o)
     {
-        if(!onlyUniqueAllowed)
+        if (!onlyUniqueAllowed)
         {
             return true;
         }
-        
+
         ensureKeys();
-        
+
         return !uniqueKeys.containsKey(getObjectHashCode(o));
     }
 
@@ -64,23 +69,23 @@ public class SimplePartialSender implements PartialSenderI
     }
 
     public void addToQueue(Object o)
-	{
-		synchronized (queue)
-		{
-			if(canBeAdded(o))
+    {
+        synchronized (queue)
+        {
+            if (canBeAdded(o))
             {
                 queue.add(o);
                 markObjectAsAdded(o);
             }
-		}
-	}
+        }
+    }
 
     private void markObjectAsAdded(Object o)
     {
-        if(!onlyUniqueAllowed)
+        if (!onlyUniqueAllowed)
             return;
 
-        if(uniqueKeys != null)
+        if (uniqueKeys != null)
         {
             synchronized (uniqueKeys)
             {
@@ -92,29 +97,29 @@ public class SimplePartialSender implements PartialSenderI
     }
 
     public void addToQueueAll(Collection c)
-	{
-		synchronized (queue)
-		{
+    {
+        synchronized (queue)
+        {
             for (Iterator iterator = c.iterator(); iterator.hasNext(); )
             {
                 Object o = iterator.next();
-                if(canBeAdded(o))
+                if (canBeAdded(o))
                 {
                     queue.add(o);
                     markObjectAsAdded(o);
                 }
             }
-		}
-	}
+        }
+    }
 
 
-	public void run()
-	{
-		while(running)
-		{
-			if(!queue.isEmpty())
+    public void run()
+    {
+        while (running)
+        {
+            if (!queue.isEmpty())
             {
-                if(waitDelayForMinimalSize > 0 && queue.size() < chunkSize)
+                if (waitDelayForMinimalSize > 0 && queue.size() < chunkSize)
                 {
                     try
                     {
@@ -132,22 +137,22 @@ public class SimplePartialSender implements PartialSenderI
                     queue.clear();
                 }
 
-                if(!toSend.isEmpty())
+                if (!toSend.isEmpty())
                 {
                     preSendPartially(toSend);
                 }
             }
-			Thread.yield();
-			try
-			{
-				Thread.sleep(sendPeriod);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+            Thread.yield();
+            try
+            {
+                Thread.sleep(sendPeriod);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void preSendPartially(ArrayList toSend)
     {
@@ -155,22 +160,22 @@ public class SimplePartialSender implements PartialSenderI
     }
 
     public void stop()
-	{
-		running = false;
-	}
+    {
+        running = false;
+    }
 
 
     public void setOnlyUniqueAllowed(boolean onlyUniqueAllowed)
     {
         this.onlyUniqueAllowed = onlyUniqueAllowed;
-        if(!onlyUniqueAllowed)
+        if (!onlyUniqueAllowed)
         {
             uniqueKeys = null;
         }
     }
 
     public ArrayList sendByPortions(List allData)
-	{
+    {
         startWhenIteration = System.currentTimeMillis();
         sendingQueueSize = allData.size();
         ArrayList returnList = new ArrayList();
@@ -178,29 +183,29 @@ public class SimplePartialSender implements PartialSenderI
         steps = allData.size() / byHowManyIteration + 1;
         int totalSend = 0;
         int totalFailed = 0;
-        for(currentStep = 0; currentStep < steps; currentStep++)
-		{
-			try
-			{
-				List subList = allData.subList(currentStep * byHowManyIteration, Math.min((currentStep + 1) * byHowManyIteration, allData.size()));
+        for (currentStep = 0; currentStep < steps; currentStep++)
+        {
+            try
+            {
+                List subList = allData.subList(currentStep * byHowManyIteration, Math.min((currentStep + 1) * byHowManyIteration, allData.size()));
                 int subListSize = subList.size();
-				boolean ok = false;
-				while(!ok)
-				{
+                boolean ok = subList.isEmpty();
+                while (!ok)
+                {
                     try
-					{
-						Collection result = senderFeedI.sendData(subList);
-						if(result != null)
-						{
+                    {
+                        Collection result = senderFeedI.sendData(subList);
+                        if (result != null)
+                        {
                             returnList.addAll(result);
-						}
-						ok = true;
+                        }
+                        ok = true;
                         totalSend += subListSize;
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-                        if(!repeatFailedSend)
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        if (!repeatFailedSend)
                         {
                             ok = true;
                             totalFailed += subListSize;
@@ -209,9 +214,9 @@ public class SimplePartialSender implements PartialSenderI
                         {
                             Thread.sleep(smallDelayPeriod);
                         }
-					}
-				}
-                if(onlyUniqueAllowed)
+                    }
+                }
+                if (onlyUniqueAllowed)
                 {
                     for (Iterator iterator = subList.iterator(); iterator.hasNext(); )
                     {
@@ -220,27 +225,27 @@ public class SimplePartialSender implements PartialSenderI
                     }
                 }
             }
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
         sendingQueueSize = 0;
         currentStep = 0;
         steps = 0;
-        if(logs.size() > maxLogsCount)
+        if (logs.size() > maxLogsCount)
         {
             logs.remove(0);
         }
         toSend.clear();
         logs.add(new Object[]{startWhenIteration, System.currentTimeMillis(), totalSend, totalFailed});
-        
-		return returnList;
-	}
+
+        return returnList;
+    }
 
     private void ensureKeys()
     {
-        if(uniqueKeys == null)
+        if (uniqueKeys == null)
         {
             uniqueKeys = new HashMap();
             for (Iterator iterator = queue.iterator(); iterator.hasNext(); )
@@ -257,34 +262,34 @@ public class SimplePartialSender implements PartialSenderI
     }
 
     public int getChunkSize()
-	{
-		return chunkSize;
-	}
+    {
+        return chunkSize;
+    }
 
-	public void setChunkSize(int chunkSize)
-	{
-		this.chunkSize = chunkSize;
-	}
+    public void setChunkSize(int chunkSize)
+    {
+        this.chunkSize = chunkSize;
+    }
 
-	public int getSendPeriod()
-	{
-		return sendPeriod;
-	}
+    public int getSendPeriod()
+    {
+        return sendPeriod;
+    }
 
-	public void setSendPeriod(int sendPeriod)
-	{
-		this.sendPeriod = sendPeriod;
-	}
+    public void setSendPeriod(int sendPeriod)
+    {
+        this.sendPeriod = sendPeriod;
+    }
 
-	public int getSmallDelayPeriod()
-	{
-		return smallDelayPeriod;
-	}
+    public int getSmallDelayPeriod()
+    {
+        return smallDelayPeriod;
+    }
 
-	public void setSmallDelayPeriod(int smallDelayPeriod)
-	{
-		this.smallDelayPeriod = smallDelayPeriod;
-	}
+    public void setSmallDelayPeriod(int smallDelayPeriod)
+    {
+        this.smallDelayPeriod = smallDelayPeriod;
+    }
 
     public boolean isOnlyUniqueAllowed()
     {
