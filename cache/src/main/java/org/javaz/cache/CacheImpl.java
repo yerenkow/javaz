@@ -100,7 +100,7 @@ public class CacheImpl implements CacheI
     {
         synchronized (CLEAR_LOCK)
         {
-            if(LOCK_STATE.equals(LOCK_STATE_LOCKED))
+            if (LOCK_STATE.equals(LOCK_STATE_LOCKED))
             {
                 return;
             }
@@ -232,7 +232,7 @@ public class CacheImpl implements CacheI
             {
                 longs = new ArrayList(objectTimeStamps.values());
             }
-            for (Iterator<Long> iterator = longs.iterator(); iterator.hasNext();)
+            for (Iterator<Long> iterator = longs.iterator(); iterator.hasNext(); )
             {
                 Long next = iterator.next() + timeToLive;
                 if (nextTimeSomeExpired == NO_OBJECTS || next < nextTimeSomeExpired)
