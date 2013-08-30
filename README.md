@@ -14,6 +14,8 @@ Sub Projects:
 
 * servlet - Servlet, XMLRPC and SSL stuff
 
+* util - Small useful utils, not belong to any significant project
+
 Sub Projects cross-dependencies:
 --------------------------------
 
