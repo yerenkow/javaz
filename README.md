@@ -12,6 +12,8 @@ Sub Projects:
 
 * queues - Helpers to make some batching/queues, both abstract and implementation part
 
+* servlet - Servlet, XMLRPC and SSL stuff
+
 Sub Projects cross-dependencies:
 --------------------------------
 
