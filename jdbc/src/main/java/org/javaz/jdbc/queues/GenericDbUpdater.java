@@ -25,27 +25,27 @@ public class GenericDbUpdater extends SimplePartialSender
      * How much threads will run simultaneously and run some updates
      */
     public static int MAX_UPDATE_THREADS =
-        Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.MAX_UPDATE_THREADS", DEFAULT_MAX_UPDATE_THREADS)).intValue();
+            Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.MAX_UPDATE_THREADS", DEFAULT_MAX_UPDATE_THREADS)).intValue();
 
     /**
      * If we just updated something, how long we will sleep before trying
-     *  to find next data
+     * to find next data
      */
     public static int SHORT_SEND_PERIOD =
-        Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.SHORT_SEND_PERIOD", DEFAULT_SHORT_SEND_PERIOD)).intValue();
+            Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.SHORT_SEND_PERIOD", DEFAULT_SHORT_SEND_PERIOD)).intValue();
 
     /**
      * If there's nothing update at all - let's sleep a bit longer
      */
     public static int LONG_SEND_PERIOD =
-        Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.LONG_SEND_PERIOD", DEFAULT_LONG_SEND_PERIOD)).intValue();
+            Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.LONG_SEND_PERIOD", DEFAULT_LONG_SEND_PERIOD)).intValue();
 
     /**
      * Most JDBC can't handle more than 30k placeholders - "?"
      * This should be pretty big, to have considerable effect
      */
     public static int MAX_OBJECTS_PER_UPDATE =
-        Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.MAX_OBJECTS_PER_UPDATE", DEFAULT_MAX_OBJECTS_PER_UPDATE)).intValue();
+            Integer.valueOf(System.getProperty("org.javaz.jdbc.queues.MAX_OBJECTS_PER_UPDATE", DEFAULT_MAX_OBJECTS_PER_UPDATE)).intValue();
 
     private static final HashMap<String, HashMap> queryQueues = new HashMap<String, HashMap>();
 
@@ -148,7 +148,6 @@ public class GenericDbUpdater extends SimplePartialSender
             }
         }
     }
-
 
 
     public void runDbUpdates()

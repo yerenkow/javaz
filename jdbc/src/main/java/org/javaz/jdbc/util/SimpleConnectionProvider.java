@@ -15,13 +15,13 @@ public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConsta
 {
     public Connection getConnection(String dsAddress) throws SQLException
     {
-        if(dsAddress.startsWith(JDBC_MARKER))
+        if (dsAddress.startsWith(JDBC_MARKER))
         {
             return DriverManager.getConnection(dsAddress);
         }
         else
         {
-            if(dsAddress.startsWith(JAVA_MARKER))
+            if (dsAddress.startsWith(JAVA_MARKER))
             {
                 InitialContext context = null;
                 try

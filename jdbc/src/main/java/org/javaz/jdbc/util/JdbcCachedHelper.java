@@ -5,7 +5,8 @@ import java.util.HashMap;
 /**
  *
  */
-public class JdbcCachedHelper {
+public class JdbcCachedHelper
+{
     /**
      * This map contains all singleton instances which are used to access DBs.
      * These instances not synchronized, as they not stateful (all activity goes in
