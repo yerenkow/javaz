@@ -41,7 +41,7 @@ public class UpdateableAuthPropertyUtil
 
     protected UpdateableAuthPropertyUtil(String file)
     {
-        filePropertyUtil = new UpdateableFilePropertyUtil(file);
+        filePropertyUtil = UpdateableFilePropertyUtil.getInstance(file);
     }
 
     public String getUserPasswordSplitExpression()
