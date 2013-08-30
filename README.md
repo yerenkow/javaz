@@ -140,4 +140,25 @@ QUEUE
         //That's it. When sender will be ready, it will call your implemented method in FeedI:
         // yourFeederDataSaver.sendData(Collection nextChunkOfRecords) throws Exception;
 
+UTIL
+----
+        // return time in such format YYYYDDDPP
+        // where YYYY - year
+        // DDD - day in year
+        // PP - percents of time; e.g. 12:00 = 50; 18:00 = 75
+        Integer day = DayUtil.getIntegerTime();
 
+        // @return day from beginning of 2011 Year, or from beginning of 2000 Year, if newScheme = false;
+        //         It's NOT the same as ((extract(year from NOW()) - 2011)*365 + extract(doy from NOW())) in database;
+        //         As leap years counting.
+        Integer daysFrom2011 = DayUtil.getDayShort();
+
+        String toBrowser = JsonUtil.convertToJS(anyHashMapOrArrayOrAnything);
+
+        filePropertyUtil = UpdateableFilePropertyUtil.getInstance(file);
+        //get property from file;
+        String original = filePropertyUtil.getProperty(key);
+        // imagine that file is somehow changed;
+
+        //get property from file;
+        String updated = filePropertyUtil.getProperty(key);
