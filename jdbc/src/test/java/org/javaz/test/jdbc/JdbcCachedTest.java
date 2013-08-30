@@ -49,8 +49,12 @@ public class JdbcCachedTest
         server.setAddress("localhost");
         server.setDatabaseName(0, "mydb1");
         server.setDatabaseName(1, "mydb2");
-        server.setDatabasePath(0, File.createTempFile("fake", "fake").getName());
-        server.setDatabasePath(1, File.createTempFile("fake", "fake").getName());
+        File tempFile1 = File.createTempFile("jdbc-junit-test1", "hsqldb");
+        tempFile1.deleteOnExit();
+        server.setDatabasePath(0, tempFile1.getCanonicalPath());
+        File tempFile2 = File.createTempFile("jdbc-junit-test2", "hsqldb");
+        tempFile2.deleteOnExit();
+        server.setDatabasePath(1, tempFile2.getCanonicalPath());
         server.setPort(testPort);
         server.setTrace(true);
         server.setLogWriter(new PrintWriter(System.out));
