@@ -148,7 +148,7 @@ UTIL
         // PP - percents of time; e.g. 12:00 = 50; 18:00 = 75
         Integer day = DayUtil.getIntegerTime();
 
-        // @return day from beginning of 2011 Year, or from beginning of 2000 Year, if newScheme = false;
+        // @return day from beginning of 2011 Year
         //         It's NOT the same as ((extract(year from NOW()) - 2011)*365 + extract(doy from NOW())) in database;
         //         As leap years counting.
         Integer daysFrom2011 = DayUtil.getDayShort();
