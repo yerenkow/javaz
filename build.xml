@@ -1,0 +1,64 @@
+<project name="Javaz ant script" default="main" basedir=".">
+
+    <target name="main">
+        <echo>Run ant build</echo>
+    </target>
+
+    <property name="temp.compile.path" value="temp.compile.path"/>
+    <property name="temp.src.path" value="temp.src.path"/>
+    <property name="lib.path" value="lib"/>
+    <property name="jar.name" value="javaz-util.jar"/>
+
+    <property name="sources.cache.path" value="cache/src/main/java" />
+    <property name="sources.jdbc.path" value="jdbc/src/main/java" />
+    <property name="sources.queues.path" value="queues/src/main/java" />
+    <property name="sources.servlet.path" value="servlet/src/main/java" />
+    <property name="sources.util.path" value="util/src/main/java" />
+
+    <path id="classpath">
+        <fileset dir="${lib.path}">
+            <include name="**/*.jar"/>
+            <include name="**/*.zip"/>
+        </fileset>
+    </path>
+
+    <target name="build">
+        <delete dir="${temp.compile.path}"/>
+        <delete dir="${temp.src.path}"/>
+        <mkdir dir="${temp.compile.path}"/>
+        <mkdir dir="${temp.src.path}"/>
+
+        <copy todir="${temp.src.path}">
+            <fileset dir="${sources.cache.path}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${sources.jdbc.path}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${sources.queues.path}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${sources.servlet.path}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${sources.util.path}">
+                <include name="**"/>
+            </fileset>
+        </copy>
+        <javac source="1.5" target="1.5" classpathref="classpath" srcdir="${temp.src.path}" destdir="${temp.compile.path}" debug="on" encoding="UTF-8"/>
+
+<!--
+        <copy todir="${temp.compile.path}">
+            <fileset dir="${all-pathes}">
+                <include name="**"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+-->
+
+        <mkdir dir="build"/>
+        <jar destfile="build/${jar.name}" basedir="${temp.compile.path}"/>
+        <delete dir="${temp.compile.path}"/>
+        <delete dir="${temp.src.path}"/>
+    </target>
+</project>
