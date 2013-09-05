@@ -21,8 +21,10 @@ public class CacheImpl implements CacheI
     /**
      * LOCK object for make sure that we are running
      * clearExpired() in only one instance
+     *
+     * Not using low values (-128..127) as they are IntegerCache'd
      */
-    private final Integer CLEAR_LOCK = 0;
+    private final Integer CLEAR_LOCK = 100500;
     /**
      * Current state of LOCK regarding clearExpired()
      */
