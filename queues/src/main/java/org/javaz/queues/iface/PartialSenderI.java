@@ -37,8 +37,9 @@ public interface PartialSenderI extends Runnable
      * @param o - Object to calculate its hashCode
      * @return hashcode of object. If you adding complex data to sender
      *         like Arrays or Collections, you should override hash calculation for them.
+     *         OR use objectHashCalculator
      */
-    public Object getObjectHashCode(Object o);
+    public Object calculateObjectHash(Object o);
 
     /**
      * @param o - object to be added to Sender's queue
@@ -95,6 +96,14 @@ public interface PartialSenderI extends Runnable
     public boolean isRepeatFailedSend();
 
     public void setRepeatFailedSend(boolean repeatFailedSend);
+
+    /**
+     * Getter and Setter for objectHashCalculator -
+     * which can calculate hashes of complex Objects, liket Lists, Arrays, etc.
+     */
+    public ObjectHashCalculator getObjectHashCalculator();
+
+    public void setObjectHashCalculator(ObjectHashCalculator hashCodeCalculator);
 
     /**
      * Methods useful for debugging/monitoring

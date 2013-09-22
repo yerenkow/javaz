@@ -1,5 +1,6 @@
 package org.javaz.queues.impl;
 
+import org.javaz.queues.iface.ObjectHashCalculator;
 import org.javaz.queues.iface.PartialSenderFeedI;
 import org.javaz.queues.iface.PartialSenderI;
 
@@ -30,6 +31,7 @@ public class SimplePartialSender implements PartialSenderI
     protected final ArrayList toSend = new ArrayList();
     protected ArrayList<Object[]> logs = new ArrayList<Object[]>();
     protected PartialSenderFeedI senderFeedI = null;
+    protected ObjectHashCalculator objectHashCalculator = null;
 
     public SimplePartialSender()
     {
@@ -60,12 +62,14 @@ public class SimplePartialSender implements PartialSenderI
 
         ensureKeys();
 
-        return !uniqueKeys.containsKey(getObjectHashCode(o));
+        return !uniqueKeys.containsKey(calculateObjectHash(o));
     }
 
-    public Object getObjectHashCode(Object o)
+    public Object calculateObjectHash(Object o)
     {
-        return o.hashCode();
+        return objectHashCalculator != null ?
+                objectHashCalculator.calculateObjectHash(o)
+                : o.hashCode();
     }
 
     public void addToQueue(Object o)
@@ -89,9 +93,7 @@ public class SimplePartialSender implements PartialSenderI
         {
             synchronized (uniqueKeys)
             {
-                {
-                    uniqueKeys.put(getObjectHashCode(o), 1);
-                }
+                uniqueKeys.put(calculateObjectHash(o), 1);
             }
         }
     }
@@ -221,7 +223,7 @@ public class SimplePartialSender implements PartialSenderI
                     for (Iterator iterator = subList.iterator(); iterator.hasNext(); )
                     {
                         Object o = iterator.next();
-                        uniqueKeys.remove(getObjectHashCode(o));
+                        uniqueKeys.remove(calculateObjectHash(o));
                     }
                 }
             }
@@ -238,7 +240,7 @@ public class SimplePartialSender implements PartialSenderI
             logs.remove(0);
         }
         toSend.clear();
-        logs.add(new Object[]{startWhenIteration, System.currentTimeMillis(), totalSend, totalFailed});
+        logs.add(new Object[]{startWhenIteration, System.currentTimeMillis(), totalSend, totalFailed, returnList.size()});
 
         return returnList;
     }
@@ -251,12 +253,12 @@ public class SimplePartialSender implements PartialSenderI
             for (Iterator iterator = queue.iterator(); iterator.hasNext(); )
             {
                 Object next = iterator.next();
-                uniqueKeys.put(getObjectHashCode(next), 1);
+                uniqueKeys.put(calculateObjectHash(next), 1);
             }
             for (Iterator iterator = toSend.iterator(); iterator.hasNext(); )
             {
                 Object next = iterator.next();
-                uniqueKeys.put(getObjectHashCode(next), 1);
+                uniqueKeys.put(calculateObjectHash(next), 1);
             }
         }
     }
@@ -354,6 +356,16 @@ public class SimplePartialSender implements PartialSenderI
     public void setRepeatFailedSend(boolean repeatFailedSend)
     {
         this.repeatFailedSend = repeatFailedSend;
+    }
+
+    public ObjectHashCalculator getObjectHashCalculator()
+    {
+        return objectHashCalculator;
+    }
+
+    public void setObjectHashCalculator(ObjectHashCalculator objectHashCalculator)
+    {
+        this.objectHashCalculator = objectHashCalculator;
     }
 }
 
