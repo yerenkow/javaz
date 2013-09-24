@@ -8,6 +8,8 @@ import org.javaz.queues.iface.PartialSenderFeedI;
 import org.javaz.queues.impl.SimplePartialSender;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -53,9 +55,16 @@ public class GenericDbUpdater extends SimplePartialSender
 
     public static ConnectionProviderI providerI = new SimpleConnectionProvider();
 
+    private ExecutorService service = null;
+
     private GenericDbUpdater(PartialSenderFeedI senderFeedI)
     {
         super(senderFeedI);
+    }
+
+    private void initPool()
+    {
+        service = Executors.newFixedThreadPool(MAX_UPDATE_THREADS);
     }
 
     //NOT running by thread, just here to hold DB ID AND query.
@@ -70,14 +79,11 @@ public class GenericDbUpdater extends SimplePartialSender
                 if (!running)
                 {
                     running = true;
-                    for (int i = 0; i < MAX_UPDATE_THREADS; i++)
-                    {
-                        GenericDbUpdater instance = new GenericDbUpdater(null);
-                        instance.setSendPeriod(SHORT_SEND_PERIOD);
-                        Thread thread = new Thread(instance);
-                        thread.setPriority(Thread.MIN_PRIORITY);
-                        thread.start();
-                    }
+                    GenericDbUpdater instance = new GenericDbUpdater(null);
+                    instance.setSendPeriod(SHORT_SEND_PERIOD);
+                    instance.initPool();
+                    Thread thread = new Thread(instance);
+                    thread.start();
                 }
             }
         }
@@ -152,80 +158,42 @@ public class GenericDbUpdater extends SimplePartialSender
 
     public void runDbUpdates()
     {
-        String db = null;
-        String query = null;
-        Collection list = null;
+        boolean noDataToUpdate = false;
         //this synchronized code blocks only for brief time - when thread tries to find something to update
         synchronized (queryQueues)
         {
             Set<String> dbs = queryQueues.keySet();
-            for (Iterator<String> iterator = dbs.iterator(); list == null && iterator.hasNext(); )
+            for (Iterator<String> iterator = dbs.iterator(); iterator.hasNext(); )
             {
-                db = iterator.next();
+                String db = iterator.next();
                 HashMap queryObject = queryQueues.get(db);
-                ArrayList set = new ArrayList(queryObject.keySet());
-                //let's pretend this is for greater good
-                Collections.shuffle(set);
-                for (Iterator iterator1 = set.iterator(); list == null && iterator1.hasNext(); )
+                ArrayList queriesIterator = new ArrayList(queryObject.keySet());
+                for (Iterator iterator1 = queriesIterator.iterator(); iterator1.hasNext(); )
                 {
-                    query = (String) iterator1.next();
-                    ArrayList tmpList = (ArrayList) queryObject.get(query);
+                    String queryUpdate = (String) iterator1.next();
+                    ArrayList tmpList = (ArrayList) queryObject.get(queryUpdate);
                     if (!tmpList.isEmpty())
                     {
-                        list = new ArrayList();
+                        List list = new ArrayList();
                         list.addAll(tmpList);
                         tmpList.clear();
+
+                        service.execute(new GenericDbUpdaterThread(db, queryUpdate, list, providerI));
+                        noDataToUpdate = true;
                     }
+                    queryObject.remove(queryUpdate);
                 }
             }
         }
 
-        if (list == null || list.isEmpty())
+        if (noDataToUpdate)
         {
             //if there really nothing to update - let's sleep for a bit more.
             setSendPeriod(LONG_SEND_PERIOD);
             return;
         }
 
-        long l = System.currentTimeMillis();
-
-        updateManyObjects(db, query, list);
-
-        l = System.currentTimeMillis() - l;
-        String subQ = query;
-
-        int whereIndex = subQ.toLowerCase().indexOf("where");
-        if (whereIndex > -1)
-        {
-            subQ = subQ.substring(0, whereIndex).trim();
-        }
-        //here can be happened logging/monitoring
         setSendPeriod(SHORT_SEND_PERIOD);
-    }
-
-
-    public static void updateManyObjects(String db, String queryPart, Collection allDataForUpdate)
-    {
-        List subList = null;
-        if (allDataForUpdate.size() > 0)
-        {
-            ArrayList dataForUpdateList = new ArrayList(allDataForUpdate);
-            int steps = dataForUpdateList.size() / MAX_OBJECTS_PER_UPDATE + 1;
-            for (int currentStep = 0; currentStep < steps; currentStep++)
-            {
-                try
-                {
-                    subList = dataForUpdateList.subList(currentStep * MAX_OBJECTS_PER_UPDATE, Math.min((currentStep + 1) * MAX_OBJECTS_PER_UPDATE, dataForUpdateList.size()));
-                    HashMap queryParamsMap = new HashMap(subList.size() + 1, 1.0f);
-                    UnsafeSqlHelper.addArrayParameters(queryParamsMap, subList);
-                    UnsafeSqlHelper.runSqlUnsafe(providerI, db, queryPart + " in (" + UnsafeSqlHelper.repeatQuestionMark(subList.size()) + ")", JdbcConstants.ACTION_EXECUTE_UPDATE_DATA_IGNORE, queryParamsMap);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     private String query = null;
