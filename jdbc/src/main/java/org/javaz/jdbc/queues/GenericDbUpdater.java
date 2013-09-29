@@ -59,7 +59,8 @@ public class GenericDbUpdater extends SimplePartialSender
 
     private GenericDbUpdater(PartialSenderFeedI senderFeedI)
     {
-        super(senderFeedI);
+        //no super(); call, since super is auto start Thread with itself
+        this.senderFeedI = senderFeedI;
     }
 
     private void initPool()
@@ -171,17 +172,12 @@ public class GenericDbUpdater extends SimplePartialSender
                 for (Iterator iterator1 = queriesIterator.iterator(); iterator1.hasNext(); )
                 {
                     String queryUpdate = (String) iterator1.next();
-                    ArrayList tmpList = (ArrayList) queryObject.get(queryUpdate);
+                    List tmpList = (List) queryObject.remove(queryUpdate);
                     if (!tmpList.isEmpty())
                     {
-                        List list = new ArrayList();
-                        list.addAll(tmpList);
-                        tmpList.clear();
-
-                        service.execute(new GenericDbUpdaterThread(db, queryUpdate, list, providerI));
+                        service.execute(new GenericDbUpdaterThread(db, queryUpdate, tmpList, providerI));
                         noDataToUpdate = true;
                     }
-                    queryObject.remove(queryUpdate);
                 }
             }
         }
