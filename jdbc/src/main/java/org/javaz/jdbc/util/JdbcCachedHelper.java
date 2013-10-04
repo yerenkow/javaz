@@ -16,6 +16,11 @@ public class JdbcCachedHelper
 
     public static JdbcHelperI getInstance(String address)
     {
+        return getInstance(address, ConnectionProviderFactory.instance);
+    }
+
+    public static JdbcHelperI getInstance(String address, ConnectionProviderFactory factory)
+    {
         if (!jdbcHelperInstances.containsKey(address))
         {
             synchronized (jdbcHelperInstances)
@@ -24,6 +29,7 @@ public class JdbcCachedHelper
                 {
                     JdbcHelper jdbcHelper = new JdbcHelper();
                     jdbcHelper.setJdbcAddress(address);
+                    jdbcHelper.setProvider(factory.createProvider(address));
                     jdbcHelperInstances.put(address, jdbcHelper);
                 }
             }

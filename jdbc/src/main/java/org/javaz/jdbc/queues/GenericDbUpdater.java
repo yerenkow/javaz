@@ -1,9 +1,6 @@
 package org.javaz.jdbc.queues;
 
-import org.javaz.jdbc.util.ConnectionProviderI;
-import org.javaz.jdbc.util.JdbcConstants;
-import org.javaz.jdbc.util.SimpleConnectionProvider;
-import org.javaz.jdbc.util.UnsafeSqlHelper;
+import org.javaz.jdbc.util.*;
 import org.javaz.queues.iface.PartialSenderFeedI;
 import org.javaz.queues.impl.SimplePartialSender;
 
@@ -53,7 +50,7 @@ public class GenericDbUpdater extends SimplePartialSender
 
     private static boolean running = false;
 
-    public static ConnectionProviderI providerI = new SimpleConnectionProvider();
+    public static ConnectionProviderFactory factory = null;
 
     private ExecutorService service = null;
 
@@ -175,7 +172,9 @@ public class GenericDbUpdater extends SimplePartialSender
                     List tmpList = (List) queryObject.remove(queryUpdate);
                     if (!tmpList.isEmpty())
                     {
-                        service.execute(new GenericDbUpdaterThread(db, queryUpdate, tmpList, providerI));
+                        service.execute(new GenericDbUpdaterThread(db, queryUpdate, tmpList,
+                                factory == null ? ConnectionProviderFactory.instance.createProvider(db)
+                                        : factory.createProvider(db)));
                         noDataToUpdate = true;
                     }
                 }

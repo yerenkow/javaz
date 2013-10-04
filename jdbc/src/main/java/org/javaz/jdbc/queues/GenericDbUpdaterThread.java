@@ -1,5 +1,6 @@
 package org.javaz.jdbc.queues;
 
+import org.javaz.jdbc.util.ConnectionProviderFactory;
 import org.javaz.jdbc.util.ConnectionProviderI;
 import org.javaz.jdbc.util.JdbcConstants;
 import org.javaz.jdbc.util.UnsafeSqlHelper;
