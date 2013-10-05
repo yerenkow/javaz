@@ -45,7 +45,7 @@ JDBC
         // own ConnectionProviderFactory and use it.
         ConnectionProviderFactory ownFactory = ...
         String address2 = "custom-address";
-        JdbcHelperI dbCustom = JdbcCachedHelper.getInstance(address2);
+        JdbcHelperI dbCustom = JdbcCachedHelper.getInstance(address2, ownFactory);
 
         // simple query execution
         db.runUpdate("create table test (id integer, name varchar(250))", null);
