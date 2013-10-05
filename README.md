@@ -41,6 +41,12 @@ JDBC
         String address = "jdbc:hsqldb:hsql://localhost:1600/mydb1;username=SA";
         JdbcHelperI db = JdbcCachedHelper.getInstance(address);
 
+        // When you using pool, or your connections have to be created in some obscure way, you should implement
+        // own ConnectionProviderFactory and use it.
+        ConnectionProviderFactory ownFactory = ...
+        String address2 = "custom-address";
+        JdbcHelperI dbCustom = JdbcCachedHelper.getInstance(address2);
+
         // simple query execution
         db.runUpdate("create table test (id integer, name varchar(250))", null);
 
@@ -99,7 +105,7 @@ JDBC
  When you read some rows into memory, objects will stay there until GC, right? So, storing them actually
  not bad idea, at least for some short time.
 
-QUEUE
+Queue
 -----
 
         // You have very large table (~millions of records), or other datasource;
@@ -136,7 +142,7 @@ QUEUE
         //Any size
         sender.setChunkSize(25);
         //If your logic allows - wait some time to push more data
-        sender.setWaitDelayForMinimalSize(1000);
+        sender.setWaitDtelayForMinimalSize(1000);
 
         // When data came, just puch it like this:
         sender.addToQueueAll(manyObjects);
@@ -144,7 +150,7 @@ QUEUE
         //That's it. When sender will be ready, it will call your implemented method in FeedI:
         // yourFeederDataSaver.sendData(Collection nextChunkOfRecords) throws Exception;
 
-UTIL
+Util
 ----
         // return time in such format YYYYDDDPP
         // where YYYY - year
@@ -166,3 +172,21 @@ UTIL
 
         //get property from file;
         String updated = filePropertyUtil.getProperty(key);
+
+        // Comparators - dynamic comparators, which can treat any Collections, elements can be any level of complexity
+        // and any level of nesting
+
+        // Create comparator which will sort Collection of Map, by getting from each map value by key "a",
+        // splitting this value by "\t" and comparing second part of split, treating it as Long.
+        GenericDeepComparator deepComparator = new GenericDeepComparator();
+        MapValueProducer producer1 = new MapValueProducer("a");
+        SplitStringProducer nested1 = new SplitStringProducer("\t", 1);
+        nested1.setNested(new LongFromStringProducer());
+        producer1.setNested(nested1);
+        deepComparator.setProducerI(producer1);
+
+        // Create comparator which will sort Collection of Map by getting from each map value by key "a"
+        GenericDeepComparator deepComparator = new GenericDeepComparator();
+        MapValueProducer producer1 = new MapValueProducer("a");
+        deepComparator.setProducerI(producer1);
+
