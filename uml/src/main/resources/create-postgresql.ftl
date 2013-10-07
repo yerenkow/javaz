@@ -4,24 +4,24 @@ begin;
         <#assign tablePrefix = "tbl_">
     </#if>
     <#list beans as bean>
-    CREATE SEQUENCE ${tablePrefix?lower_case}${bean.tableName?lower_case}_id_sequence;
-    CREATE TABLE ${tablePrefix?lower_case}${bean.tableName?lower_case}
+    CREATE SEQUENCE ${tablePrefix}${bean.table_name}_id_sequence;
+    CREATE TABLE ${tablePrefix}${bean.table_name}
     (
-        <#assign attributes = bean.getAttribute()>
+        <#assign attributes = bean.attributes>
         <#list attributes as attribute>
-        ${attribute.columnName?lower_case} ${attribute.sqlType},
+        ${attribute.column_name} ${attribute.sql_type},
         </#list>
 
         <#list attributes as attribute>
-            <#if attribute.primaryKey >
-            CONSTRAINT pk_${tablePrefix?lower_case}${bean.tableName?lower_case} PRIMARY KEY (${attribute.columnName?lower_case})
+            <#if attribute.primary_key == 'true' >
+            CONSTRAINT pk_${tablePrefix}${bean.table_name} PRIMARY KEY (${attribute.column_name})
             </#if>
         </#list>
     );
         <#list attributes as attribute>
-            <#if attribute.primaryKey >
-            ALTER TABLE ${tablePrefix?lower_case}${bean.tableName?lower_case} ALTER COLUMN ${attribute.columnName?lower_case} SET NOT NULL;
-            ALTER TABLE ${tablePrefix?lower_case}${bean.tableName?lower_case} ALTER COLUMN ${attribute.columnName?lower_case} SET DEFAULT nextval('${tablePrefix?lower_case}${bean.tableName?lower_case}_id_sequence'::regclass);
+            <#if attribute.primary_key == 'true'  >
+            ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN ${attribute.column_name} SET NOT NULL;
+            ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN ${attribute.column_name} SET DEFAULT nextval('${tablePrefix}${bean.table_name}_id_sequence'::regclass);
 
             </#if>
         </#list>

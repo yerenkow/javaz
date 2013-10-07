@@ -1,5 +1,7 @@
 package org.javaz.uml;
 
+import net.sf.json.JSONObject;
+import org.javaz.util.JsonUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -9,7 +11,10 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,6 +71,27 @@ public class VioletParser
         sqlTypes.put("java.lang.String", "character varying({size})");
         sqlTypes.put("java.sql.Date", "date");
         sqlTypes.put("java.sql.Timestamp", "timestamp without time zone");
+    }
+
+    public HashMap<String, Object> parseFromJson(String file)
+    {
+        StringBuffer buffer = new StringBuffer();
+        try
+        {
+            LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+            String line = null;
+            while ((line = lnr.readLine()) != null)
+            {
+                buffer.append(line);
+            }
+            return new HashMap(JSONObject.fromObject(buffer.toString()));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public HashMap<String, Object> parseVioletClass(String file)
@@ -209,5 +235,19 @@ public class VioletParser
         }
 
         return result.toLowerCase();
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        if (args.length != 2)
+        {
+            System.out.println("Please, specify two parameters - in violet model file and out json file");
+            System.exit(0);
+        }
+        VioletParser vp = new VioletParser();
+        HashMap<String, Object> model = vp.parseVioletClass(args[0]);
+        FileWriter fw = new FileWriter(args[1]);
+        fw.write(JsonUtil.convertToJS(model));
+        fw.close();
     }
 }

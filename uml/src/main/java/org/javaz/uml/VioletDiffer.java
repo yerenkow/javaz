@@ -30,9 +30,9 @@ public class VioletDiffer
         HashMap bMap = ObjectDifference.packHashesByKey((List<Map>) modelOld.get("beans"), "name");
 
         HashMap newOne = ObjectDifference.getInANotInB(aMap, bMap);
-        newBeans.add(newOne.values());
+        newBeans.addAll(newOne.values());
         HashMap oldOne = ObjectDifference.getInANotInB(bMap, aMap);
-        deletedBeans.add(oldOne.values());
+        deletedBeans.addAll(oldOne.values());
 
         //changed
         Set set = aMap.keySet();

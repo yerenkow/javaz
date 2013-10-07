@@ -4,16 +4,16 @@ begin;
         <#assign tablePrefix = "tbl_">
     </#if>
     <#list beans as bean>
-    CREATE TABLE ${tablePrefix?lower_case}${bean.tableName?lower_case}
+    CREATE TABLE ${tablePrefix}${bean.table_name}
     (
-        <#assign attributes = bean.getAttribute()>
+        <#assign attributes = bean.attributes>
         <#list attributes as attribute>
-        `${attribute.columnName?lower_case}` ${attribute.sqlType} <#if attribute.primaryKey >NOT NULL AUTO_INCREMENT </#if>,
+        `${attribute.column_name}` ${attribute.sql_type} <#if attribute.primary_key == 'true' >NOT NULL AUTO_INCREMENT </#if>,
         </#list>
 
         <#list attributes as attribute>
-            <#if attribute.primaryKey >
-            CONSTRAINT pk_${tablePrefix?lower_case}${bean.tableName?lower_case} PRIMARY KEY (`${attribute.columnName?lower_case}`)
+            <#if attribute.primary_key  == 'true' >
+            CONSTRAINT pk_${tablePrefix}${bean.table_name} PRIMARY KEY (`${attribute.column_name}`)
             </#if>
         </#list>
     );
