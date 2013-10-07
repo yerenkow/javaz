@@ -16,13 +16,25 @@ public class JsonUtil
     public static String convertToJS(Object object, boolean newLine)
     {
 
+        return convertToJS(object, newLine, false);
+    }
+
+    public static String convertToJS(Object object, boolean newLine, boolean sort)
+    {
+
         StringBuffer sb = new StringBuffer();
 
         if (object instanceof Map)
         {
             Map hash = (Map) object;
             sb.append("{");
-            Set set = hash.keySet();
+            Collection set = hash.keySet();
+            if (sort)
+            {
+                ArrayList set2 = new ArrayList(set);
+                Collections.sort(set2);
+                set = set2;
+            }
             String outerZpt = "";
             for (Iterator iteratorX = set.iterator(); iteratorX.hasNext(); )
             {
