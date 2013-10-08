@@ -14,6 +14,8 @@ Sub Projects:
 
 * servlet - Servlet, XMLRPC and SSL stuff
 
+* uml - tools to convert Violet UML editor class diagrams into objects, and render objects to any script files usung freemarker.
+
 * util - Small useful utils, not belong to any significant project
 
 Sub Projects cross-dependencies:
@@ -150,6 +152,28 @@ Queue
         //That's it. When sender will be ready, it will call your implemented method in FeedI:
         // yourFeederDataSaver.sendData(Collection nextChunkOfRecords) throws Exception;
 
+Uml
+---
+
+        // VioletParser used to parse beans from violet file or from json
+        HashMap fromViolet = new VioletParser().parseVioletClass("path");
+
+        // VioletParser used to parse beans from violet file or from json
+        HashMap fromJson = new VioletParser().parseFromJson("path");
+
+        // Can be used from commandline
+        java -cp ${jar} org.javaz.uml.VioletParser in.class.violet out-ver${ver}.json
+
+        // RenderFtl used to take beans (or each bean) and render some templates
+        RenderFtl renderFtl = new RenderFtl(oldModel, newModel);
+        renderFtl.setParseType(RENDER_DIFFERENCE);
+        renderFtl.setTemplate("update-db");
+
+        // This can be used from command-line
+        // This takes model from file newmodel.json and renders template create-mysql.ftl
+        java -cp ${jar} org.javaz.uml.RenderFtl newmodel.json create-mysql 1 -DtemplatePath=/path/to/templates
+
+
 Util
 ----
         // return time in such format YYYYDDDPP
@@ -189,4 +213,11 @@ Util
         GenericDeepComparator deepComparator = new GenericDeepComparator();
         MapValueProducer producer1 = new MapValueProducer("a");
         deepComparator.setProducerI(producer1);
+
+        // ObjectDifference used to find difference between objects.
+        // Mostly useful to make difference between Map(s)
+        HashMap inANotInB = ObjectDifference.getInANotInB(a, b);
+        HashMap inAAndInBEquals = ObjectDifference.getInAAndInBEquals(a, b);
+        HashMap inAAndInBNotEquals = ObjectDifference.getInAAndInBNotEquals(a, b);
+
 
