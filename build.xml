@@ -7,16 +7,18 @@
     <property name="temp.compile.path" value="temp.compile.path"/>
     <property name="temp.src.path" value="temp.src.path"/>
     <property name="lib.path" value="lib"/>
-    <property name="all.version" value="0.95" />
+    <property name="all.version" value="0.95"/>
     <property name="jar.name" value="javaz-util-${all.version}.jar"/>
+    <property name="jar.full.name" value="javaz-util-full-${all.version}.jar"/>
 
-    <property name="sources.cache.path" value="cache/src/main/java" />
-    <property name="sources.jdbc.path" value="jdbc/src/main/java" />
-    <property name="sources.queues.path" value="queues/src/main/java" />
-    <property name="sources.servlet.path" value="servlet/src/main/java" />
-    <property name="sources.util.path" value="util/src/main/java" />
+    <property name="sources.cache.path" value="cache/src/main/java"/>
+    <property name="sources.jdbc.path" value="jdbc/src/main/java"/>
+    <property name="sources.queues.path" value="queues/src/main/java"/>
+    <property name="sources.servlet.path" value="servlet/src/main/java"/>
+    <property name="sources.uml.path" value="uml/src/main/java"/>
+    <property name="sources.util.path" value="util/src/main/java"/>
 
-    <tstamp id="TODAY" />
+    <tstamp id="TODAY"/>
 
 
     <path id="classpath">
@@ -45,23 +47,42 @@
             <fileset dir="${sources.servlet.path}">
                 <include name="**"/>
             </fileset>
+            <fileset dir="${sources.uml.path}">
+                <include name="**"/>
+            </fileset>
             <fileset dir="${sources.util.path}">
                 <include name="**"/>
             </fileset>
         </copy>
-        <javac source="1.5" target="1.5" classpathref="classpath" srcdir="${temp.src.path}" destdir="${temp.compile.path}" debug="on" encoding="UTF-8"/>
+        <javac source="1.5" target="1.5" classpathref="classpath" srcdir="${temp.src.path}"
+               destdir="${temp.compile.path}" debug="on" encoding="UTF-8"/>
 
-<!--
-        <copy todir="${temp.compile.path}">
-            <fileset dir="${all-pathes}">
-                <include name="**"/>
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
--->
+        <!--
+                <copy todir="${temp.compile.path}">
+                    <fileset dir="${all-pathes}">
+                        <include name="**"/>
+                        <exclude name="**/*.java"/>
+                    </fileset>
+                </copy>
+        -->
 
         <mkdir dir="build"/>
         <jar destfile="build/${jar.name}" basedir="${temp.compile.path}">
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <section name="common">
+                    <attribute name="Implementation-Version" value="${all.version}"/>
+                    <attribute name="Build-Date" value="${TODAY}"/>
+                </section>
+            </manifest>
+        </jar>
+        <unzip dest="${temp.compile.path}">
+            <fileset dir="${lib.path}">
+                <include name="**.jar"/>
+            </fileset>
+        </unzip>
+
+        <jar destfile="build/${jar.full.name}" basedir="${temp.compile.path}">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
                 <section name="common">
