@@ -1,6 +1,6 @@
 #!/bin/sh
 
-jar="javaz-all.jar"
+jar="javaz-util-full-0.95.jar"
 ver="1"
 
-java -jar ${jar} org.javaz.uml.VioletParser in.class.violet out-ver${ver}.json
+java -cp ${jar} org.javaz.uml.VioletParser in.class.violet out-ver${ver}.json
