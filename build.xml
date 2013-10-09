@@ -79,6 +79,8 @@
         <unzip dest="${temp.compile.path}">
             <fileset dir="${lib.path}">
                 <include name="**.jar"/>
+                <exclude name="junit**"/>
+                <exclude name="hsqldb**"/>
             </fileset>
         </unzip>
 
