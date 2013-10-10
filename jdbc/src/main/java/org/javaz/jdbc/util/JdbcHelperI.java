@@ -49,6 +49,17 @@ public interface JdbcHelperI extends JdbcConstants
     public int runUpdate(String query, Map parameters);
 
     /**
+     * Update something in DB, but not expecting nothing back.
+     * RETURNING not appended if DB supports this.
+     *
+     * @param query
+     * @param parameters
+     * @return
+     */
+    public void runUpdateDataIgnore(String query, Map parameters);
+
+
+    /**
      * Run a lots of updates in single Connection
      *
      * @param objects

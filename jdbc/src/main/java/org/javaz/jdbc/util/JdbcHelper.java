@@ -46,6 +46,18 @@ public class JdbcHelper extends AbstractJdbcHelper
         return 0;
     }
 
+    public void runUpdateDataIgnore(String query, Map parameters)
+    {
+        try
+        {
+            UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public List getRecordList(String query, Map parameters, boolean useCache)
     {
         Object o = null;
