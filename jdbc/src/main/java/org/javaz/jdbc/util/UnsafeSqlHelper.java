@@ -117,7 +117,7 @@ public class UnsafeSqlHelper implements JdbcConstants
                                 //This can happen with MySQL, let's silent ignore it.
                                 //System.out.println("Incorrect object in ResultSet");
                             }
-                            results.put(name, o);
+                            results.put(name.toLowerCase(), o);
                         }
 
                         listToReturn.add(results);
@@ -138,7 +138,7 @@ public class UnsafeSqlHelper implements JdbcConstants
                         ArrayList a = new ArrayList();
                         for (int i = 1; i <= setMetaData.getColumnCount(); i++)
                         {
-                            a.add(setMetaData.getColumnLabel(i));
+                            a.add(setMetaData.getColumnLabel(i).toLowerCase());
                         }
                         listToReturn.add(a);
                     }
