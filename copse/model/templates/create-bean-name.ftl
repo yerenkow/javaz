@@ -1,0 +1,1 @@
+${bean.name}VO.java
