@@ -92,6 +92,7 @@ public class UpdateableFilePropertyUtil
                             properties.putAll(p);
                         }
                         fileStampModify = lastModified;
+                        fileStampUpdate = currentMillis;
                     }
                     catch (IOException e)
                     {

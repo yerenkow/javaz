@@ -28,6 +28,7 @@ public class UpdateableTest
         Assert.assertEquals(instance.getProperty("a.b"), "x");
         Assert.assertEquals(instance.getProperty("a.c"), "x");
 
+        Thread.sleep(1000); // wait for timestamps to update.
         writer = new FileWriter(file, false);
         writer.write("a.b=y\n");
         writer.write("o1.o1=*.*\n");
@@ -48,6 +49,7 @@ public class UpdateableTest
         Assert.assertTrue(auth.isAuthorized("o2", "o2", "mm.xxxx"));
         Assert.assertTrue(auth.isAuthorized("o3", "o3", "mm.xx"));
 
+        Thread.sleep(1000); // wait for timestamps to update.
         writer = new FileWriter(file, false);
         writer.write("ab=y");
         writer.write("cd=o");
