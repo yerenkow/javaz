@@ -245,28 +245,12 @@ public class RenderFtl
             System.exit(0);
         }
 
-        VioletParser vp = new VioletParser();
-        HashMap newModel = null;
-        if (fileInNew.endsWith(".json"))
-        {
-            newModel = vp.parseFromJson(fileInNew);
-        }
-        else
-        {
-            newModel = vp.parseVioletClass(fileInNew);
-        }
+        HashMap newModel = VioletParser.parseVioletModel(fileInNew);
 
         HashMap oldModel = new HashMap();
         if (parseType == RENDER_DIFFERENCE)
         {
-            if (fileInOld.endsWith(".json"))
-            {
-                oldModel = vp.parseFromJson(fileInOld);
-            }
-            else
-            {
-                oldModel = vp.parseVioletClass(fileInOld);
-            }
+            oldModel = VioletParser.parseVioletModel(fileInOld);
         }
 
         RenderFtl renderFtl = new RenderFtl(oldModel, newModel);
