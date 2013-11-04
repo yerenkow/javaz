@@ -1,9 +1,11 @@
 package org.javaz.uml;
 
+import org.javaz.util.GenericDeepComparator;
 import org.javaz.util.JsonUtil;
+import org.javaz.util.MapValueProducer;
 
 import java.io.FileWriter;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * This is helper to parse Violet UML .class files
@@ -38,8 +40,18 @@ public class VioletParser
         }
 
         HashMap<String, Object> model = parseVioletModel(args[0]);
+
+        ArrayList<Map> allBeans = (ArrayList<Map>) model.get("beans");
+        GenericDeepComparator c = new GenericDeepComparator();
+        c.setProducerI(new MapValueProducer("name"));
+        Collections.sort(allBeans, c);
+        for (Map bean : allBeans) {
+            ArrayList<Map> attributes = (ArrayList<Map>) bean.get("attributes");
+            Collections.sort(attributes, c);
+        }
+
         FileWriter fw = new FileWriter(args[1]);
-        fw.write(JsonUtil.convertToJS(model));
+        fw.write(JsonUtil.convertToJS(model, true, true));
         fw.close();
     }
 }
