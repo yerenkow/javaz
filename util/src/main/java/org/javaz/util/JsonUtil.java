@@ -41,10 +41,10 @@ public class JsonUtil
                 Object x = iteratorX.next();
                 String s = "" + x;
                 sb.append(outerZpt);
-                sb.append(convertToJS(s, newLine));
+                sb.append(convertToJS(s, newLine, sort));
                 sb.append(":");
                 Object o = hash.get(x);
-                sb.append(convertToJS(o, newLine));
+                sb.append(convertToJS(o, newLine, sort));
                 outerZpt = ",";
             }
             sb.append("}");
@@ -62,7 +62,7 @@ public class JsonUtil
             {
                 Object o1 = iterator.next();
                 sb.append(innerZpt);
-                sb.append(convertToJS(o1, newLine));
+                sb.append(convertToJS(o1, newLine, sort));
                 innerZpt = ",";
             }
             sb.append("]");
@@ -76,7 +76,7 @@ public class JsonUtil
             {
                 Object o1 = list[i];
                 sb.append(innerZpt);
-                sb.append(convertToJS(o1, newLine));
+                sb.append(convertToJS(o1, newLine, sort));
                 innerZpt = ",";
             }
             sb.append("]");
