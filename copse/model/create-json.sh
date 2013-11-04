@@ -1,6 +1,6 @@
 #!/bin/sh
 
 jar="../../build/javaz-util-full-0.95.jar"
-ver="XXX"
+ver="1"
 
-java -cp ${jar} org.javaz.uml.VioletParser copse.class.violet versions/copse-ver${ver}.json
+java -cp ${jar} org.javaz.uml.VioletParser copse.class.violet.html versions/copse-ver${ver}.json
