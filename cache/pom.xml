@@ -1,0 +1,58 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.javaz</groupId>
+    <artifactId>javaz-cache</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <name>Javaz Cache</name>
+    <description>Cache abstraction</description>
+    <url>https://github.com/yerenkow/javaz/tree/master/cache</url>
+
+    <licenses>
+        <license>
+            <name>BSD 2-Clause license</name>
+            <url>https://github.com/yerenkow/javaz/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/yerenkow/javaz/tree/master/cache</url>
+        <connection>https://github.com/yerenkow/javaz/tree/master/cache</connection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>yerenkow</id>
+            <name>Yerenkow</name>
+            <email>yerenkow@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
