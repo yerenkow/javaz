@@ -278,6 +278,10 @@ public class JdbcCachedTest
             Map m1 = (Map) list.get(i);
             Map m2 = (Map) list2.get(i);
             Object id = m1.get("ID");
+            if(id == null)
+            {
+                id = m1.get("id");
+            }
             if (id.equals(0))
             {
                 Assert.assertNotSame(m1, m2);
