@@ -8,6 +8,12 @@
     <description>JDBC utils and helpers</description>
     <url>https://github.com/yerenkow/javaz/tree/master/jdbc</url>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <licenses>
         <license>
             <name>BSD 2-Clause license</name>

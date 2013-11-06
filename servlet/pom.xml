@@ -8,6 +8,12 @@
     <description>Servlet + RPC </description>
     <url>https://github.com/yerenkow/javaz/tree/master/servlet</url>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <licenses>
         <license>
             <name>BSD 2-Clause license</name>
