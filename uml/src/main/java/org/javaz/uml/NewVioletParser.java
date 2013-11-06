@@ -33,8 +33,12 @@ public class NewVioletParser extends BasicVioletXmlParser
 
             Node attributesNode = NodeParserUtil.getNodeChildDeepStatic(node.getChildNodes(), "attributes");
             Node attributesTextNode = NodeParserUtil.getNodeChildDeepStatic(attributesNode.getChildNodes(), "text");
-
             String attributes = attributesTextNode.getTextContent();
+
+            Node methodsNode = NodeParserUtil.getNodeChildDeepStatic(node.getChildNodes(), "methods");
+            Node methodsTextNode = NodeParserUtil.getNodeChildDeepStatic(methodsNode.getChildNodes(), "text");
+            String methods = methodsTextNode.getTextContent();
+
             HashMap<String, Object> bean = new HashMap<String, Object>();
             bean.put("name", name);
             bean.put("table_name", getDbName(name));
@@ -93,6 +97,28 @@ public class NewVioletParser extends BasicVioletXmlParser
                     attribute.put("primary_key", attribute.get("name").equalsIgnoreCase("id") ? "true" : "false");
 
                     beanAttributes.add(attribute);
+                }
+            }
+            ArrayList<Map> beanMethods = new ArrayList<Map>();
+            bean.put("methods", beanMethods);
+            String[] splittedMethods = methods.split("\\n");
+            for (int j = 0; j < splittedMethods.length; j++)
+            {
+                String s = splittedMethods[j];
+                String[] nameTypePair = s.split(":");
+                if (nameTypePair.length < 2)
+                {
+                    System.out.println("Error with: " + name + "." + s + ", ignoring");
+                }
+                else
+                {
+                    HashMap<String, String> method = new HashMap<String, String>();
+                    String methodName = nameTypePair[1].trim();
+                    method.put("name", methodName);
+                    String type = nameTypePair[0].trim();
+                    type = getFullyQualifiedTypeName(type);
+                    method.put("type", type);
+                    beanMethods.add(method);
                 }
             }
             allBeans.add(bean);
