@@ -1,6 +1,10 @@
 #!/bin/sh
 
 jar="../../build/javaz-util-full-0.95.jar"
-ver="1"
-java -cp ${jar} org.javaz.uml.RenderFtl versions/copse-ver${ver}.json create-iface 2 -DtemplatePath=templates -DoutPath=../src/main/java/org/javaz/copse/iface -Dpackage=org.javaz.copse -DtablePrefix=copse_
-java -cp ${jar} org.javaz.uml.RenderFtl versions/copse-ver${ver}.json create-bean 2 -DtemplatePath=templates -DoutPath=../src/main/java/org/javaz/copse/bean -Dpackage=org.javaz.copse -DtablePrefix=copse_
+src="../src/main/java/"
+bean_whole="1"
+bean_by_one="2"
+bean_difference="4"
+
+java -cp ${jar} org.javaz.uml.RenderFtl versions/copse-current.json create-iface ${bean_by_one} -DtemplatePath=templates -DoutPath=${src}org/javaz/copse/iface -Dpackage=org.javaz.copse -DtablePrefix=copse_
+java -cp ${jar} org.javaz.uml.RenderFtl versions/copse-current.json create-bean ${bean_by_one} -DtemplatePath=templates -DoutPath=${src}org/javaz/copse/abs -Dpackage=org.javaz.copse -DtablePrefix=copse_

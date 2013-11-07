@@ -1,6 +1,8 @@
 #!/bin/sh
 
-jar="../../build/javaz-util-full-0.95.jar"
-ver="1"
+#just don't forget increment here.
+ver="2"
 
+jar="../../build/javaz-util-full-0.95.jar"
 java -cp ${jar} org.javaz.uml.VioletParser copse.class.violet.html versions/copse-ver${ver}.json
+cp versions/copse-ver${ver}.json versions/copse-current.json
