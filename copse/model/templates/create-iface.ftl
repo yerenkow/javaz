@@ -22,4 +22,8 @@ public interface ${bean.name}I extends Serializable, Cloneable
     public Object[] getDbUpdateQuery();
 
     public Object[] getDbUpdateQuery(String table_name);
+
+    <#list bean.methods as method>
+    public ${method.type} ${method.name};
+    </#list>
 }</#if>

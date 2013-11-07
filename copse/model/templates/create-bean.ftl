@@ -3,14 +3,14 @@
         <#assign comma = false>
     </#if>
     <#assign attributes = bean.attributes>
-package ${package}.bean;
+package ${package}.abs;
 
 import ${package}.iface.${bean.name}I;
 import java.util.*;
 import java.sql.*;
 import java.io.Serializable;
 
-public class ${bean.name}VO implements ${bean.name}I
+public abstract class Abstract${bean.name} implements ${bean.name}I
 {
     <#list attributes as attribute>
     private ${attribute.type} ${attribute.name};
@@ -149,5 +149,9 @@ public class ${bean.name}VO implements ${bean.name}I
         }
         return new Object[]{sb.toString(), map};
     }
+
+    <#list bean.methods as method>
+    public abstract ${method.type} ${method.name};
+    </#list>
 }
 </#if>

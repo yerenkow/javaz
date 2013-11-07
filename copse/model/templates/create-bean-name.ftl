@@ -1,1 +1,1 @@
-${bean.name}VO.java
+Abstract${bean.name}.java
