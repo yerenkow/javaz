@@ -1,7 +1,22 @@
 javaz
 =====
 
-Set of mini utils, classes, routines and other useful things, all buildable as JAR
+Set of mini utils, classes, routines and other useful things, all buildable as JAR and available as maven artifacats.
+
+Maven dependencies:
+==================
+
+    <dependency>
+        <groupId>org.javaz</groupId>
+        <artifactId>javaz-jdbc</artifactId>
+        <version>1.0</version>
+        <type>pom</type>
+    </dependency>
+
+Available artifactIds:
+----------------------
+javaz-cache, javaz-jdbc, javaz-queues, javaz-servlet, javaz-uml, javaz-util
+
 
 Sub Projects:
 -------------
