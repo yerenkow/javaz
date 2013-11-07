@@ -1,0 +1,199 @@
+{"beans":[{"attributes":[{"column_name":"action","length":"250","name":"action","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"applicable_action_list","length":"250","name":"applicableActionList","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"entity_descriptor_type_id","length":"250","name":"entityDescriptorTypeId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"js_code","length":"250","name":"jsCode","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"required_permissions","length":"250","name":"requiredPermissions","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"selection_type","length":"250","name":"selectionType","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"ActionButton","table_name":"action_button"}
+,{"attributes":[{"column_name":"applicable_action_list","length":"250","name":"applicableActionList","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"class_name","length":"250","name":"className","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"entity_descriptor_type_id","length":"250","name":"entityDescriptorTypeId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"ActionHandlerDescriptor","table_name":"action_handler_descriptor"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"login","length":"250","name":"login","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"name","length":"250","name":"name","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"password","length":"250","name":"password","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"url","length":"250","name":"url","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"DataBase","table_name":"data_base"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"EntityDescriptorInfo","table_name":"entity_descriptor_info"}
+,{"attributes":[{"column_name":"default_action","length":"250","name":"defaultAction","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"factory_id","length":"250","name":"factoryId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"EntityDescriptorType","table_name":"entity_descriptor_type"}
+,{"attributes":[{"column_name":"column_number","length":"250","name":"columnNumber","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"default_value","length":"250","name":"defaultValue","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"field_name","length":"250","name":"fieldName","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"field_type_id","length":"250","name":"fieldTypeId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"help","length":"250","name":"help","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"html_overridden_label","length":"250","name":"htmlOverriddenLabel","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"html_overridden_name","length":"250","name":"htmlOverriddenName","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"java_type","length":"250","name":"javaType","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"nullable","length":"250","name":"nullable","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"numeric","length":"250","name":"numeric","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"options","length":"250","name":"options","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"page_id","length":"250","name":"pageId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"readonly","length":"250","name":"readonly","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"required","length":"250","name":"required","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"size","length":"250","name":"size","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"sortable","length":"250","name":"sortable","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"use_in_sql","length":"250","name":"useInSql","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+],"methods":[],"name":"Field","table_name":"field"}
+,{"attributes":[{"column_name":"field_type","length":"250","name":"fieldType","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"FieldType","table_name":"field_type"}
+,{"attributes":[{"column_name":"factory_id","length":"250","name":"factoryId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"FormDescriptor","table_name":"form_descriptor"}
+,{"attributes":[{"column_name":"comments","length":"250","name":"comments","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"form_id","length":"250","name":"formId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"FormPage","table_name":"form_page"}
+,{"attributes":[{"column_name":"factory","length":"250","name":"factory","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"FormResultHandler","table_name":"form_result_handler"}
+,{"attributes":[{"column_name":"factory_class","length":"250","name":"factoryClass","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"name","length":"250","name":"name","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"GenericFactory","table_name":"generic_factory"}
+,{"attributes":[{"column_name":"category_id","length":"250","name":"categoryId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"GenericTag","table_name":"generic_tag"}
+,{"attributes":[{"column_name":"code","length":"250","name":"code","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"comments","length":"250","name":"comments","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"enabled","length":"250","name":"enabled","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"parent_group_id","length":"250","name":"parentGroupId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"Group","table_name":"group"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"IncludeDescriptor","table_name":"include_descriptor"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"Language","table_name":"language"}
+,{"attributes":[{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"parent_menu_id","length":"250","name":"parentMenuId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"MenuItem","table_name":"menu_item"}
+,{"attributes":[{"column_name":"deny","length":"250","name":"deny","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"group_id","length":"250","name":"groupId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"permission_flags","length":"250","name":"permissionFlags","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"user_id","length":"250","name":"userId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"Permission","table_name":"permission"}
+,{"attributes":[{"column_name":"entity_descriptor_type_id","length":"250","name":"entityDescriptorTypeId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"factory","length":"250","name":"factory","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[{"name":"checkPermissions(org.javaz.copse.profile.UserProfileI profile,Integer entityId,String permissionFlag,org.javaz.copse.iface.DataBaseI db)","type":"java.lang.Boolean"}
+],"name":"PermissionChecker","table_name":"permission_checker"}
+,{"attributes":[{"column_name":"class_name","length":"250","name":"className","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"parameters","length":"250","name":"parameters","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"Plugin","table_name":"plugin"}
+,{"attributes":[{"column_name":"created_when","length":"250","name":"createdWhen","primary_key":"false","sql_type":"timestamp without time zone","type":"java.sql.Timestamp"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"group_id","length":"250","name":"groupId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"is_default","length":"250","name":"isDefault","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"user_id","length":"250","name":"userId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"value","length":"250","name":"value","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"SavedFilter","table_name":"saved_filter"}
+,{"attributes":[{"column_name":"db_id","length":"250","name":"dbId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"name","length":"250","name":"name","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"SeparateFilterDescriptor","table_name":"separate_filter_descriptor"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"string_key","length":"250","name":"stringKey","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"string_value","length":"250","name":"stringValue","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"string_value2","length":"250","name":"stringValue2","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"SimpleRecord","table_name":"simple_record"}
+,{"attributes":[{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"java_type","length":"250","name":"javaType","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"key","length":"250","name":"key","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"value","length":"250","name":"value","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"SqlCondition","table_name":"sql_condition"}
+,{"attributes":[{"column_name":"additional_where","length":"250","name":"additionalWhere","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"db_id","length":"250","name":"dbId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"delete_field","length":"250","name":"deleteField","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"join_tables","length":"250","name":"joinTables","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"linked_child_entity_column_id","length":"250","name":"linkedChildEntityColumnId","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"linked_order_field","length":"250","name":"linkedOrderField","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"linked_parent_entity_id","length":"250","name":"linkedParentEntityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"table_name","length":"250","name":"tableName","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"title","length":"250","name":"title","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"TableEntityDescriptor","table_name":"table_entity_descriptor"}
+,{"attributes":[{"column_name":"category_id","length":"250","name":"categoryId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"record_id","length":"250","name":"recordId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"tag_id","length":"250","name":"tagId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"TagLink","table_name":"tag_link"}
+,{"attributes":[{"column_name":"enabled","length":"250","name":"enabled","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"from_time","length":"250","name":"fromTime","primary_key":"false","sql_type":"timestamp without time zone","type":"java.sql.Timestamp"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"record_id","length":"250","name":"recordId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"till_time","length":"250","name":"tillTime","primary_key":"false","sql_type":"timestamp without time zone","type":"java.sql.Timestamp"}
+,{"column_name":"type","length":"250","name":"type","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"TimeBinding","table_name":"time_binding"}
+,{"attributes":[{"column_name":"comments","length":"250","name":"comments","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"enabled","length":"250","name":"enabled","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"open_id","length":"250","name":"openId","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"open_id_email","length":"250","name":"openIdEmail","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"parent_id","length":"250","name":"parentId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"User","table_name":"user"}
+,{"attributes":[{"column_name":"group_id","length":"250","name":"groupId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"user_id","length":"250","name":"userId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"UserToGroup","table_name":"user_to_group"}
+,{"attributes":[{"column_name":"child_user_id","length":"250","name":"childUserId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"comments","length":"250","name":"comments","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"created_when","length":"250","name":"createdWhen","primary_key":"false","sql_type":"timestamp without time zone","type":"java.sql.Timestamp"}
+,{"column_name":"enabled","length":"250","name":"enabled","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"parent_user_id","length":"250","name":"parentUserId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"UserToUserGrant","table_name":"user_to_user_grant"}
+,{"attributes":[{"column_name":"column_name","length":"250","name":"columnName","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"entity_id","length":"250","name":"entityId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"factory_id","length":"250","name":"factoryId","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"order_value","length":"250","name":"orderValue","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"parameters","length":"250","name":"parameters","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"ValidatedField","table_name":"validated_field"}
+]}
