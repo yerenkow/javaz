@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -101,10 +102,30 @@ public class NewVioletParser extends BasicVioletXmlParser
             }
             ArrayList<Map> beanMethods = new ArrayList<Map>();
             bean.put("methods", beanMethods);
+            ArrayList splittedMethodsList = new ArrayList();
             String[] splittedMethods = methods.split("\\n");
+            StringBuffer currentMethod = new StringBuffer();
             for (int j = 0; j < splittedMethods.length; j++)
             {
                 String s = splittedMethods[j];
+                if(!s.contains(")"))
+                {
+                    currentMethod.append(s);
+                }
+                else
+                {
+                    currentMethod.append(s);
+                    splittedMethodsList.add(currentMethod.toString().trim());
+                    currentMethod = new StringBuffer();
+                }
+            }
+            if(currentMethod.toString().trim().length() > 0)
+            {
+                splittedMethodsList.add(currentMethod.toString().trim());
+            }
+            for (Iterator iterator = splittedMethodsList.iterator(); iterator.hasNext(); )
+            {
+                String s = (String) iterator.next();
                 String[] nameTypePair = s.split(":");
                 if (nameTypePair.length < 2)
                 {
