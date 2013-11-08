@@ -1,0 +1,1 @@
+Abstract${bean.name}.java

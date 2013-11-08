@@ -1,0 +1,40 @@
+{"beans":[{"attributes":[],"methods":[{"name":"handleRequest(ParameterProviderI provider)","type":"AnswerData"}
+,{"name":"beginAuthorization(ParameterProviderI provider)","type":"void"}
+,{"name":"authorize(ParameterProviderI provider) throws NotAuthorizedException, NoSuchAccountException","type":"void"}
+,{"name":"authorizeByOpenId(String openId, String email, ParameterProviderI provider) throws NoSuchAccountException","type":"void"}
+,{"name":"reauthorizeByGrantId(UserProfileI userProfile, Integer otherId, ParameterProviderI provider)","type":"void"}
+,{"name":"logout(ParameterProviderI provider)","type":"void"}
+,{"name":"haveNoRights()","type":"AnswerData"}
+,{"name":"notAuthorized()","type":"AnswerData"}
+,{"name":"noSuchAccount()","type":"AnswerData"}
+,{"name":"noSuitableHandler()","type":"AnswerData"}
+,{"name":"handleUnknownRequest(ParameterProviderI provider)","type":"AnswerData"}
+,{"name":"writeMenuList(ArrayList allowedMenu)","type":"AnswerData"}
+,{"name":"writeLanguages(ArrayList languages)","type":"AnswerData"}
+,{"name":"writeEntities(ArrayList allowedMenu, UserProfileI profile)","type":"AnswerData"}
+],"name":"AbstractHandler","table_name":"abstract_handler"}
+,{"attributes":[{"column_name":"data","length":"250","name":"data","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+],"methods":[],"name":"AnswerData","table_name":"answer_data"}
+,{"attributes":[],"methods":[{"name":"init(DataBaseI db)","type":"void"}
+,{"name":"getEntityDescriptor(Integer id, boolean loadForeignData, UserProfileI profile)","type":"EntityDescriptorI"}
+,{"name":"getEntityDescriptorInfo(Integer id)","type":"EntityDescriptorInfoI"}
+,{"name":"getEntityField(Integer id, Integer entityId)","type":"EntityFieldI"}
+,{"name":"getMenuItem(Integer id)","type":"MenuItemI"}
+,{"name":"getAllMenuItemByPermission(UserProfileI profile, String permissionFlag)","type":"ArrayList"}
+,{"name":"getAllLanguages()","type":"ArrayList"}
+,{"name":"getPluginsForEntity(Integer entityId)","type":"ArrayList"}
+,{"name":"getButtonsForEntity(Integer entityId)","type":"ArrayList"}
+,{"name":"getHandlerDescriptorsForEntity(Integer entityId)","type":"ArrayList"}
+,{"name":"getValidatorsForEntity(Integer entityId)","type":"ArrayList"}
+,{"name":"getValidatorTypes()","type":"ArrayList"}
+,{"name":"getUserProfile(String openId, String openIdEmail) throws NoSuchAccountException","type":"AdminUserProfileI"}
+,{"name":"changeUserProfile(AdminUserProfileI profile, Integer otherId)","type":"AdminUserProfileI"}
+,{"name":"getOtherUserIdGrants(UserProfileI profile)","type":"HashMap"}
+,{"name":"getPermissionChecker(Integer id)","type":"PermissionCheckerI"}
+,{"name":"saveFilter(SavedFilterI filter)","type":"void"}
+,{"name":"getSavedFilters(UserProfileI userProfileI, Integer entityId)","type":"ArrayList"}
+,{"name":"getFilter(UserProfileI userProfileI, ParameterProviderI provider, EntityDescriptorI descriptor)","type":"FilterInfoI"}
+,{"name":"getDefaultFilter(UserProfileI userProfileI, EntityDescriptorI descriptor)","type":"FilterInfoI"}
+,{"name":"getProfile(ParameterProviderI provider)","type":"UserProfileI"}
+],"name":"DataProvider","table_name":"data_provider"}
+]}
