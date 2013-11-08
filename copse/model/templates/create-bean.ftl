@@ -3,6 +3,10 @@
         <#assign comma = false>
     </#if>
     <#assign attributes = bean.attributes>
+    <#assign abs = "">
+    <#if bean.methods?size != 0 >
+        <#assign abs = "Abstract">
+    </#if>
 package ${package}.abs;
 
 import ${package}.iface.${bean.name}I;
@@ -10,7 +14,7 @@ import java.util.*;
 import java.sql.*;
 import java.io.Serializable;
 
-public abstract class Abstract${bean.name} implements ${bean.name}I
+public abstract class ${abs}${bean.name} implements ${bean.name}I
 {
     <#list attributes as attribute>
     private ${attribute.type} ${attribute.name};
@@ -150,8 +154,8 @@ public abstract class Abstract${bean.name} implements ${bean.name}I
         return new Object[]{sb.toString(), map};
     }
 
-    <#list bean.methods as method>
+<#list bean.methods as method>
     public abstract ${method.type} ${method.name};
-    </#list>
+</#list>
 }
 </#if>
