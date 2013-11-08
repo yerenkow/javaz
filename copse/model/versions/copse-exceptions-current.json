@@ -1,0 +1,5 @@
+{"beans":[{"attributes":[],"methods":[],"name":"AdminAuthenticateException","table_name":"admin_authenticate_exception"}
+,{"attributes":[],"methods":[],"name":"NoFieldsForUpdateException","table_name":"no_fields_for_update_exception"}
+,{"attributes":[],"methods":[],"name":"NoSuchAccountException","table_name":"no_such_account_exception"}
+,{"attributes":[],"methods":[],"name":"NotAuthorizedException","table_name":"not_authorized_exception"}
+]}
