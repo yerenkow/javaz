@@ -3,8 +3,17 @@
     <#if beanName?index_of(":") &gt; 0 >
         <#assign beanName=beanName?substring(0, bean.name?index_of(":")) >
     </#if>
+    <#if !dbQuery??>
+        <#assign dbQuery = "true">
+    </#if>
+    <#if !excpackage??>
+        <#assign excpackage = package + ".exc">
+    </#if>
     <#if !comma??>
         <#assign comma = false>
+    </#if>
+    <#if !subpkg??>
+        <#assign subpkg = "abs">
     </#if>
     <#assign attributes = bean.attributes>
     <#assign abs = "">
@@ -13,9 +22,11 @@
         <#assign abs = "Abstract">
         <#assign absClass = "abstract">
     </#if>
-package ${package}.abs;
+package ${package}.${subpkg};
 
-import ${package}.iface.${beanName}I;
+import ${package}.iface.*;
+
+import ${excpackage}.*;
 import java.util.*;
 import java.sql.*;
 import java.io.Serializable;
@@ -110,6 +121,7 @@ public ${absClass} class ${abs}${beanName} implements ${beanName}I
         return h;
     }
 
+    <#if dbQuery == "true">
     public Object[] getDbUpdateQuery()
     {
         return getDbUpdateQuery("${tablePrefix?lower_case}${bean.table_name?lower_case}");
@@ -168,6 +180,7 @@ public ${absClass} class ${abs}${beanName} implements ${beanName}I
         }
         return new Object[]{sb.toString(), map};
     }
+    </#if>
 
 <#list bean.methods as method>
     public abstract ${method.type} ${method.name};

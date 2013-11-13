@@ -1,10 +1,17 @@
 <#if bean??>
+    <#if !excpackage??>
+        <#assign excpackage = package + ".exc">
+    </#if>
+    <#if !dbQuery??>
+        <#assign dbQuery = "true">
+    </#if>
     <#if !comma??>
         <#assign comma = false>
     </#if>
 <#assign attributes = bean.attributes>
 package ${package}.iface;
 
+import ${excpackage}.*;
 import java.util.*;
 import java.io.Serializable;
 
@@ -27,9 +34,11 @@ public interface ${beanName}I extends Serializable, Cloneable ${impl}
 
     public Map toStringMap();
 
+    <#if dbQuery == "true">
     public Object[] getDbUpdateQuery();
 
     public Object[] getDbUpdateQuery(String table_name);
+    </#if>
 
 <#list bean.methods as method>
     public ${method.type} ${method.name};
