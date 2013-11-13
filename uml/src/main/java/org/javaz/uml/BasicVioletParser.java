@@ -67,6 +67,8 @@ public abstract class BasicVioletParser
         fullyQTypes.put("java::sql::timestamp", "java.sql.Timestamp");
         fullyQTypes.put("hashmap", "java.util.HashMap");
         fullyQTypes.put("java::util::hashmap", "java.util.HashMap");
+        fullyQTypes.put("arraylist", "java.util.ArrayList");
+        fullyQTypes.put("java::util::arraylist", "java.util.ArrayList");
 
         sqlTypes.put("java.lang.Boolean", "boolean");
         sqlTypes.put("java.lang.Integer", "integer");
@@ -80,6 +82,7 @@ public abstract class BasicVioletParser
         sqlTypes.put("java.sql.Date", "date");
         sqlTypes.put("java.sql.Timestamp", "timestamp without time zone");
         sqlTypes.put("java.util.HashMap", "text");
+        sqlTypes.put("java.util.ArrayList", "text");
     }
 
     public String readFile(String path, Charset encoding) throws IOException
