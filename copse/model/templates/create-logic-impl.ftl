@@ -5,7 +5,7 @@
     <#assign attributes = bean.attributes>
 package ${package}.impl;
 
-import ${package}.logic.iface.${bean.name}I;
+import ${package}.logic.iface.*;
 import ${package}.exc.*;
 import java.util.*;
 import java.sql.*;
@@ -17,7 +17,7 @@ public abstract class Abstract${bean.name} implements ${bean.name}I
     private ${attribute.type} ${attribute.name};
 </#list>
 
-    public ${bean.name}VO ()
+    public Abstract${bean.name} ()
     {
     }
 <#list bean.methods as method>

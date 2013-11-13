@@ -8,14 +8,22 @@ package ${package}.iface;
 import java.util.*;
 import java.io.Serializable;
 
-public interface ${bean.name}I extends Serializable, Cloneable
+<#assign beanName = bean.name >
+<#assign impl="">
+<#if bean.name?index_of(":") &gt; 0 >
+
+<#assign impl=", " + bean.name?substring( 1 + bean.name?index_of(":")) >
+<#assign beanName=beanName?substring(0, bean.name?index_of(":")) >
+</#if>
+
+public interface ${beanName}I extends Serializable, Cloneable ${impl}
 {
 <#list attributes as attribute>
     public ${attribute.type} get${attribute.name?cap_first}();
     public void set${attribute.name?cap_first}(${attribute.type} ${attribute.name});
 
 </#list>
-    public ${bean.name}I fromMap(Map h);
+    public ${beanName}I fromMap(Map h);
 
     public Map toStringMap();
 

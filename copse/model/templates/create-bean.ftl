@@ -1,30 +1,36 @@
 <#if bean??>
+    <#assign beanName = bean.name >
+    <#if beanName?index_of(":") &gt; 0 >
+        <#assign beanName=beanName?substring(0, bean.name?index_of(":")) >
+    </#if>
     <#if !comma??>
         <#assign comma = false>
     </#if>
     <#assign attributes = bean.attributes>
     <#assign abs = "">
+    <#assign absClass = "">
     <#if bean.methods?size != 0 >
         <#assign abs = "Abstract">
+        <#assign absClass = "abstract">
     </#if>
 package ${package}.abs;
 
-import ${package}.iface.${bean.name}I;
+import ${package}.iface.${beanName}I;
 import java.util.*;
 import java.sql.*;
 import java.io.Serializable;
 
-public abstract class ${abs}${bean.name} implements ${bean.name}I
+public ${absClass} class ${abs}${beanName} implements ${beanName}I
 {
     <#list attributes as attribute>
     private ${attribute.type} ${attribute.name};
     </#list>
 
-    public ${bean.name}VO ()
+    public ${abs}${beanName} ()
     {
     }
 
-    public ${bean.name}VO (Map h)
+    public ${abs}${beanName} (Map h)
     {
     <#list attributes as attribute>
         <#assign found = "false">
@@ -58,9 +64,18 @@ public abstract class ${abs}${bean.name} implements ${bean.name}I
     </#list>
     }
 
-    public ${bean.name}VO fromMap(Map h)
+    <#if bean.methods?size != 0 >
+    public abstract ${abs}${beanName} createNewInstance(Map h);
+    <#else>
+    public ${abs}${beanName} createNewInstance(Map h)
     {
-        return new ${bean.name}VO(h);
+        return new ${abs}${beanName}(h);
+    }
+    </#if>
+
+    public ${abs}${beanName} fromMap(Map h)
+    {
+        return createNewInstance(h);
     }
 
     <#list attributes as attribute>
@@ -78,7 +93,7 @@ public abstract class ${abs}${bean.name} implements ${bean.name}I
 
     public Object clone() throws CloneNotSupportedException
     {
-        ${bean.name}VO clone = new ${bean.name}VO();
+        ${abs}${beanName} clone = createNewInstance(new HashMap());
         <#list attributes as attribute>
         clone.set${attribute.name?cap_first}(get${attribute.name?cap_first}());
         </#list>
