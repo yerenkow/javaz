@@ -15,9 +15,13 @@ public class RotatorPartialSender extends SimplePartialSender
     protected RotatorFetcher target = null;
     protected RecordsFetcherI fetcherI;
 
+    public RotatorPartialSender() {
+    }
+
     public RotatorPartialSender(RecordsFetcherI fetcherI, PartialSenderFeedI senderFeedI) {
-        super(senderFeedI);
         this.fetcherI = fetcherI;
+        this.senderFeedI = senderFeedI;
+        startRotating();
     }
 
 
@@ -77,10 +81,10 @@ public class RotatorPartialSender extends SimplePartialSender
                     RecordsFetcherI fetcherI = getFetcherI();
                     if(fetcherI != null) {
                         RecordsRotatorI rotater = RotatorsHolder.getRotater(fetcherI);
-                        addToQueueAll(rotater.getManyElements(rotatorFetchSize));
+                        addToQueueAll(rotater.getManyElements(getRotatorFetchSize()));
                     }
 
-                    Thread.sleep(rotatorFetchDelay);
+                    Thread.sleep(getRotatorFetchDelay());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

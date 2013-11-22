@@ -40,6 +40,11 @@ public class SimplePartialSender implements PartialSenderI
     public SimplePartialSender(PartialSenderFeedI senderFeedI)
     {
         this.senderFeedI = senderFeedI;
+        startRotating();
+    }
+
+    public void startRotating()
+    {
         new Thread(this).start();
     }
 

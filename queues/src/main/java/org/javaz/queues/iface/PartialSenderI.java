@@ -121,4 +121,5 @@ public interface PartialSenderI extends Runnable
 
     public long getStartWhenIteration();
 
+    public void startRotating();
 }
