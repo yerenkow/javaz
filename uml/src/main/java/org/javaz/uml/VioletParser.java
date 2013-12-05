@@ -42,11 +42,24 @@ public class VioletParser
         HashMap<String, Object> model = parseVioletModel(args[0]);
 
         ArrayList<Map> allBeans = (ArrayList<Map>) model.get("beans");
-        GenericDeepComparator c = new GenericDeepComparator();
-        c.setProducerI(new MapValueProducer("name"));
-        Collections.sort(allBeans, c);
+
+
+        GenericDeepComparator beansComparator = new GenericDeepComparator();
+        beansComparator.setProducerI(new MapValueProducer("name"));
+
+        Collections.sort(allBeans, beansComparator);
+
         for (Map bean : allBeans) {
             ArrayList<Map> attributes = (ArrayList<Map>) bean.get("attributes");
+
+            GenericDeepComparator c = new GenericDeepComparator();
+            c.setProducerI(new MapValueProducer("primary_key"));
+            c.setInverted(true);
+
+            GenericDeepComparator c2 = new GenericDeepComparator();
+            c.setSecondarySort(c2);
+            c2.setProducerI(new MapValueProducer("name"));
+
             Collections.sort(attributes, c);
         }
 
