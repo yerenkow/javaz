@@ -33,6 +33,8 @@ Sub Projects:
 
 * util - Small useful utils, not belong to any significant project
 
+* xml - Useful things for xml
+
 Sub Projects cross-dependencies:
 --------------------------------
 
@@ -234,5 +236,47 @@ Util
         HashMap inANotInB = ObjectDifference.getInANotInB(a, b);
         HashMap inAAndInBEquals = ObjectDifference.getInAAndInBEquals(a, b);
         HashMap inAAndInBNotEquals = ObjectDifference.getInAAndInBNotEquals(a, b);
+
+
+XML
+-----
+        // If you are dealing with different XML and they are big to be processed via DOM, you end up with SAX.
+        // XpathSaxHandler could transform XML into set of HashMaps/ArrayLists/Strings the way you specify by simple rules.
+        XpathSaxHandler dh = new XpathSaxHandler();
+
+        // Specify what objects you want to treat as highest level objects
+        dh.addHashToHashFillingRule("tag1", XpathSaxHandler.RESULTS);
+
+        // Specify other objects you need to parse, and where this objects will be put, in this case
+        // all node2 objects will be put into their parent Map tag1, into property "key1", tag1.get("key1") == ArrayList
+        dh.addHashToHashFillingRule("node2", "tag1@key1,list");
+
+        // node3 which shuold be nested into Node2 structure put in both tag1 & tag2.
+        dh.addHashToHashFillingRule("node3", "tag2@n3,list");
+        dh.addHashToHashFillingRule("node3", "tag1@alln3,list");
+
+        // Okey, now let's tell parser where to create new Objects
+        dh.addNewObjectRule("/start/", "tag1");
+        dh.addNewObjectRule("/start/some/node2/", "node2");
+        dh.addNewObjectRule("/start/some/node2/deeper/deeper/", "node3");
+
+        // And let's specify which attributes we actually need to be extracted:
+
+        // You see that we extract id for tag1 not from /start/, but from any child tree attribute
+        dh.addObjectFillingRule("/start/some/@id", "tag1@id");
+
+        // Extract id for node2
+        dh.addObjectFillingRule("/start/some/node2/@id", "node2@id");
+        // Extract all requred texts and put them into ArrayList into node2
+        dh.addObjectFillingRule("/start/some/node2/desc/@text", "node2@alltextes,list");
+
+        // As for node3, we interested only in one attribute.
+        dh.addObjectFillingRule("/start/some/node2/deeper/deeper/@refid", "node3@id");
+
+        // Parse magic
+        parser.parse(inputStream, dh);
+
+        // And at last, get our data.
+        ArrayList objects = dh.getResults();
 
 
