@@ -13,7 +13,7 @@ public class XpathSaxHandler extends DefaultHandler
 {
     public static final String RESULTS = "RESULTS";
     public static final String LIST = "LIST";
-    private String currentPath = "/";
+    private String currentPath = "";
 
     private ArrayList<HashMap<String, String>> newObjectRules = new ArrayList<HashMap<String, String>>();
     private ArrayList<HashMap<String, String>> objectFillingRules = new ArrayList<HashMap<String, String>>();
@@ -112,7 +112,7 @@ public class XpathSaxHandler extends DefaultHandler
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        currentPath += qName +"/";
+        currentPath += "/" + qName;
         handleElementStart(attributes);
     }
 
@@ -120,7 +120,7 @@ public class XpathSaxHandler extends DefaultHandler
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
         handleElementEnd();
-        currentPath = currentPath.substring(0, currentPath.lastIndexOf(qName + "/"));
+        currentPath = currentPath.substring(0, currentPath.lastIndexOf("/" + qName));
     }
 
     private void handleElementStart(Attributes attributes) {

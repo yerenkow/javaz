@@ -63,13 +63,13 @@ public class TestXmlStructuredParser
         dh.addHashToHashFillingRule("tc", "resultInJson@tc,list");
         dh.addHashToHashFillingRule("tc", "allsections@alltc,list");
 
-        dh.addNewObjectRule("/start/", "allsections");
-        dh.addNewObjectRule("/start/section1/", "resultInJson");
-        dh.addNewObjectRule("/start/section1/tagA/tagB/tagC/", "tc");
+        dh.addNewObjectRule("/start", "allsections");
+        dh.addNewObjectRule("/start/section1", "resultInJson");
+        dh.addNewObjectRule("/start/section1/tagA/tagB/tagC", "tc");
 
-        dh.addObjectFillingRule("/start/section1/tagA/@id", "resultInJson@id");
-        dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC/@id", "resultInJson@tcids,list");
-        dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC/@id", "tc@id");
+        dh.addObjectFillingRule("/start/section1/tagA@id", "resultInJson@id");
+        dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC@id", "resultInJson@tcids,list");
+        dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC@id", "tc@id");
 
         long l = System.currentTimeMillis();
         parser.parse(inputStream, dh);
