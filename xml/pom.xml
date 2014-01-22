@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <name>Javaz XML</name>
     <description>XML Sax parsing via specifying interested elements and their inheritance</description>
-    <url>https://github.com/yerenkow/javaz/tree/master/cache</url>
+    <url>https://github.com/yerenkow/javaz/tree/master/xml</url>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
