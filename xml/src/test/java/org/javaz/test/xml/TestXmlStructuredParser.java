@@ -19,7 +19,7 @@ public class TestXmlStructuredParser
     public void runXmlTest() throws Exception
     {
 
-        String sampleDataInJson = "[{alls1:[{id:1,tc:[{id:3},{id:4}],tcids:[3,4]},{id:5,tc:[{id:7},{id:8}],tcids:[7,8]},{id:9,tc:[{id:B},{id:C},{id:D}],tcids:[B,C,D]}],alltc:[{id:3},{id:4},{id:7},{id:8},{id:B},{id:C},{id:D}]}]";
+        String sampleDataInJson = "[{alls1:[{content:[inner text,],id:1,tc:[{id:3},{id:4}],tcids:[3,4]},{id:5,tc:[{id:7},{id:8}],tcids:[7,8]},{id:9,tc:[{id:B},{id:C},{id:D}],tcids:[B,C,D]}],alltc:[{id:3},{id:4},{id:7},{id:8},{id:B},{id:C},{id:D}]}]";
         StringBuffer s = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>");
         s.append("<start>");
 
@@ -29,7 +29,8 @@ public class TestXmlStructuredParser
         s.append("<tagC id='3'></tagC>");
         s.append("<tagC id='4'></tagC>");
         s.append("</tagB>");
-        s.append("</tagA>");
+        s.append("</tagA><tag-with-content>inner text</tag-with-content>");
+        s.append("<tag-without-content></tag-without-content>");
         s.append("</section1>");
 
         s.append("<section1>");
@@ -68,6 +69,8 @@ public class TestXmlStructuredParser
         dh.addNewObjectRule("/start/section1/tagA/tagB/tagC", "tc");
 
         dh.addObjectFillingRule("/start/section1/tagA@id", "resultInJson@id");
+        dh.addObjectFillingRule("/start/section1/tag-with-content", "resultInJson@content,list");
+        dh.addObjectFillingRule("/start/section1/tag-without-content", "resultInJson@content,list");
         dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC@id", "resultInJson@tcids,list");
         dh.addObjectFillingRule("/start/section1/tagA/tagB/tagC@id", "tc@id");
 

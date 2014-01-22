@@ -20,6 +20,7 @@ public class XpathSaxHandler extends DefaultHandler
     private ArrayList<HashMap<String, String>> hashToHashFillingRules = new ArrayList<HashMap<String, String>>();
 
     private HashMap<String, Object> hashesByName = new HashMap();
+    private HashMap<String, StringBuffer> contentsByName = new HashMap();
 
     private ArrayList results = new ArrayList();
 
@@ -110,6 +111,12 @@ public class XpathSaxHandler extends DefaultHandler
     }
 
     @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        super.characters(ch, start, length);
+        handleElementsContentOrAttributes(null, ch, start, length);
+    }
+
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
         currentPath += "/" + qName;
@@ -139,6 +146,10 @@ public class XpathSaxHandler extends DefaultHandler
 
 
         }
+        handleElementsContentOrAttributes(attributes, null, 0, 0);
+    }
+
+    private void handleElementsContentOrAttributes(Attributes attributes, char[] ch, int start, int length) {
 
         for (Iterator<HashMap<String, String>> iteratorOuter = objectFillingRules.iterator(); iteratorOuter.hasNext(); ) {
             HashMap<String, String> next = iteratorOuter.next();
@@ -147,7 +158,19 @@ public class XpathSaxHandler extends DefaultHandler
             for (Iterator<String> iterator = strings.iterator(); iterator.hasNext(); ) {
                 String pathAndAttribute = iterator.next();
 
-                if(pathAndAttribute.startsWith(currentPath + "@")) {
+                if(pathAndAttribute.equals(currentPath)) {
+                    // so, we are getting content of tags, if this tag start (e.g. Attributes != null)
+                    if(attributes != null) {
+                        contentsByName.put(currentPath, new StringBuffer());
+                    } else {
+                        // if attributes == null, then we in characters mode.
+                        // get according StringBuffer and append to it
+                        contentsByName.get(currentPath).append(ch, start, length);
+                    }
+                }
+
+                if(pathAndAttribute.startsWith(currentPath + "@") && attributes != null) {
+                    //if we are in Attributes mode, and we some from this tag, let's extract it.
                     String where = next.get(pathAndAttribute);
                     String[] split = pathAndAttribute.split("@");
                     String attributeName = split[1];
@@ -156,9 +179,11 @@ public class XpathSaxHandler extends DefaultHandler
                         addValueToHashMap(where, value);
                     }
                 }
+
+                if(ch != null && length > 0) {
+                }
             }
         }
-
     }
 
     private void handleElementEnd() {
@@ -182,6 +207,25 @@ public class XpathSaxHandler extends DefaultHandler
                 }
             }
         }
+
+        for (Iterator<HashMap<String, String>> iteratorOuter = objectFillingRules.iterator(); iteratorOuter.hasNext(); ) {
+            HashMap<String, String> next = iteratorOuter.next();
+
+            Set<String> strings = next.keySet();
+            for (Iterator<String> iterator = strings.iterator(); iterator.hasNext(); ) {
+                String pathAndAttribute = iterator.next();
+
+                if(pathAndAttribute.equals(currentPath)) {
+                    // we need to get content of tag, and put it somewhere.
+                    // GET! Not REMOVE, since we could need this Value in multiple places
+                    StringBuffer buffer = contentsByName.get(currentPath);
+                    String where = next.get(pathAndAttribute);
+                    addValueToHashMap(where, buffer.toString());
+                }
+            }
+        }
+        //we remove StringBuffer ONLY after all iterations
+        contentsByName.remove(currentPath);
     }
 
     private void addValueToHashMap(String where, Object value) {
