@@ -60,8 +60,8 @@ JDBC
         String address = "jdbc:hsqldb:hsql://localhost:1600/mydb1;username=SA";
         JdbcHelperI db = JdbcCachedHelper.getInstance(address);
 
-        // When you using pool, or your connections have to be created in some obscure way, you should implement
-        // own ConnectionProviderFactory and use it.
+        // When you using pool, or your connections have to be created in some obscure way, you should
+        // implement own ConnectionProviderFactory and use it.
         ConnectionProviderFactory ownFactory = ...
         String address2 = "custom-address";
         JdbcHelperI dbCustom = JdbcCachedHelper.getInstance(address2, ownFactory);
@@ -94,7 +94,8 @@ JDBC
         // For example, you in one thread very efficiently finding what should be updated.
         // To make updates happen in separate Thread, is such simple as:
 
-        GenericDbUpdater dbUpdater = GenericDbUpdater.getInstance("update test set name='x' where id", address);
+        GenericDbUpdater dbUpdater =
+            GenericDbUpdater.getInstance("update test set name='x' where id", address);
         dbUpdater.addToQueueAll(millionIdsCollection);
         // And updates will go Batched by GenericDbUpdater.MAX_OBJECTS_PER_UPDATE and in separate Thread.
 
@@ -131,8 +132,8 @@ Queue
         // and you need get records from there by some condition;
         // For example to make update of expired data.
         // Synchronous select is bad, since any significant client traffic will kill your DB
-        // To avoid this, there are RecordsRotaterI, which get records from underlying RecordsFetcherI in separate
-        // thread, by reasonable chunks.
+        // To avoid this, there are RecordsRotaterI, which get records from underlying
+        // RecordsFetcherI in separate thread, by reasonable chunks.
 
         SqlRecordsFetcher fetcher = new SqlRecordsFetcher(address,
                 "idx, name", // which columns are returned as DATA
@@ -147,9 +148,10 @@ Queue
         //get and launch in background Thread rotator itself
         RecordsRotatorI rotater = RotatorsHolder.getRotater(fetcher);
 
-        //if data is read, then here will be some results.
-        //No matter how many clients called this method, load will be low
-        //Since querying ready objects pool are separated from part which fills it from DB (Or any other source - RPC, WS)
+        // if data is read, then here will be some results.
+        // No matter how many clients called this method, load will be low
+        // Since querying ready objects pool are separated from part which fills it from DB (Or any
+        // other source - RPC, WS)
         Collection elements = rotater.getManyElements(1000);
 
         // If you implementing accepter of data, it's nice to have it asynchronous too.
@@ -187,8 +189,8 @@ Uml
         renderFtl.setTemplate("update-db");
 
         // This can be used from command-line
-        // This takes model from file newmodel.json and renders template create-mysql.ftl
-        java -cp ${jar} org.javaz.uml.RenderFtl newmodel.json create-mysql 1 -DtemplatePath=/path/to/templates
+        // This takes model from file model7.json and renders template create-mysql.ftl
+        java -cp ${jar} org.javaz.uml.RenderFtl model7.json create-mysql 1 -DtemplatePath=/path/tpl
 
 
 Util
@@ -200,8 +202,9 @@ Util
         Integer day = DayUtil.getIntegerTime();
 
         // @return day from beginning of 2011 Year
-        //         It's NOT the same as ((extract(year from NOW()) - 2011)*365 + extract(doy from NOW())) in database;
-        //         As leap years counting.
+        //         It's NOT the same as ((extract(year from NOW()) - 2011)*365 +
+        //         extract(doy from NOW())) in database;
+        // As leap years and DST counting.
         Integer daysFrom2011 = DayUtil.getDayShort();
 
         String toBrowser = JsonUtil.convertToJS(anyHashMapOrArrayOrAnything);
@@ -214,11 +217,12 @@ Util
         //get property from file;
         String updated = filePropertyUtil.getProperty(key);
 
-        // Comparators - dynamic comparators, which can treat any Collections, elements can be any level of complexity
-        // and any level of nesting
+        // Comparators - dynamic comparators, which can treat any Collections, elements can be any
+        // level of complexity and any level of nesting
 
-        // Create comparator which will sort Collection of Map, by getting from each map value by key "a",
-        // splitting this value by "\t" and comparing second part of split, treating it as Long.
+        // Create comparator which will sort Collection of Map, by getting from each map value
+        // by key "a", splitting this value by "\t" and comparing second part of split, treating
+        // it as Long.
         GenericDeepComparator deepComparator = new GenericDeepComparator();
         MapValueProducer producer1 = new MapValueProducer("a");
         SplitStringProducer nested1 = new SplitStringProducer("\t", 1);
@@ -226,7 +230,8 @@ Util
         producer1.setNested(nested1);
         deepComparator.setProducerI(producer1);
 
-        // Create comparator which will sort Collection of Map by getting from each map value by key "a"
+        // Create comparator which will sort Collection of Map by getting from each map value
+        // by key "a"
         GenericDeepComparator deepComparator = new GenericDeepComparator();
         MapValueProducer producer1 = new MapValueProducer("a");
         deepComparator.setProducerI(producer1);
@@ -240,15 +245,18 @@ Util
 
 XML
 -----
-        // If you are dealing with different XML and they are big to be processed via DOM, you end up with SAX.
-        // XpathSaxHandler could transform XML into set of HashMaps/ArrayLists/Strings the way you specify by simple rules.
+        // If you are dealing with different XML and they are big to be processed via DOM,
+        // you end up with SAX.
+        // XpathSaxHandler could transform XML into set of HashMaps/ArrayLists/Strings the way you
+        // specify by simple rules.
         XpathSaxHandler dh = new XpathSaxHandler();
 
         // Specify what objects you want to treat as highest level objects
         dh.addHashToHashFillingRule("tag1", XpathSaxHandler.RESULTS);
 
-        // Specify other objects you need to parse, and where this objects will be put, in this case
-        // all node2 objects will be put into their parent Map tag1, into property "key1", tag1.get("key1") == ArrayList
+        // Specify other objects you need to parse, and where this objects will be put,
+        // in this case all node2 objects will be put into their parent Map tag1, into
+        // property "key1", tag1.get("key1") == ArrayList
         dh.addHashToHashFillingRule("node2", "tag1@key1,list");
 
         // node3 which should be nested into Node2 structure put in both tag1 & tag2.
@@ -272,6 +280,10 @@ XML
 
         // As for node3, we interested only in one attribute.
         dh.addObjectFillingRule("/start/some/node2/deeper/deeper@refid", "node3@id");
+
+        // And, we need extract text content from tag 'text' into ArrayList of texts.
+        // Note that even empty Strings are proceeded.
+        dh.addObjectFillingRule("/start/some/node2/deeper/deeper/text", "node3@texts,list");
 
         // Parse magic
         parser.parse(inputStream, dh);
