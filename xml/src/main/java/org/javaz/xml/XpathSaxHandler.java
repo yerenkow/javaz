@@ -7,13 +7,22 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.*;
 
 /**
- * Created by user on 21.01.14.
+ * Xpath-line Sax handler (you specify point of interest in Xpath terms, and gather results)
  */
 public class XpathSaxHandler extends DefaultHandler
 {
     public static final String RESULTS = "RESULTS";
     public static final String LIST = "LIST";
     private String currentPath = "";
+    private HashObjectAccepter objectAccepter = null;
+
+    public HashObjectAccepter getObjectAccepter() {
+        return objectAccepter;
+    }
+
+    public void setObjectAccepter(HashObjectAccepter objectAccepter) {
+        this.objectAccepter = objectAccepter;
+    }
 
     private ArrayList<HashMap<String, String>> newObjectRules = new ArrayList<HashMap<String, String>>();
     private ArrayList<HashMap<String, String>> objectFillingRules = new ArrayList<HashMap<String, String>>();
@@ -62,7 +71,7 @@ public class XpathSaxHandler extends DefaultHandler
         hashToHashFillingRules.add(map);
     }
 
-    private void validateRule(String rule) throws Exception {
+    protected void validateRule(String rule) throws Exception {
         if(rule.equals(RESULTS)) {
             return;
         }
@@ -83,7 +92,7 @@ public class XpathSaxHandler extends DefaultHandler
         }
     }
 
-    private void validateHashName(String hashName) throws Exception {
+    protected void validateHashName(String hashName) throws Exception {
         ArrayList knownHashNames = new ArrayList();
         for (Iterator<HashMap<String, String>> stringIterator = hashToHashFillingRules.iterator(); stringIterator.hasNext(); ) {
             HashMap<String, String> hashToHash = stringIterator.next();
@@ -130,7 +139,7 @@ public class XpathSaxHandler extends DefaultHandler
         currentPath = currentPath.substring(0, currentPath.lastIndexOf("/" + qName));
     }
 
-    private void handleElementStart(Attributes attributes) {
+    protected void handleElementStart(Attributes attributes) {
         for (Iterator<HashMap<String, String>> iteratorOuter = newObjectRules.iterator(); iteratorOuter.hasNext(); ) {
             HashMap<String, String> next = iteratorOuter.next();
 
@@ -149,7 +158,7 @@ public class XpathSaxHandler extends DefaultHandler
         handleElementsContentOrAttributes(attributes, null, 0, 0);
     }
 
-    private void handleElementsContentOrAttributes(Attributes attributes, char[] ch, int start, int length) {
+    protected void handleElementsContentOrAttributes(Attributes attributes, char[] ch, int start, int length) {
 
         for (Iterator<HashMap<String, String>> iteratorOuter = objectFillingRules.iterator(); iteratorOuter.hasNext(); ) {
             HashMap<String, String> next = iteratorOuter.next();
@@ -186,7 +195,7 @@ public class XpathSaxHandler extends DefaultHandler
         }
     }
 
-    private void handleElementEnd() {
+    protected void handleElementEnd() {
         for (Iterator<HashMap<String, String>> iteratorOuter = newObjectRules.iterator(); iteratorOuter.hasNext(); ) {
             HashMap<String, String> next = iteratorOuter.next();
 
@@ -228,9 +237,13 @@ public class XpathSaxHandler extends DefaultHandler
         contentsByName.remove(currentPath);
     }
 
-    private void addValueToHashMap(String where, Object value) {
+    protected void addValueToHashMap(String where, Object value) {
         if(where.equals(RESULTS)) {
-            results.add(value);
+            if(objectAccepter != null) {
+                objectAccepter.acceptObject(value);
+            } else {
+                results.add(value);
+            }
             return;
         }
         String[] split = where.split("@");

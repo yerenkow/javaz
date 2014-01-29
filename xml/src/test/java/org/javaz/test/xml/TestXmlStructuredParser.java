@@ -2,6 +2,7 @@ package org.javaz.test.xml;
 
 import junit.framework.Assert;
 import org.javaz.util.JsonUtil;
+import org.javaz.xml.HashObjectAccepter;
 import org.javaz.xml.XpathSaxHandler;
 import org.junit.Test;
 
@@ -19,7 +20,6 @@ public class TestXmlStructuredParser
     public void runXmlTest() throws Exception
     {
 
-        String sampleDataInJson = "[{alls1:[{content:[inner text,],id:1,tc:[{id:3},{id:4}],tcids:[3,4]},{id:5,tc:[{id:7},{id:8}],tcids:[7,8]},{id:9,tc:[{id:B},{id:C},{id:D}],tcids:[B,C,D]}],alltc:[{id:3},{id:4},{id:7},{id:8},{id:B},{id:C},{id:D}]}]";
         StringBuffer s = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>");
         s.append("<start>");
 
@@ -78,7 +78,26 @@ public class TestXmlStructuredParser
         parser.parse(inputStream, dh);
 
         ArrayList objects = dh.getResults();
+        runResultsAsserts(objects);
+        dh.getResults().clear();
 
+        SimpleListAcceptor simpleListAcceptor = new SimpleListAcceptor();
+
+        dh.setObjectAccepter(simpleListAcceptor);
+        inputStream.reset();
+        parser.parse(inputStream, dh);
+
+
+        objects = dh.getResults();
+        Assert.assertEquals(0, objects.size());
+
+        objects = simpleListAcceptor.getResults();
+        runResultsAsserts(objects);
+    }
+
+    private void runResultsAsserts(ArrayList objects) {
+
+        String sampleDataInJson = "[{alls1:[{content:[inner text,],id:1,tc:[{id:3},{id:4}],tcids:[3,4]},{id:5,tc:[{id:7},{id:8}],tcids:[7,8]},{id:9,tc:[{id:B},{id:C},{id:D}],tcids:[B,C,D]}],alltc:[{id:3},{id:4},{id:7},{id:8},{id:B},{id:C},{id:D}]}]";
         String resultInJson = JsonUtil.convertToJS(objects, false, true).replace("\"", "");
 
         Assert.assertEquals(1, objects.size());
@@ -96,5 +115,19 @@ public class TestXmlStructuredParser
         Assert.assertTrue(allsections.get("alltc") instanceof ArrayList);
 
         Assert.assertEquals(sampleDataInJson, resultInJson);
+    }
+
+    static class SimpleListAcceptor implements HashObjectAccepter
+    {
+        private ArrayList results = new ArrayList();
+
+        public ArrayList getResults() {
+            return results;
+        }
+
+        @Override
+        public void acceptObject(Object value) {
+            results.add(value);
+        }
     }
 }

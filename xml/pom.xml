@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.javaz</groupId>
     <artifactId>javaz-xml</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <name>Javaz XML</name>
     <description>XML Sax parsing via specifying interested elements and their inheritance</description>
