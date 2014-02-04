@@ -4,7 +4,10 @@ import org.javaz.util.GenericDeepComparator;
 import org.javaz.util.JsonUtil;
 import org.javaz.util.MapValueProducer;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -12,6 +15,9 @@ import java.util.*;
  */
 public class VioletParser
 {
+    public static String DATATYPE_FILENAME = "datatypes.properties";
+    public static String TYPE_PREFIX = "type.";
+    public static String SQL_PREFIX = "sql.";
 
     public static HashMap parseVioletModel(String fileInNew)
     {
@@ -37,6 +43,26 @@ public class VioletParser
         {
             System.out.println("Please, specify two parameters - in violet model file and out json file");
             System.exit(0);
+        }
+        File file = new File(DATATYPE_FILENAME);
+        if(file.exists()) {
+            try {
+                Properties properties = new Properties();
+                properties.load(new FileReader(file));
+
+                Set<Object> set = properties.keySet();
+                for (Iterator<Object> iterator = set.iterator(); iterator.hasNext(); ) {
+                    String key = (String) iterator.next();
+                    if(key.startsWith(TYPE_PREFIX)) {
+                        BasicVioletParser.fullyQTypes.put(key.substring(TYPE_PREFIX.length()), properties.get(key));
+                    }
+                    if(key.startsWith(SQL_PREFIX)) {
+                        BasicVioletParser.sqlTypes.put(key.substring(SQL_PREFIX.length()), properties.get(key));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         HashMap<String, Object> model = parseVioletModel(args[0]);
