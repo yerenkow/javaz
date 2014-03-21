@@ -42,10 +42,14 @@ public class SplitWeightByIds<K> {
                 {
                     K id = iterator.next();
                     Double aDouble = weights.get(id);
-                    int needToGive = (int) (aDouble / allWeight);
-                    if(needToGive > 0)
+                    double needToGiveDouble = aDouble / allWeight;
+                    if(needToGiveDouble > 0)
                     {
                         anyGiven = true;
+                        int needToGive = (int) needToGiveDouble;
+                        if(needToGive < 1) {
+                            needToGive = 1;
+                        }
                         count -= needToGive;
                         incrementValue(results, id, needToGive);
                     }
@@ -66,6 +70,8 @@ public class SplitWeightByIds<K> {
                         count --;
                         incrementValue(results, id, 1);
                         break;
+                    } else {
+                        zero += aDouble;
                     }
                 }
             }
