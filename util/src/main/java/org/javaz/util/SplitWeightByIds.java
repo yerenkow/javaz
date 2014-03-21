@@ -13,7 +13,7 @@ public class SplitWeightByIds<K> {
         r = new Random(seed);
     }
 
-    protected HashMap<K, Integer> splitByIdsWithWeights(HashMap<K, Double> weights, Integer count) {
+    public HashMap<K, Integer> splitByIdsWithWeights(HashMap<K, Double> weights, Integer count) {
         HashMap<K, Integer>  results = new HashMap<K, Integer> ();
         if(count == null || count < 1 || weights.isEmpty())
         {
@@ -79,7 +79,7 @@ public class SplitWeightByIds<K> {
         return results;
     }
 
-    protected HashMap<K, Integer> splitByIdsEvenly(Collection<K> keys, Integer count) {
+    public HashMap<K, Integer> splitByIdsEvenly(Collection<K> keys, Integer count) {
         HashMap<K, Double>  weights = new HashMap<K, Double> ();
         for (Iterator<K> iterator = keys.iterator(); iterator.hasNext(); )
         {
