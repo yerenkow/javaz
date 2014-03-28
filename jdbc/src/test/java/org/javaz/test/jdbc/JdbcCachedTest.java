@@ -1,6 +1,5 @@
 package org.javaz.test.jdbc;
 
-import junit.framework.Assert;
 import org.hsqldb.server.Server;
 import org.javaz.jdbc.queues.GenericDbUpdater;
 import org.javaz.jdbc.queues.SqlRecordsFetcher;
@@ -8,6 +7,7 @@ import org.javaz.jdbc.replicate.ReplicateTables;
 import org.javaz.jdbc.util.*;
 import org.javaz.queues.iface.RecordsRotatorI;
 import org.javaz.queues.impl.RotatorsHolder;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -67,6 +67,45 @@ public class JdbcCachedTest
         {
             e.printStackTrace(System.out);
         }
+    }
+
+    @Test
+    public void testReplicateBlob() throws Exception
+    {
+        test.runUpdate("drop table blobtest", null);
+        test.runUpdate("create table blobtest (id integer, bb blob)", null);
+        test.runUpdate("insert into blobtest values (1, '0xAAAAFFFFFFFFFFF8787878787a77777777')", null);
+
+
+        test2.runUpdate("drop table blobtest2", null);
+        test2.runUpdate("create table blobtest2 (id integer, bb blob)", null);
+
+        ReplicateTables replicator = new ReplicateTables();
+        replicator.init(null);
+        replicator.dbFrom = address;
+        replicator.dbTo = address2;
+        replicator.dbToType = "hsqldb";
+        HashMap<String, String> tableInfo = new HashMap<String, String>();
+        tableInfo.put("name", "blobtest");
+        tableInfo.put("name2", "blobtest2");
+        tableInfo.put("where1", "");
+        tableInfo.put("where2", "");
+        replicator.tables.add(tableInfo);
+
+        replicator.runReplicate();
+
+
+        List recordList = test.getRecordList("select * from  blobtest", null, false);
+        Assert.assertEquals(recordList.size(), 1);
+        Object bb = ((Map) recordList.iterator().next()).get("bb");
+
+        recordList = test2.getRecordList("select * from  blobtest2", null, false);
+        Assert.assertEquals(recordList.size(), 1);
+        Object bb2 = ((Map) recordList.iterator().next()).get("bb");
+
+        Assert.assertArrayEquals((byte[]) bb, (byte[]) bb2);
+        test.runUpdate("drop table blobtest", null);
+        test2.runUpdate("drop table blobtest2", null);
     }
 
     @Test
