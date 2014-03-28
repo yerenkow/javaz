@@ -117,6 +117,16 @@ public class UnsafeSqlHelper implements JdbcConstants
                                 //This can happen with MySQL, let's silent ignore it.
                                 //System.out.println("Incorrect object in ResultSet");
                             }
+                            if(o instanceof Blob) {
+                                Blob blob = (Blob) o;
+                                if(blob.length() > 0)
+                                    o = blob.getBytes(1/*SQL*/, (int) blob.length());
+                            }
+                            if(o instanceof Clob) {
+                                Clob clob = (Clob) o;
+                                if(clob.length() > 0)
+                                    o = clob.getSubString(1/*SQL*/, (int) clob.length());
+                            }
                             results.put(name.toLowerCase(), o);
                         }
 
