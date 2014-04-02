@@ -34,23 +34,23 @@
     </#list>
 </#if>
 <#if alteredBeansNewAttribute??>
-    <#list alteredBeansNewAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} ADD COLUMN ${attribute.column_name} ${attribute.sql_type};
-        </#list>
+<#list alteredBeansNewAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} ADD COLUMN ${attribute.column_name} ${attribute.sql_type};
     </#list>
+</#list>
 </#if>
 <#if alteredBeansModifyAttribute??>
-    <#list alteredBeansModifyAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN ${attribute.column_name} TYPE ${attribute.sql_type};
-        </#list>
+<#list alteredBeansModifyAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN ${attribute.column_name} TYPE ${attribute.sql_type};
     </#list>
+</#list>
 </#if>
 <#if alteredBeansDeletedAttribute??>
-    <#list alteredBeansDeletedAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} DROP COLUMN ${attribute.column_name};
-        </#list>
+<#list alteredBeansDeletedAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} DROP COLUMN ${attribute.column_name};
     </#list>
+</#list>
 </#if>

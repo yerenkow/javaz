@@ -1,4 +1,5 @@
 <#if beans??>
+-- Create new tables part;
     <#if !tablePrefix??>
         <#assign tablePrefix = "tbl_">
     </#if>
@@ -19,28 +20,32 @@
     </#list>
 </#if>
 <#if deletedBeans??>
+-- Drop obsolete tables
     <#list deletedBeans as bean>
     DROP TABLE ${tablePrefix}${bean.table_name};
     </#list>
 </#if>
 <#if alteredBeansNewAttribute??>
-    <#list alteredBeansNewAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} ADD COLUMN `${attribute.column_name}` ${attribute.sql_type};
-        </#list>
+-- For some tables - new fields
+<#list alteredBeansNewAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} ADD COLUMN `${attribute.column_name}` ${attribute.sql_type};
     </#list>
+</#list>
 </#if>
 <#if alteredBeansModifyAttribute??>
-    <#list alteredBeansModifyAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN `${attribute.column_name}` TYPE ${attribute.sql_type};
-        </#list>
+-- For some tables - present fields changes types
+<#list alteredBeansModifyAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} ALTER COLUMN `${attribute.column_name}` TYPE ${attribute.sql_type};
     </#list>
+</#list>
 </#if>
 <#if alteredBeansDeletedAttribute??>
-    <#list alteredBeansDeletedAttribute as bean>
-        <#list bean.attributes as attribute>
-        ALTER TABLE ${tablePrefix}${bean.table_name} DROP COLUMN `${attribute.column_name}`;
-        </#list>
+-- For some tables - remove fields
+<#list alteredBeansDeletedAttribute as bean>
+    <#list bean.attributes as attribute>
+    ALTER TABLE ${tablePrefix}${bean.table_name} DROP COLUMN `${attribute.column_name}`;
     </#list>
+</#list>
 </#if>

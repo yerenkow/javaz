@@ -3,10 +3,14 @@
     <#if !subpkg??>
         <#assign subpkg = "sample">
     </#if>
+    <#if !abs??>
+        <#assign abs = "">
+    </#if>
+    <#if !package??>
+        <#assign package = "package">
+    </#if>
     <#assign attributes = bean.attributes>
 package ${package}.${subpkg};
-
-import ${package}.iface.*;
 
 import java.util.*;
 import java.sql.*;
