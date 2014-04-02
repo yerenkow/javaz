@@ -1,0 +1,16 @@
+{"beans":[{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"completed","length":"250","name":"completed","primary_key":"false","sql_type":"boolean","type":"java.lang.Boolean"}
+,{"column_name":"what","length":"250","name":"what","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"who","length":"250","name":"who","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"ItemsOrder","table_name":"items_order"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"address","length":"250","name":"address","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"name","length":"250","name":"name","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"work_hours","length":"250","name":"workHours","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+],"methods":[],"name":"Shop","table_name":"shop"}
+,{"attributes":[{"column_name":"id","length":"250","name":"id","primary_key":"true","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"available_count","length":"250","name":"availableCount","primary_key":"false","sql_type":"integer","type":"java.lang.Integer"}
+,{"column_name":"name","length":"250","name":"name","primary_key":"false","sql_type":"character varying(250)","type":"java.lang.String"}
+,{"column_name":"price","length":"250","name":"price","primary_key":"false","sql_type":"double precision","type":"java.lang.Double"}
+],"methods":[],"name":"ShopItem","table_name":"shop_item"}
+]}
