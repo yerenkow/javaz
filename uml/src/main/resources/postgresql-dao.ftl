@@ -4,8 +4,10 @@
     <#if !tablePrefix??>
         <#assign tablePrefix = "tbl_">
     </#if>
-    <#assign table = "${tablePrefix}_${bean.table_name}">
+    <#assign table = "${tablePrefix}${bean.table_name}">
 package ${package}.${subpkg};
+
+import org.javaz.jdbc.util.JdbcCachedHelper;
 
 import java.util.*;
 import java.sql.*;
@@ -13,8 +15,8 @@ import java.io.Serializable;
 
 public class ${beanName}DAOPostgresql
 {
-    private static final String dsAddress;
-    private static String table = "${table}";
+    private String dsAddress;
+    protected String table = "${table}";
 
     public ${beanName}DAOPostgresql(String dsAddress) {
         this.dsAddress = dsAddress;
