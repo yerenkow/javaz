@@ -1,152 +1,84 @@
 package org.javaz.uml;
 
 import org.javaz.util.JsonUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.javaz.xml.XpathSaxHandler;
 
+import javax.xml.parsers.*;
+import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 /**
  * This is helper to parse Violet UML .class files
  */
-public class NewVioletParser extends BasicVioletXmlParser
+public class NewVioletParser extends BasicVioletParser
 {
     public static String START_MARKER = "<![CDATA[";
     public static String END_MARKER = "]]>";
 
-    @Override
-    protected void parseDocument(Document document, ArrayList<Map> allBeans) {
-        NodeList list = document.getElementsByTagName("ClassNode");
-        for (int i = 0; i < list.getLength(); i++)
+    public HashMap<String, Object> parseVioletClass(String file)
+    {
+        try
         {
-            Node node = list.item(i);
-            Node nameNode = NodeParserUtil.getNodeChildDeepStatic(node.getChildNodes(), "name");
-            Node nameTextNode = NodeParserUtil.getNodeChildDeepStatic(nameNode.getChildNodes(), "text");
-            String name = nameTextNode.getTextContent();
-
-
-            Node attributesNode = NodeParserUtil.getNodeChildDeepStatic(node.getChildNodes(), "attributes");
-            Node attributesTextNode = NodeParserUtil.getNodeChildDeepStatic(attributesNode.getChildNodes(), "text");
-            String attributes = attributesTextNode.getTextContent();
-
-            Node methodsNode = NodeParserUtil.getNodeChildDeepStatic(node.getChildNodes(), "methods");
-            Node methodsTextNode = NodeParserUtil.getNodeChildDeepStatic(methodsNode.getChildNodes(), "text");
-            String methods = methodsTextNode.getTextContent();
-
-            HashMap<String, Object> bean = new HashMap<String, Object>();
-            bean.put("name", name);
-            bean.put("table_name", getDbName(name));
-            ArrayList<Map> beanAttributes = new ArrayList<Map>();
-            bean.put("attributes", beanAttributes);
-
-            String[] splittedAttributes = attributes.split("\\n");
-            for (int j = 0; j < splittedAttributes.length; j++)
-            {
-                String s = splittedAttributes[j];
-                String[] nameTypePair = s.split(":");
-                if (nameTypePair.length < 2)
-                {
-                    System.out.println("Error with: " + name + "." + s + ", ignoring");
-                }
-                else
-                {
-                    HashMap<String, String> attribute = new HashMap<String, String>();
-                    String atrributeName = nameTypePair[0].trim();
-                    attribute.put("name", atrributeName);
-                    attribute.put("column_name", getDbName(atrributeName));
-
-                    String type = nameTypePair[1].trim();
-                    String sqlType = "";
-                    int length = DEFAULT_LENGTH;
-
-                    Matcher matcher = SIZE_PATTERN.matcher(type);
-                    if (matcher.find())
-                    {
-                        String sizeString = matcher.group(1);
-                        try
-                        {
-                            length = Integer.parseInt(sizeString);
-                            type = type.substring(0, type.indexOf(sizeString));
-                        }
-                        catch (NumberFormatException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    type = getFullyQualifiedTypeName(type);
-                    sqlType = (String) sqlTypes.get(type);
-                    if (sqlType == null)
-                    {
-                        System.out.println("Unknown type = " + type + " of attribute " + bean.get("name") + "." + attribute.get("name") + ", using " + DEFAULT_TYPE_JAVA + ".");
-                        type = DEFAULT_TYPE_JAVA;
-                        sqlType = (String) sqlTypes.get(type);
-                    }
-                    sqlType = sqlType.replace("{size}", "" + length);
-
-                    attribute.put("type", type);
-                    attribute.put("sql_type", sqlType);
-                    attribute.put("length", "" + length);
-
-                    attribute.put("primary_key", attribute.get("name").equalsIgnoreCase("id") ? "true" : "false");
-
-                    beanAttributes.add(attribute);
-                }
-            }
-            ArrayList<Map> beanMethods = new ArrayList<Map>();
-            bean.put("methods", beanMethods);
-            ArrayList splittedMethodsList = new ArrayList();
-            String[] splittedMethods = methods.split("\\n");
-            StringBuffer currentMethod = new StringBuffer();
-            for (int j = 0; j < splittedMethods.length; j++)
-            {
-                String s = splittedMethods[j];
-                if(!s.contains(")"))
-                {
-                    currentMethod.append(s);
-                }
-                else
-                {
-                    currentMethod.append(s);
-                    splittedMethodsList.add(currentMethod.toString().trim());
-                    currentMethod = new StringBuffer();
-                }
-            }
-            if(currentMethod.toString().trim().length() > 0)
-            {
-                splittedMethodsList.add(currentMethod.toString().trim());
-            }
-            for (Iterator iterator = splittedMethodsList.iterator(); iterator.hasNext(); )
-            {
-                String s = (String) iterator.next();
-                String[] nameTypePair = s.split(":");
-                if (nameTypePair.length < 2)
-                {
-                    System.out.println("Error with: " + name + "." + s + ", ignoring");
-                }
-                else
-                {
-                    HashMap<String, String> method = new HashMap<String, String>();
-                    String methodName = nameTypePair[1].trim();
-                    method.put("name", methodName);
-                    String type = nameTypePair[0].trim();
-                    type = getFullyQualifiedTypeName(type);
-                    method.put("type", type);
-                    beanMethods.add(method);
-                }
-            }
-            allBeans.add(bean);
+            String readContent = readContent(file);
+            return parseWithXpath(readContent);
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    @Override
+    protected HashMap<String, Object> parseWithXpath(String content) throws Exception {
+
+        SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+
+        XpathSaxHandler dh = new XpathSaxHandler();
+
+        dh.addHashToHashFillingRule("all", XpathSaxHandler.RESULTS);
+        dh.addHashToHashFillingRule("bean", "all@beans,list");
+        dh.addHashToHashFillingRule("edge", "all@edges,list");
+
+        dh.addNewObjectRule("/ClassDiagramGraph", "all");
+        dh.addNewObjectRule("/ClassDiagramGraph/nodes/ClassNode", "bean");
+        dh.addNewObjectRule("/ClassDiagramGraph/edges/AssociationEdge", "edge");
+
+        dh.addObjectFillingRule("/ClassDiagramGraph/nodes/ClassNode/name/text", "bean@name");
+        dh.addObjectFillingRule("/ClassDiagramGraph/nodes/ClassNode@id", "bean@umlid");
+        dh.addObjectFillingRule("/ClassDiagramGraph/nodes/ClassNode/attributes/text", "bean@attributes");
+        dh.addObjectFillingRule("/ClassDiagramGraph/nodes/ClassNode/methods/text", "bean@methods");
+        dh.addObjectFillingRule("/ClassDiagramGraph/edges/AssociationEdge/start@reference", "edge@start");
+        dh.addObjectFillingRule("/ClassDiagramGraph/edges/AssociationEdge/end@reference", "edge@end");
+
+        long l = System.currentTimeMillis();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        parser.parse(inputStream, dh);
+
+        HashMap<String, Object> result = new HashMap<String, Object>();
+        ArrayList objects = dh.getResults();
+        if(!objects.isEmpty()) {
+            Map all = (Map) objects.iterator().next();
+            ArrayList beans = (ArrayList) all.get("beans");
+            for (Iterator iterator = beans.iterator(); iterator.hasNext(); ) {
+                Map bean = (Map) iterator.next();
+                String name = (String) bean.get("name");
+                bean.put("table_name", getDbName(name));
+                bean.put("attributes", createAttributesFromString((String) bean.get("attributes"), name));
+                bean.put("methods", createMethodsFromString((String) bean.get("methods"), name));
+            }
+            result.put("beans", beans);
+            result.put("edges", all.get("edges"));
+        }
+
+        return result;
+    }
+
     protected String readContent(String file)
     {
         String content = null;

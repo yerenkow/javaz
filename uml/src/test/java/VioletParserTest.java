@@ -1,15 +1,15 @@
 import junit.framework.Assert;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.javaz.uml.BasicVioletParser;
+import org.javaz.uml.NewVioletParser;
 import org.javaz.uml.VioletDiffer;
-import org.javaz.uml.VioletParser;
-import org.javaz.util.JsonUtil;
-import org.javaz.util.ObjectDifference;
 import org.junit.Test;
 
-import java.io.FileReader;
-import java.io.LineNumberReader;
-import java.util.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -17,9 +17,25 @@ import java.util.*;
 public class VioletParserTest
 {
     @Test
-    public void testParser()
+    public void testParser() throws Exception
     {
-        VioletParser vp = new VioletParser();
+        BasicVioletParser vp = new NewVioletParser();
+        File test = File.createTempFile("class.violet.html", "test");
+        test.deleteOnExit();
+        InputStream resourceAsStream = getClass().getResourceAsStream("test.class.violet.html");
+        FileOutputStream fileOutputStream = new FileOutputStream(test);
+        while(resourceAsStream.available() > 0) {
+            fileOutputStream.write(resourceAsStream.read());
+        }
+        fileOutputStream.close();
+        HashMap<String, Object> stringObjectHashMap = vp.parseVioletClass(test.getAbsolutePath());
+        List beans = (List) stringObjectHashMap.get("beans");
+        Assert.assertEquals(beans.size(), 3);
+        for (Iterator iterator = beans.iterator(); iterator.hasNext(); ) {
+            Map bean = (Map) iterator.next();
+            Assert.assertEquals(((List) bean.get("attributes")).size(), 3);
+            Assert.assertEquals(((List) bean.get("methods")).size(), 0);
+        }
     }
 
     @Test

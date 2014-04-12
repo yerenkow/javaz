@@ -5,8 +5,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +22,43 @@ import java.util.regex.Matcher;
 
 /**
  * This is helper to parse Violet UML .class files
+ * @deprecated
  */
-public class OldVioletParser extends BasicVioletXmlParser
+public class OldVioletParser extends BasicVioletParser
 {
-    @Override
+    public HashMap<String, Object> parseVioletClass(String file)
+    {
+        HashMap<String, Object> result = new HashMap<String, Object>();
+
+        ArrayList<Map> allBeans = new ArrayList<Map>();
+        result.put("beans", allBeans);
+
+        try
+        {
+            String readContent = readContent(file);
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new BufferedInputStream(new ByteArrayInputStream(readContent.getBytes())));
+
+            parseDocument(document, allBeans);
+        }
+        catch (ParserConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+        catch (SAXException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     protected void parseDocument(Document document, ArrayList<Map> allBeans)
     {
         NodeList list = document.getElementsByTagName("object");
@@ -95,7 +135,6 @@ public class OldVioletParser extends BasicVioletXmlParser
         }
     }
 
-    @Override
     protected String readContent(String file)
     {
         try

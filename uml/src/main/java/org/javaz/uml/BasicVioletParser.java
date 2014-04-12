@@ -16,10 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,4 +125,110 @@ public abstract class BasicVioletParser
 
         return result.toLowerCase();
     }
+
+    protected ArrayList<Map> createMethodsFromString(String methods, String beanName) {
+        ArrayList<Map> beanMethods = new ArrayList<Map>();
+        ArrayList splittedMethodsList = new ArrayList();
+        String[] splittedMethods = methods.split("\\n");
+        StringBuffer currentMethod = new StringBuffer();
+        for (int j = 0; j < splittedMethods.length; j++)
+        {
+            String s = splittedMethods[j];
+            if(!s.contains(")"))
+            {
+                currentMethod.append(s);
+            }
+            else
+            {
+                currentMethod.append(s);
+                splittedMethodsList.add(currentMethod.toString().trim());
+                currentMethod = new StringBuffer();
+            }
+        }
+        if(currentMethod.toString().trim().length() > 0)
+        {
+            splittedMethodsList.add(currentMethod.toString().trim());
+        }
+        for (Iterator iterator = splittedMethodsList.iterator(); iterator.hasNext(); )
+        {
+            String s = (String) iterator.next();
+            String[] nameTypePair = s.split(":");
+            if (nameTypePair.length < 2)
+            {
+                System.out.println("Error with: " + nameTypePair + "." + s + ", ignoring");
+            }
+            else
+            {
+                HashMap<String, String> method = new HashMap<String, String>();
+                String methodName = nameTypePair[1].trim();
+                method.put("name", methodName);
+                String type = nameTypePair[0].trim();
+                type = getFullyQualifiedTypeName(type);
+                method.put("type", type);
+                beanMethods.add(method);
+            }
+        }
+        return beanMethods;
+    }
+
+    protected ArrayList<Map> createAttributesFromString(String attributes, String beanName) {
+        ArrayList<Map> beanAttributes = new ArrayList<Map>();
+        String[] splittedAttributes = attributes.split("\\n");
+        for (int j = 0; j < splittedAttributes.length; j++)
+        {
+            String s = splittedAttributes[j];
+            String[] nameTypePair = s.split(":");
+            if (nameTypePair.length < 2)
+            {
+                System.out.println("Error with: " + nameTypePair + "." + s + ", ignoring");
+            }
+            else
+            {
+                HashMap<String, String> attribute = new HashMap<String, String>();
+                String atrributeName = nameTypePair[0].trim();
+                attribute.put("name", atrributeName);
+                attribute.put("column_name", getDbName(atrributeName));
+
+                String type = nameTypePair[1].trim();
+                String sqlType = "";
+                int length = DEFAULT_LENGTH;
+
+                Matcher matcher = SIZE_PATTERN.matcher(type);
+                if (matcher.find())
+                {
+                    String sizeString = matcher.group(1);
+                    try
+                    {
+                        length = Integer.parseInt(sizeString);
+                        type = type.substring(0, type.indexOf(sizeString));
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+
+                type = getFullyQualifiedTypeName(type);
+                sqlType = (String) sqlTypes.get(type);
+                if (sqlType == null)
+                {
+                    System.out.println("Unknown type = " + type + " of attribute " + beanName + "." + attribute.get("name") + ", using " + DEFAULT_TYPE_JAVA + ".");
+                    type = DEFAULT_TYPE_JAVA;
+                    sqlType = (String) sqlTypes.get(type);
+                }
+                sqlType = sqlType.replace("{size}", "" + length);
+
+                attribute.put("type", type);
+                attribute.put("sql_type", sqlType);
+                attribute.put("length", "" + length);
+
+                attribute.put("primary_key", attribute.get("name").equalsIgnoreCase("id") ? "true" : "false");
+
+                beanAttributes.add(attribute);
+            }
+        }
+
+        return beanAttributes;
+    }
+
 }
