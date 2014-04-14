@@ -74,7 +74,23 @@ public class UnsafeSqlHelper implements JdbcConstants
                         java.util.Date d = (java.util.Date) parameterValue;
                         parameterValue = new Timestamp(d.getTime());
                     }
-                    preparedStatement.setObject(key, parameterValue);
+                    if(parameterValue instanceof Object[]) {
+                        Object[] arr = (Object[]) parameterValue;
+                        Object notNull = null;
+                        for (int i = 0; notNull == null && i < arr.length; i++) {
+                            notNull = arr[i];
+                        }
+                        if(notNull != null ) {
+                            String type = getSqlType(notNull);
+                            Array arrayOf = preparedStatement.getConnection().createArrayOf(type, arr);
+                            preparedStatement.setObject(key, arrayOf);
+                        } else {
+                            //bad choice, but at least.
+                            preparedStatement.setObject(key, null);
+                        }
+                    } else {
+                        preparedStatement.setObject(key, parameterValue);
+                    }
                 }
             }
 
@@ -116,6 +132,10 @@ public class UnsafeSqlHelper implements JdbcConstants
                             {
                                 //This can happen with MySQL, let's silent ignore it.
                                 //System.out.println("Incorrect object in ResultSet");
+                            }
+                            if(o instanceof Array) {
+                                Array array = (Array) o;
+                                o = array.getArray();
                             }
                             if(o instanceof Blob) {
                                 Blob blob = (Blob) o;
@@ -171,6 +191,14 @@ public class UnsafeSqlHelper implements JdbcConstants
             System.err.println("Problem with query: {" + query + "} code " + code + " and params: " + parameters);
         }
         return listToReturn;
+    }
+
+    public static String getSqlType(Object notNull) {
+        String s = notNull.getClass().getSimpleName().toLowerCase();
+        if(System.getProperty("org.javaz.sql.type." + s) != null) {
+            return System.getProperty("org.javaz.sql.type." + s);
+        }
+        return s;
     }
 
     public static ArrayList runMassSqlUnsafe(ConnectionProviderI provider, String jdbcAddress, ArrayList<Object[]> objects)
