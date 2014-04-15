@@ -50,7 +50,7 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI
 
     public abstract List getRecordList(String query, Map parameters, boolean useCache);
 
-    public abstract int runUpdate(String query, Map parameters);
+    public abstract long runUpdate(String query, Map parameters);
 
     public abstract  void runUpdateDataIgnore(String query, Map parameters);
 

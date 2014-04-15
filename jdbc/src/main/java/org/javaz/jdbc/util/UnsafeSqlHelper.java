@@ -64,7 +64,15 @@ public class UnsafeSqlHelper implements JdbcConstants
                 {
                     Integer key = (Integer) iterator.next();
                     Object parameterValue = parameters.get(key);
-                    if (parameterValue != null && parameterValue instanceof java.util.Date
+                    if (parameterValue instanceof StringBuffer)
+                    {
+                        parameterValue = ((StringBuffer) parameterValue).toString();
+                    }
+                    if (parameterValue instanceof StringBuilder)
+                    {
+                        parameterValue = ((StringBuilder) parameterValue).toString();
+                    }
+                    if (parameterValue instanceof java.util.Date
                             && !(parameterValue instanceof java.sql.Date)
                             && !(parameterValue instanceof java.sql.Time)
                             && !(parameterValue instanceof java.sql.Timestamp))
@@ -74,6 +82,14 @@ public class UnsafeSqlHelper implements JdbcConstants
                         java.util.Date d = (java.util.Date) parameterValue;
                         parameterValue = new Timestamp(d.getTime());
                     }
+                    //if we have something like collection - repack it to array, and proceed it to next block
+                    if(parameterValue instanceof Collection) {
+                        Collection coll = (Collection) parameterValue;
+                        parameterValue = coll.toArray();
+                    }
+
+                    // we can't send array into JDBC as is, we need find type of element.
+                    // bad but only way - is to rely on first not-null element found
                     if(parameterValue instanceof Object[]) {
                         Object[] arr = (Object[]) parameterValue;
                         Object notNull = null;
@@ -82,15 +98,14 @@ public class UnsafeSqlHelper implements JdbcConstants
                         }
                         if(notNull != null ) {
                             String type = getSqlType(notNull);
-                            Array arrayOf = preparedStatement.getConnection().createArrayOf(type, arr);
-                            preparedStatement.setObject(key, arrayOf);
+                            parameterValue = preparedStatement.getConnection().createArrayOf(type, arr);
                         } else {
-                            //bad choice, but at least.
-                            preparedStatement.setObject(key, null);
+                            //bad choice, but at least we need to set it to something.
+                            parameterValue = null;
                         }
-                    } else {
-                        preparedStatement.setObject(key, parameterValue);
                     }
+
+                    preparedStatement.setObject(key, parameterValue);
                 }
             }
 
