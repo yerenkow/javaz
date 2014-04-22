@@ -64,7 +64,15 @@ public class UnsafeSqlHelper implements JdbcConstants
                 {
                     Integer key = (Integer) iterator.next();
                     Object parameterValue = parameters.get(key);
-                    if (parameterValue != null && parameterValue instanceof java.util.Date
+                    if (parameterValue instanceof StringBuffer)
+                    {
+                        parameterValue = ((StringBuffer) parameterValue).toString();
+                    }
+                    if (parameterValue instanceof StringBuilder)
+                    {
+                        parameterValue = ((StringBuilder) parameterValue).toString();
+                    }
+                    if (parameterValue instanceof java.util.Date
                             && !(parameterValue instanceof java.sql.Date)
                             && !(parameterValue instanceof java.sql.Time)
                             && !(parameterValue instanceof java.sql.Timestamp))
@@ -74,6 +82,29 @@ public class UnsafeSqlHelper implements JdbcConstants
                         java.util.Date d = (java.util.Date) parameterValue;
                         parameterValue = new Timestamp(d.getTime());
                     }
+                    //if we have something like collection - repack it to array, and proceed it to next block
+                    if(parameterValue instanceof Collection) {
+                        Collection coll = (Collection) parameterValue;
+                        parameterValue = coll.toArray();
+                    }
+
+                    // we can't send array into JDBC as is, we need find type of element.
+                    // bad but only way - is to rely on first not-null element found
+                    if(parameterValue instanceof Object[]) {
+                        Object[] arr = (Object[]) parameterValue;
+                        Object notNull = null;
+                        for (int i = 0; notNull == null && i < arr.length; i++) {
+                            notNull = arr[i];
+                        }
+                        if(notNull != null ) {
+                            String type = getSqlType(notNull);
+                            parameterValue = preparedStatement.getConnection().createArrayOf(type, arr);
+                        } else {
+                            //bad choice, but at least we need to set it to something.
+                            parameterValue = null;
+                        }
+                    }
+
                     preparedStatement.setObject(key, parameterValue);
                 }
             }
@@ -116,6 +147,10 @@ public class UnsafeSqlHelper implements JdbcConstants
                             {
                                 //This can happen with MySQL, let's silent ignore it.
                                 //System.out.println("Incorrect object in ResultSet");
+                            }
+                            if(o instanceof Array) {
+                                Array array = (Array) o;
+                                o = array.getArray();
                             }
                             if(o instanceof Blob) {
                                 Blob blob = (Blob) o;
@@ -171,6 +206,14 @@ public class UnsafeSqlHelper implements JdbcConstants
             System.err.println("Problem with query: {" + query + "} code " + code + " and params: " + parameters);
         }
         return listToReturn;
+    }
+
+    public static String getSqlType(Object notNull) {
+        String s = notNull.getClass().getSimpleName().toLowerCase();
+        if(System.getProperty("org.javaz.sql.type." + s) != null) {
+            return System.getProperty("org.javaz.sql.type." + s);
+        }
+        return s;
     }
 
     public static ArrayList runMassSqlUnsafe(ConnectionProviderI provider, String jdbcAddress, ArrayList<Object[]> objects)

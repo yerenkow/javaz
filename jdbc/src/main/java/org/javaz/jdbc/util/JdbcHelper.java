@@ -23,7 +23,7 @@ public class JdbcHelper extends AbstractJdbcHelper
         return UnsafeSqlHelper.runMassSqlUnsafe(getProvider(), jdbcAddress, objects);
     }
 
-    public int runUpdate(String query, Map parameters)
+    public long runUpdate(String query, Map parameters)
     {
         ArrayList list = null;
         try
@@ -34,7 +34,7 @@ public class JdbcHelper extends AbstractJdbcHelper
                 Object object = list.get(0);
                 if (object != null && object instanceof Number)
                 {
-                    return ((Number) object).intValue();
+                    return ((Number) object).longValue();
                 }
             }
         }
