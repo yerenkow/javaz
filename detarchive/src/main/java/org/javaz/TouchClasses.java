@@ -19,18 +19,10 @@ public class TouchClasses
     /**
      * Location of the file.
      *
-     * @parameter default-value="classes"
-     * @required
-     */
-    private String classesDirectory;
-
-    /**
-     * Location of the file.
-     *
      * @parameter expression="${project.build.directory}"
      * @required
      */
-    private File outputDirectory;
+    private File targetDirectory;
 
     /**
      * Stamp set to.
@@ -50,18 +42,16 @@ public class TouchClasses
 
     public void execute()
             throws MojoExecutionException {
-        File f = outputDirectory;
-
-        if (!f.exists()) {
+        getLog().info("Going to stamp all over " + targetDirectory);
+        if (!targetDirectory.exists()) {
             return;
         }
 
-        File classes = new File(f, classesDirectory);
-        if (classes.exists() && classes.isDirectory()) {
+        if (targetDirectory.exists() && targetDirectory.isDirectory()) {
             Date parse = null;
             try {
                 parse = new SimpleDateFormat(stampFormat).parse(stamp);
-                changeDirectoryStampTo(classes, parse.getTime());
+                changeDirectoryStampTo(targetDirectory, parse.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
                 throw new MojoExecutionException(e.getMessage());
