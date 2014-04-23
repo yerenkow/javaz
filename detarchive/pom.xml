@@ -7,11 +7,13 @@
     <name>Javaz Deterministic Archive plugin</name>
     <description>This plugin should be used to get deterministic archives (e.g. not changed from build to build)</description>
     <url>https://github.com/yerenkow/javaz/tree/master/detarchive</url>
+
     <parent>
         <groupId>org.javaz</groupId>
         <artifactId>javaz-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>

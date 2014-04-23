@@ -2,6 +2,7 @@ package org.javaz.servlet.test;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.javaz.xmlrpc.GenericRpcFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import java.util.Properties;
 public class RpcClientTest
 {
     @Test
+    @Ignore
     public void testRpc() throws Exception
     {
         new GenericRpcFactory();
