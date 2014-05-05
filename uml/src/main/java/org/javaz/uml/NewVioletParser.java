@@ -56,7 +56,6 @@ public class NewVioletParser extends BasicVioletParser
         dh.addObjectFillingRule("/ClassDiagramGraph/edges/AssociationEdge/start@reference", "edge@start");
         dh.addObjectFillingRule("/ClassDiagramGraph/edges/AssociationEdge/end@reference", "edge@end");
 
-        long l = System.currentTimeMillis();
         ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes());
         parser.parse(inputStream, dh);
 
