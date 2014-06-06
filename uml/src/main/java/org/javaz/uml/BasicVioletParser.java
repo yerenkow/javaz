@@ -66,6 +66,7 @@ public abstract class BasicVioletParser
         fullyQTypes.put("java::util::hashmap", "java.util.HashMap");
         fullyQTypes.put("arraylist", "java.util.ArrayList");
         fullyQTypes.put("java::util::arraylist", "java.util.ArrayList");
+        fullyQTypes.put("text", "java.lang.String");
 
         sqlTypes.put("java.lang.Boolean", "boolean");
         sqlTypes.put("java.lang.Integer", "integer");
@@ -80,6 +81,8 @@ public abstract class BasicVioletParser
         sqlTypes.put("java.sql.Timestamp", "timestamp without time zone");
         sqlTypes.put("java.util.HashMap", "text");
         sqlTypes.put("java.util.ArrayList", "text");
+
+        sqlTypes.put("text", "text");
     }
 
     public String readFile(String path, Charset encoding) throws IOException
@@ -208,8 +211,13 @@ public abstract class BasicVioletParser
                     }
                 }
 
+                String originalType = type;
                 type = getFullyQualifiedTypeName(type);
-                sqlType = (String) sqlTypes.get(type);
+                if(sqlTypes.containsKey(originalType)) {
+                    sqlType = (String) sqlTypes.get(type);
+                } else {
+                    sqlType = (String) sqlTypes.get(type);
+                }
                 if (sqlType == null)
                 {
                     System.out.println("Unknown type = " + type + " of attribute " + beanName + "." + attribute.get("name") + ", using " + DEFAULT_TYPE_JAVA + ".");
