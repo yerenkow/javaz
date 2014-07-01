@@ -47,21 +47,24 @@ public class BinarySearch {
         }
 
         if(start < 0) {
-            if(a[low1 - 1] >= keyMin) {
+            if(low1 > 0 && a[low1 - 1] >= keyMin) {
                 start = low1 - 1;
-            } else if(a[low1] >= keyMin) {
+            } else if(low1 < a.length && a[low1] >= keyMin) {
                 start = low1;
-            } else if(a[low1 + 1] >= keyMin) {
+            } else if(low1 + 1 < a.length && a[low1 + 1] >= keyMin) {
                 start = low1 + 1;
+            }
+            if(start < 0) {
+                return new int[]{-1, -1};
             }
         }
 
         if(end < 0) {
-            if(a[high2 + 1] <= keyMax) {
+            if(high2 + 1 < a.length && a[high2 + 1] <= keyMax) {
                 end = high2 + 1;
-            } else if(a[high2] <= keyMax) {
+            } else if(high2 < a.length && a[high2] <= keyMax) {
                 end = high2;
-            } else if(a[high2 - 1] <= keyMax) {
+            } else if(high2 > 0 && a[high2 - 1] <= keyMax) {
                 end = high2 - 1;
             }
         }
@@ -109,21 +112,24 @@ public class BinarySearch {
         }
 
         if(start < 0) {
-            if(a[low1 - 1] >= keyMin) {
+            if(low1 > 0 && a[low1 - 1] >= keyMin) {
                 start = low1 - 1;
-            } else if(a[low1] >= keyMin) {
+            } else if(low1 < a.length && a[low1] >= keyMin) {
                 start = low1;
-            } else if(a[low1 + 1] >= keyMin) {
+            } else if(low1 + 1 < a.length && a[low1 + 1] >= keyMin) {
                 start = low1 + 1;
+            }
+            if(start < 0) {
+                return new int[]{-1, -1};
             }
         }
 
         if(end < 0) {
-            if(a[high2 + 1] <= keyMax) {
+            if(high2 + 1 < a.length && a[high2 + 1] <= keyMax) {
                 end = high2 + 1;
-            } else if(a[high2] <= keyMax) {
+            } else if(high2 < a.length && a[high2] <= keyMax) {
                 end = high2;
-            } else if(a[high2 - 1] <= keyMax) {
+            } else if(high2 > 0 && a[high2 - 1] <= keyMax) {
                 end = high2 - 1;
             }
         }
