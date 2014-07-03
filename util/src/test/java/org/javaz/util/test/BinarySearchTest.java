@@ -43,21 +43,28 @@ public class BinarySearchTest {
             totalFound += result.size();
         }
         long nanoTime2 = System.nanoTime();
+        System.out.println("Method: fast array scan.");
         System.out.println("totalFound = " + totalFound);
-        System.out.println("per 1 ms = " + (nanoTime2 - nanoTime)/1000000.0/total);
-        System.out.println("total spent ms = " + (nanoTime2 - nanoTime)/1000000.0);
+        long totalTime = nanoTime2 - nanoTime;
+        System.out.println("spent for 1 array, per 1 ms = " + totalTime /1000000.0/total);
+        System.out.println("total spent ms = " + totalTime /1000000.0);
 
-        totalFound = 0;
+        int totalFound2 = 0;
         nanoTime = System.nanoTime();
         for (Iterator iterator = objs2.iterator(); iterator.hasNext(); ) {
             Object[] objects = (Object[]) iterator.next();
             List result = simpleHashSetChecks((HashSet[][]) objects[0], (HashSet) objects[1]);
-            totalFound += result.size();
+            totalFound2 += result.size();
         }
         nanoTime2 = System.nanoTime();
-        System.out.println("totalFound = " + totalFound);
-        System.out.println("per 1 ms = " + (nanoTime2 - nanoTime)/1000000.0/total);
-        System.out.println("total spent ms = " + (nanoTime2 - nanoTime)/1000000.0);
+        System.out.println("===");
+        System.out.println("Method: thorough set checks.");
+        System.out.println("totalFound = " + totalFound2);
+        long totalTime2 = nanoTime2 - nanoTime;
+        System.out.println("spent for 1 array, ms = " + totalTime2/1000000.0/total);
+        System.out.println("total spent ms = " + totalTime2 /1000000.0);
+        Assert.assertEquals(totalFound, totalFound2);
+        System.out.println("Performance ratio: " + (totalTime2*1.0 / totalTime));
     }
 
     private List simpleHashSetChecks(HashSet[][] data, HashSet negative) {
@@ -156,7 +163,11 @@ public class BinarySearchTest {
         Random random = new Random();
         long[][][] data = new long[dims][][];
         for(int i = 0; i < data.length; i++) {
+            to =   3*items;
             int size = (i ==0 ? 1 : arrs);
+            if(i == data.length - 1) {
+                to = items;
+            }
             data[i] = new long[size][];
             for(int j = 0; j < data[i].length; j++) {
 

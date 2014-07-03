@@ -158,12 +158,19 @@ public class BinarySearch {
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
+
+        final int[] arraysNotCompleted = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             indices[i] = new int[data[i].length];
+            arraysNotCompleted[i] = data[i].length;
         }
         final int[] negIndices = new int[negative.length];
 
-        for (indices[0][0] = 0; indices[0][0] < firstArray.length; indices[0][0]++) {
+        // this should set to false when any sub-array will be depleted, so
+        // there will be no sense in continuing.
+        boolean allArrayHaveMoreElements = true;
+
+        for (indices[0][0] = 0; allArrayHaveMoreElements && indices[0][0] < firstArray.length; indices[0][0]++) {
             // main loop based on first array.
             // what we do is step by step checking other arrays (or sets of arrays)
             // for same value present there.
@@ -185,6 +192,12 @@ public class BinarySearch {
                 for (int j = 0; !anyFound && j < sva.length; j++) {
                     while(indices[i][j] < sva[j].length && sva[j][indices[i][j]] <= val) {
                         anyFound = val == sva[j][indices[i][j]++];
+                        //this means we fully iterated through this array
+                        if(indices[i][j] == sva[j].length) {
+                            // this set to true, if and only if ALL of arrays in level `i` is completed
+                            // this means that there's no point in iterating, since there will be no values at all.
+                            allArrayHaveMoreElements = --arraysNotCompleted[i] > 0;
+                        }
                     }
                 }
 
@@ -210,12 +223,19 @@ public class BinarySearch {
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
+
+        final int[] arraysNotCompleted = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             indices[i] = new int[data[i].length];
+            arraysNotCompleted[i] = data[i].length;
         }
         final int[] negIndices = new int[negative.length];
 
-        for (indices[0][0] = 0; indices[0][0] < firstArray.length; indices[0][0]++) {
+        // this should set to false when any sub-array will be depleted, so
+        // there will be no sense in continuing.
+        boolean allArrayHaveMoreElements = true;
+
+        for (indices[0][0] = 0; allArrayHaveMoreElements && indices[0][0] < firstArray.length; indices[0][0]++) {
             // main loop based on first array.
             // what we do is step by step checking other arrays (or sets of arrays)
             // for same value present there.
@@ -237,6 +257,12 @@ public class BinarySearch {
                 for (int j = 0; !anyFound && j < sva.length; j++) {
                     while(indices[i][j] < sva[j].length && sva[j][indices[i][j]] <= val) {
                         anyFound = val == sva[j][indices[i][j]++];
+                        //this means we fully iterated through this array
+                        if(indices[i][j] == sva[j].length) {
+                            // this set to true, if and only if ALL of arrays in level `i` is completed
+                            // this means that there's no point in iterating, since there will be no values at all.
+                            allArrayHaveMoreElements = --arraysNotCompleted[i] > 0;
+                        }
                     }
                 }
 
