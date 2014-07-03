@@ -65,8 +65,22 @@ public class VioletCreator {
         for (Iterator iterator = beanNames.iterator(); iterator.hasNext(); ) {
             String name = (String) iterator.next();
             HashMap next = (HashMap) beanByNames.get(name);
-
+            String parent = "";
+            String ifaces = "";
             int toAddHeight = 0;
+            if(next.get("parent") != null) {
+                    String parentClass = (String) next.get("parent");
+                if(!parentClass.equals("Object")) {
+                    parent = " extends " + parentClass;
+                }
+            }
+            if(next.get("interfaces") != null) {
+                String interfaces = (String) next.get("interfaces");
+                if(interfaces.length() > 0) {
+                    ifaces = " implements " + interfaces;
+                }
+            }
+
             ArrayList attributes = (ArrayList) next.get("attributes");
             if (toAddHeight < defHeight + attributes.size() * perLineHeight) {
                 toAddHeight = defHeight + attributes.size() * perLineHeight;
@@ -93,7 +107,7 @@ public class VioletCreator {
             sb.append("<textColor reference=\"" + borderId + "\"/>\n");
 
             sb.append("<name id=\"" + (id++) + "\" justification=\"1\" size=\"3\" underlined=\"false\">\n" +
-                    "<text>" + name + "</text>\n" +
+                    "<text>" + name + parent + ifaces + "</text>\n" +
                     "</name>\n");
             if (toAddWidth < nameMargin + perLetter * (name.length())) {
                 toAddWidth = nameMargin + perLetter * (name.length());
@@ -171,15 +185,66 @@ public class VioletCreator {
                 classExceptions.add(properties.getProperty(name));
             }
         }
-
+        HashSet ignoreInterfaces = new HashSet();
+        String ifc = properties.getProperty("ignore.interfaces");
+        if(ifc != null) {
+            String[] split = ifc.split(",");
+            for (int i = 0; i < split.length; i++) {
+                String s = split[i];
+                ignoreInterfaces.add(s);
+            }
+        }
         VioletCreator creator = new VioletCreator();
         String fileName = properties.getProperty("out.file", "out.class.violet.html");
         String packageName = properties.getProperty("package", "lava.lang");
-        creator.saveViolet(fileName, creator.findAllClassesFromPackage(packageName, classExceptions, methodExceptions));
+        ArrayList<HashMap> toDraw = creator.findAllClassesFromPackage(packageName, classExceptions, methodExceptions, ignoreInterfaces);
+        normalizeInheritance(toDraw);
+        creator.saveViolet(fileName, toDraw);
+    }
+
+    private static void normalizeInheritance(ArrayList<HashMap> toDraw) {
+        HashMap allClasses = new HashMap();
+        for (Iterator<HashMap> iterator = toDraw.iterator(); iterator.hasNext(); ) {
+            HashMap next = iterator.next();
+            allClasses.put(next.get("name"), next);
+        }
+
+        for (Iterator<HashMap> iterator = toDraw.iterator(); iterator.hasNext(); ) {
+            HashMap next = iterator.next();
+            ArrayList attributes = (ArrayList) next.get("attributes");
+            for (Iterator iterator1 = attributes.iterator(); iterator1.hasNext(); ) {
+                Map attr = (Map) iterator1.next();
+                boolean checkDeep = isThisAttributePresentInParent(allClasses, next.get("parent"), attr.get("name"));
+                if(checkDeep) {
+                    iterator1.remove();
+                }
+            }
+        }
+    }
+
+    private static boolean isThisAttributePresentInParent(HashMap allClasses, Object className, Object attrName) {
+        try {
+            if(className == null || !allClasses.containsKey(className)) {
+                return false;
+            }
+            Map next = (Map) allClasses.get(className);
+            ArrayList attributes = (ArrayList) next.get("attributes");
+            for (Iterator iterator1 = attributes.iterator(); iterator1.hasNext(); ) {
+                Map attr = (Map) iterator1.next();
+                if(attrName.equals(attr.get("name"))) {
+                    return true;
+                }
+            }
+            return isThisAttributePresentInParent(allClasses, next.get("parent"), attrName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private ArrayList<HashMap> findAllClassesFromPackage(String packageName, HashSet classExceptions,
-                                                         HashSet methodExceptions) {
+                                                         HashSet methodExceptions, HashSet ignoreInterfaces) {
 
         ArrayList<HashMap> list = new ArrayList<HashMap>();
         Reflections reflections = new Reflections(packageName);
@@ -238,6 +303,17 @@ public class VioletCreator {
             }
             HashMap bean = new HashMap();
             bean.put("name", next.getSimpleName());
+            bean.put("parent", next.getSuperclass().getSimpleName());
+            Class[] interfaces = next.getInterfaces();
+            StringBuffer ifaces = new StringBuffer();
+            for (int i = 0; i < interfaces.length; i++) {
+                Class anInterface = interfaces[i];
+                if(!ignoreInterfaces.contains(anInterface.getSimpleName()) &&
+                        !ignoreInterfaces.contains(anInterface.getCanonicalName())) {
+                    ifaces.append(ifaces.length() == 0 ? "" : ", ").append(anInterface.getSimpleName());
+                }
+            }
+            bean.put("interfaces", ifaces.toString());
             ArrayList beanAttributes = new ArrayList();
             bean.put("attributes", beanAttributes);
             for (Iterator iterator1 = properties.iterator(); iterator1.hasNext(); ) {
