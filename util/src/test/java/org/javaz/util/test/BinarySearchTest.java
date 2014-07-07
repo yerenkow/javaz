@@ -14,7 +14,7 @@ public class BinarySearchTest {
     @Ignore
     @Test
     public void testComplexSearch() {
-        int total = 20;
+        int total = 5;
         ArrayList objs = new ArrayList();
         ArrayList objs2 = new ArrayList();
         for(int i =0 ; i < total; i++) {
@@ -27,7 +27,7 @@ public class BinarySearchTest {
         for(int x =0; x < 10; x++) {
             for (Iterator iterator = objs.iterator(); iterator.hasNext(); ) {
                 Object[] objects = (Object[]) iterator.next();
-                List result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
+                long[] result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
             }
             for (Iterator iterator = objs2.iterator(); iterator.hasNext(); ) {
                 Object[] objects = (Object[]) iterator.next();
@@ -39,8 +39,8 @@ public class BinarySearchTest {
         long nanoTime = System.nanoTime();
         for (Iterator iterator = objs.iterator(); iterator.hasNext(); ) {
             Object[] objects = (Object[]) iterator.next();
-            List result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
-            totalFound += result.size();
+            long[] result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
+            totalFound += result.length;
         }
         long nanoTime2 = System.nanoTime();
         System.out.println("Method: fast array scan.");
@@ -222,5 +222,72 @@ public class BinarySearchTest {
         int[] range = BinarySearch.binaryRangeSearchExclusive(ints, from, to);
         Assert.assertEquals(range[0], idx);
         Assert.assertEquals(range[1], idx2);
+    }
+
+    @Test
+    public void testInclusivePerformance() {
+        int howMany = 5000;
+        int range = 100000;
+
+        int[][] ints = genData(howMany, range);
+
+        for(int j = 0; j < 1000; j++) {
+        for (int i = 0; i < ints.length; i++) {
+            int[] anInt = ints[i];
+            int x1 = anInt[300];
+            int x2 = anInt[700];
+            BinarySearch.binaryRangeSearchInclusive(anInt, x1, x2);
+        }
+
+        for (int i = 0; i < ints.length; i++) {
+            int[] anInt = ints[i];
+            int x1 = anInt[300];
+            int x2 = anInt[700];
+            int i1 = Arrays.binarySearch(anInt, x1);
+            int i2 = Arrays.binarySearch(anInt, x2);
+
+        }
+        }
+
+
+
+        long nanoTime = System.nanoTime();
+        for (int i = 0; i < ints.length; i++) {
+            int[] anInt = ints[i];
+            int x1 = anInt[300];
+            int x2 = anInt[700];
+            int[] ints1 = BinarySearch.binaryRangeSearchInclusive(anInt, x1, x2);
+        }
+        long nanoTime2 = System.nanoTime();
+        System.out.println("per 1, ns = " + (nanoTime2 - nanoTime)/howMany);
+        System.out.println("total spent ms = " + (nanoTime2 - nanoTime)/1000000.0);
+
+
+        nanoTime = System.nanoTime();
+        for (int i = 0; i < ints.length; i++) {
+            int[] anInt = ints[i];
+            int x1 = anInt[300];
+            int x2 = anInt[700];
+            int i1 = Arrays.binarySearch(anInt, x1);
+            int i2 = Arrays.binarySearch(anInt, x2);
+        }
+        nanoTime2 = System.nanoTime();
+        System.out.println("per 1, ns = " + (nanoTime2 - nanoTime)/howMany);
+        System.out.println("total spent ms = " + (nanoTime2 - nanoTime)/1000000.0);
+
+    }
+
+    private int[][] genData(int howMany, int range) {
+        Random random = new Random();
+        int xx = 1;
+        int[][] ints = new int[howMany][];
+        for(int i = 0; i<howMany; i++) {
+            ints[i] = new int[range];
+            for(int j = 0; j < range; j++) {
+                ints[i][j] += xx;
+                xx += random.nextInt(100);
+            }
+        }
+        return ints;
     }
 }

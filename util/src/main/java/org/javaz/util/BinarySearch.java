@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class BinarySearch {
     
+    public static int DEFAULT_MAX_SIZE = 16*1024;
+
     public static int[] binaryRangeSearchInclusive(int[] a, int keyMin, int keyMax) {
         int low1 = 0;
         int high1 = a.length - 1;
@@ -148,20 +150,31 @@ public class BinarySearch {
         return binaryRangeSearchInclusive(a, keyMin + 1, keyMax - 1);
     }
 
-    public static List<Integer> complexMultiSearch(final int[][][] data, final int[][] negative) {
+    public static int[] complexMultiSearch(final int[][][] data, final int[][] negative) {
+        return complexMultiSearch(data, negative, DEFAULT_MAX_SIZE);
+    }
+
+    public static int[] complexMultiSearch(final int[][][] data, final int[][] negative, int maxSize) {
         // this is the list we'll return
-        List<Integer> retValue = new LinkedList<Integer>();
+        int[] retValue = new int[maxSize];
+        int position = 0;
+
         // this first array must be single-element array.
         final int[][] firstArrayArray = data[0];
-        //this is array, on which we'll iterate.
-        final int[] firstArray = firstArrayArray[0];
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
 
+        int guessArrayIndex = 0;
+        int minRecords = Integer.MAX_VALUE;
+
         final int[] arraysNotCompleted = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             indices[i] = new int[data[i].length];
+            //let's find least filled array in single top-array
+            if(data[i].length == 1 && minRecords > data[i][0].length) {
+                guessArrayIndex = i;
+            }
             arraysNotCompleted[i] = data[i].length;
         }
         final int[] negIndices = new int[negative.length];
@@ -170,12 +183,17 @@ public class BinarySearch {
         // there will be no sense in continuing.
         boolean allArrayHaveMoreElements = true;
 
-        for (indices[0][0] = 0; allArrayHaveMoreElements && indices[0][0] < firstArray.length; indices[0][0]++) {
+        final int iterationIndex = guessArrayIndex;
+        //this is array, on which we'll iterate.
+        final int[] firstArray = firstArrayArray[iterationIndex];
+
+        for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
+                && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
             // main loop based on first array.
             // what we do is step by step checking other arrays (or sets of arrays)
             // for same value present there.
             boolean anyFailed = false;
-            final int val = firstArray[indices[0][0]];
+            final int val = firstArray[indices[iterationIndex][0]];
 
             //simple checks for negative
             for (int i = 0; !anyFailed && i < negative.length; i++) {
@@ -184,8 +202,11 @@ public class BinarySearch {
                 }
             }
 
-            // note, that we starting from 1, not 0!
-            for (int i = 1; !anyFailed && i < data.length; i++) {
+            // note, that we starting from 0, but we skip index by which we are iterating.
+            for (int i = 0; !anyFailed && i < data.length; i++) {
+                if(i == iterationIndex) {
+                    continue;
+                }
                 // scanned variant array
                 final int[][] sva = data[i];
                 boolean anyFound = false;
@@ -207,26 +228,41 @@ public class BinarySearch {
             }
 
             if(!anyFailed) {
-                retValue.add(val);
+                retValue[position++] = val;
+                if(position >= maxSize) {
+                    return retValue;
+                }
             }
         }
-        return retValue;
+        return Arrays.copyOf(retValue, position);
     }
 
-    public static List<Long> complexMultiSearch(final long[][][] data, final long[][] negative) {
+    public static long[] complexMultiSearch(final long[][][] data, final long[][] negative) {
+        return complexMultiSearch(data, negative, DEFAULT_MAX_SIZE);
+    }
+
+    public static long[] complexMultiSearch(final long[][][] data, final long[][] negative, int maxSize) {
+
         // this is the list we'll return
-        List<Long> retValue = new LinkedList<Long>();
+        long[] retValue = new long[maxSize];
+        int position = 0;
+
         // this first array must be single-element array.
         final long[][] firstArrayArray = data[0];
-        //this is array, on which we'll iterate.
-        final long[] firstArray = firstArrayArray[0];
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
 
+        int guessArrayIndex = 0;
+        int minRecords = Integer.MAX_VALUE;
+
         final int[] arraysNotCompleted = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             indices[i] = new int[data[i].length];
+            //let's find least filled array in single top-array
+            if(data[i].length == 1 && minRecords > data[i][0].length) {
+                guessArrayIndex = i;
+            }
             arraysNotCompleted[i] = data[i].length;
         }
         final int[] negIndices = new int[negative.length];
@@ -234,13 +270,17 @@ public class BinarySearch {
         // this should set to false when any sub-array will be depleted, so
         // there will be no sense in continuing.
         boolean allArrayHaveMoreElements = true;
+        final int iterationIndex = guessArrayIndex;
+        //this is array, on which we'll iterate.
+        final long[] firstArray = firstArrayArray[iterationIndex];
 
-        for (indices[0][0] = 0; allArrayHaveMoreElements && indices[0][0] < firstArray.length; indices[0][0]++) {
+        for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
+                && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
             // main loop based on first array.
             // what we do is step by step checking other arrays (or sets of arrays)
             // for same value present there.
             boolean anyFailed = false;
-            final long val = firstArray[indices[0][0]];
+            final long val = firstArray[indices[iterationIndex][0]];
 
             //simple checks for negative
             for (int i = 0; !anyFailed && i < negative.length; i++) {
@@ -249,8 +289,11 @@ public class BinarySearch {
                 }
             }
 
-            // note, that we starting from 1, not 0!
-            for (int i = 1; !anyFailed && i < data.length; i++) {
+            // note, that we starting from 0, but we skip index by which we are iterating.
+            for (int i = 0; !anyFailed && i < data.length; i++) {
+                if(i == iterationIndex) {
+                    continue;
+                }
                 // scanned variant array
                 final long[][] sva = data[i];
                 boolean anyFound = false;
@@ -272,9 +315,12 @@ public class BinarySearch {
             }
 
             if(!anyFailed) {
-                retValue.add(val);
+                retValue[position++] = val;
+                if(position >= maxSize) {
+                    return retValue;
+                }
             }
         }
-        return retValue;
+        return Arrays.copyOf(retValue, position);
     }
 }
