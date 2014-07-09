@@ -5,7 +5,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  */
@@ -134,13 +134,22 @@ public class RenderFtl
             }
             if (parseType == RENDER_DIFFERENCE)
             {
+                trimNames(newModel);
+                trimNames(oldModel);
                 VioletDiffer diffCalculator = new VioletDiffer(newModel, oldModel);
                 diffCalculator.calculateDifference();
-                simpleHash.put("beans", diffCalculator.getNewBeans());
-                simpleHash.put("deletedBeans", diffCalculator.getDeletedBeans());
-                simpleHash.put("alteredBeansNewAttribute", diffCalculator.getAlteredBeansNewAttribute());
-                simpleHash.put("alteredBeansModifyAttribute", diffCalculator.getAlteredBeansModifyAttribute());
-                simpleHash.put("alteredBeansDeletedAttribute", diffCalculator.getAlteredBeansDeletedAttribute());
+                ArrayList newBeans = diffCalculator.getNewBeans();
+                ArrayList deletedBeans = diffCalculator.getDeletedBeans();
+                ArrayList alteredBeansNewAttribute = diffCalculator.getAlteredBeansNewAttribute();
+                ArrayList alteredBeansModifyAttribute = diffCalculator.getAlteredBeansModifyAttribute();
+                ArrayList alteredBeansDeletedAttribute = diffCalculator.getAlteredBeansDeletedAttribute();
+                restoreNames(newBeans, deletedBeans, alteredBeansNewAttribute, alteredBeansModifyAttribute, alteredBeansDeletedAttribute);
+
+                simpleHash.put("beans", newBeans);
+                simpleHash.put("deletedBeans", deletedBeans);
+                simpleHash.put("alteredBeansNewAttribute", alteredBeansNewAttribute);
+                simpleHash.put("alteredBeansModifyAttribute", alteredBeansModifyAttribute);
+                simpleHash.put("alteredBeansDeletedAttribute", alteredBeansDeletedAttribute);
                 if (!additionalValues.containsKey("v1"))
                     simpleHash.put("v1", "old");
                 if (!additionalValues.containsKey("v2"))
@@ -157,6 +166,38 @@ public class RenderFtl
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+    private void restoreNames(ArrayList newBeans, ArrayList deletedBeans,
+        ArrayList alteredBeansNewAttribute, ArrayList alteredBeansModifyAttribute,
+        ArrayList alteredBeansDeletedAttribute) {
+        ArrayList[] allOfThem = new ArrayList[] {newBeans, deletedBeans,alteredBeansNewAttribute,
+            alteredBeansModifyAttribute,alteredBeansDeletedAttribute };
+        for (int i = 0; i < allOfThem.length; i++) {
+            ArrayList beans = allOfThem[i];
+            for (Iterator iterator = beans.iterator(); iterator.hasNext(); ) {
+                Map bean = (Map)  iterator.next();
+                Object originalName = bean.remove("originalName");
+                if(originalName != null) {
+                    bean.put("name", originalName);
+                }
+            }
+
+        }
+    }
+
+    private void trimNames(HashMap model) {
+        List<Map> beans = (List<Map>) model.get("beans");
+        for (Iterator<Map> iterator = beans.iterator(); iterator.hasNext(); ) {
+            Map bean = iterator.next();
+            if(bean.containsKey("name")) {
+                String name = (String) bean.get("name");
+                if(name.contains(" ")) {
+                    bean.put("originalName", name);
+                    bean.put("name", name.substring(0, name.indexOf(" ")));
+                }
+            }
         }
     }
 
@@ -241,7 +282,7 @@ public class RenderFtl
 
         if (parseType == RENDER_DIFFERENCE && fileInOld == null)
         {
-            System.out.println("To use difference, please specify old-modle in fourth parameter");
+            System.out.println("To use difference, please specify old-model in fourth parameter");
             System.exit(0);
         }
 

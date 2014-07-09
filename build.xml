@@ -17,6 +17,7 @@
     <property name="sources.servlet.path" value="servlet/src/main/java"/>
     <property name="sources.uml.path" value="uml/src/main/java"/>
     <property name="sources.util.path" value="util/src/main/java"/>
+    <property name="sources.xml.path" value="xml/src/main/java"/>
 
     <tstamp id="TODAY"/>
 
@@ -51,6 +52,9 @@
                 <include name="**"/>
             </fileset>
             <fileset dir="${sources.util.path}">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="${sources.xml.path}">
                 <include name="**"/>
             </fileset>
         </copy>
