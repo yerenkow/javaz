@@ -2,10 +2,14 @@ package org.javaz.util.test;
 
 import junit.framework.Assert;
 import org.javaz.util.BinarySearch;
+import org.javaz.util.IndexesUtil;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  */
@@ -289,5 +293,58 @@ public class BinarySearchTest {
             }
         }
         return ints;
+    }
+
+    @Test
+    public void testGetValuesFromKeysByIds() {
+        long[] keys = {1L, 2L, 3L, 4L, 5L, 6L};
+        long[] values = {100L,200L,300L, -50L, -70L, -90L};
+        long[] ids = {1L, 2L, 5L, 6L};
+        long[] valuesFromKeysByIds = IndexesUtil.getValuesFromKeysByIds(ids, keys, values);
+        Assert.assertEquals(valuesFromKeysByIds.length, 4);
+        Assert.assertEquals(valuesFromKeysByIds[0], 100L);
+        Assert.assertEquals(valuesFromKeysByIds[1], 200L);
+        Assert.assertEquals(valuesFromKeysByIds[2], -70L);
+        Assert.assertEquals(valuesFromKeysByIds[3], -90L);
+    }
+
+    @Test
+    public void testArraySort() {
+        long[] values = {100L,200L,300L, -50L, -70L, -90L};
+
+        Integer[] ord = IndexesUtil.getOrderOfArrays(values, false);
+        Assert.assertTrue( values[ord[ord.length -1]] > values[ord[0]]);
+
+        ord = IndexesUtil.getOrderOfArrays(values, true);
+        Assert.assertTrue( values[ord[ord.length -1]] < values[ord[0]]);
+    }
+
+    @Test
+    public void testArrayIndexesSize() throws Exception {
+        ExecutorService service = Executors.newFixedThreadPool(16);
+        ArrayList tasks = new ArrayList();
+        final StringBuffer sb = new StringBuffer();
+        for(int i =0; i < 1000;i++) {
+            tasks.add(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    Random random = new Random();
+                    int i = random.nextInt(1048576 / 20);
+                    Integer[] emptyIndexes = IndexesUtil.getEmptyIndexes(i);
+                    Assert.assertEquals(emptyIndexes.length, i);
+                    int start = 0;
+                    for (int j = 0; j < emptyIndexes.length; j++) {
+                        Integer emptyIndex = emptyIndexes[j];
+                        Assert.assertEquals(emptyIndex.intValue(), start++);
+                    }
+                    sb.append(i + " OK\n");
+                    return null;
+                }
+            });
+        }
+        long nano = System.nanoTime();
+        service.invokeAll(tasks);
+        long nano2 = System.nanoTime();
+//        System.out.println(" Nanos - " + (nano2 - nano));
     }
 }

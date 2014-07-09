@@ -1,9 +1,6 @@
 package org.javaz.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Simple util, to quickly find array indices for interested elements in sorted arrays,
