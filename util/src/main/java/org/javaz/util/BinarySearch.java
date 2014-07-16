@@ -244,8 +244,6 @@ public class BinarySearch {
         long[] retValue = new long[maxSize];
         int position = 0;
 
-        // this first array must be single-element array.
-        final long[][] firstArrayArray = data[0];
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
@@ -268,8 +266,11 @@ public class BinarySearch {
         // there will be no sense in continuing.
         boolean allArrayHaveMoreElements = true;
         final int iterationIndex = guessArrayIndex;
+
+        // this first array must be single-element array.
+        final long[][] firstArrayArray = data[iterationIndex];
         //this is array, on which we'll iterate.
-        final long[] firstArray = firstArrayArray[iterationIndex];
+        final long[] firstArray = firstArrayArray[0];
 
         for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
                 && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
