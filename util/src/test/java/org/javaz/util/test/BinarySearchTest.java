@@ -231,7 +231,7 @@ public class BinarySearchTest {
     @Test
     public void testInclusivePerformance() {
         int howMany = 5000;
-        int range = 100000;
+        int range = 10000;
 
         int[][] ints = genData(howMany, range);
 
