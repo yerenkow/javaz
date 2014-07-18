@@ -1,11 +1,18 @@
 package org.javaz.util;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sun.misc.Unsafe;
 
 /**
  * Created by user on 08.07.14.
  */
 public class IndexesUtil {
+
+   private static Logger logger = LogManager.getLogger(IndexesUtil.class);
+
     /**
      *
      * @param ids - thee keys MUST be sorted and all of them exists in keys
@@ -14,13 +21,16 @@ public class IndexesUtil {
      * @return
      */
     public static long[] getValuesFromKeysByIds(long[] ids, long[] keys, long[] values) {
-        final long[] vals = new long[ids.length];
-        int pos = -1;
+        final int idsLength = ids.length;
+        final long[] vals = new long[idsLength];
+        final int keysLength = keys.length;
+        int pos = 0;
 
-        for (int i = 0; pos < keys.length && i < ids.length; i++) {
-            long id = ids[i];
-            while(pos < keys.length && id > keys[++pos]) {
+        for (int i = 0; pos < keysLength && i < idsLength; i++) {
+            final long id = ids[i];
+            while(pos < keysLength && id > keys[pos]) {
                 // iterate until we find it
+                pos++;
             }
             vals[i] = values[pos];
         }
@@ -36,10 +46,15 @@ public class IndexesUtil {
         return indexes;
     }
 
-    // that's means that our array should fit exactly in 4Mb of RAM. I hope :D
-    public static final int MAX_TEMPLATE_ARRAY_SIZE = 1048576 - 4;
+    //1048576 - 4
+    public static final String DEFAULT_MAX_TEMPLATE_ARRAY_SIZE = "1048572";
 
-    // that's means that our array should fit exactly in 64Kb of RAM. I hope :D
+    // that's means that our array should fit exactly in 4Mb of RAM. I hope :D
+    public static final int MAX_TEMPLATE_ARRAY_SIZE =
+            Integer.valueOf(System.getProperty("org.javaz.util.IndexesUtil.MAX_TEMPLATE_ARRAY_SIZE",
+                    DEFAULT_MAX_TEMPLATE_ARRAY_SIZE)).intValue();
+
+    // that's means that our array should fit exactly in 256Kb of RAM. I hope :D
     public static final int ORIGINAL_TEMPLATE_ARRAY_SIZE = 65536 - 4;
     /**
      * 64k of values, template array, must be a lot faster copy it, than fill new one.
@@ -65,6 +80,12 @@ public class IndexesUtil {
             for(int i = originalLength; i < integers.length; i++) {
                 integers[i] = i;
             }
+
+            if(length > MAX_TEMPLATE_ARRAY_SIZE) {
+                logger.info("Requested " + length/1024 + "k, while max is " + MAX_TEMPLATE_ARRAY_SIZE/1024
+                    + "k, consider increasing MAX_TEMPLATE_ARRAY_SIZE");
+            }
+
             // we grow until MAX
             if(originalLength < MAX_TEMPLATE_ARRAY_SIZE &&
                     //in case less than half MAX we prefer grow only at least doubling size
@@ -76,6 +97,7 @@ public class IndexesUtil {
 
                 // this is not very thread-safe, but it should work in this specific case -
                 // array only grow, and it's old one is sub-array of new one, so should be no harm for logic.
+                logger.info("Growing template index array from " + originalLength/1024 + "k to " + newSize/1024 + "k");
                 basicIndexArray = Arrays.copyOf(integers, newSize);
             }
         }

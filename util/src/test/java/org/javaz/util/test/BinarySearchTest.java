@@ -21,6 +21,11 @@ public class BinarySearchTest {
         int total = 5;
         ArrayList objs = new ArrayList();
         ArrayList objs2 = new ArrayList();
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for(int i =0 ; i < total; i++) {
             Object[] objects = genDataLong(8, 3, 100000, 1, 15000);
 //            Object[] objects = genDataInt(8, 4, 125000, 3, 5000);
@@ -43,7 +48,10 @@ public class BinarySearchTest {
         long nanoTime = System.nanoTime();
         for (Iterator iterator = objs.iterator(); iterator.hasNext(); ) {
             Object[] objects = (Object[]) iterator.next();
-            long[] result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
+            long[] result = new long[0];
+            for (int x = 0; x < 1000; x++) {
+                result = BinarySearch.complexMultiSearch((long[][][]) objects[0], (long[][]) objects[1]);
+            }
             totalFound += result.length;
         }
         long nanoTime2 = System.nanoTime();
@@ -306,6 +314,55 @@ public class BinarySearchTest {
         Assert.assertEquals(valuesFromKeysByIds[1], 200L);
         Assert.assertEquals(valuesFromKeysByIds[2], -70L);
         Assert.assertEquals(valuesFromKeysByIds[3], -90L);
+        for(int i = 1024; i < 8*1024*1024; i*=2) {
+            runSpecialTest(i);
+        }
+    }
+
+    public static long method1 = 0L;
+    public static long method2 = 0L;
+
+    private void runSpecialTest(int cnt) {
+        ArrayList<Long> longIds = new ArrayList<Long>();
+        ArrayList<Long> longKeys = new ArrayList<Long>();
+        ArrayList<Long> longValues = new ArrayList<Long>();
+        long lastLongKey = 0L;
+        long lastLongValue = 0L;
+        Random r = new Random();
+        for(int i = 0; i < cnt; i++) {
+            lastLongKey += 1L + r.nextInt(100);
+            lastLongValue += 1L + r.nextInt(100);
+            longKeys.add(lastLongKey);
+            longValues.add(lastLongValue);
+            if(r.nextDouble() > 0.9) {
+                longIds.add(lastLongKey);
+            }
+        }
+
+
+        long[] keys2 = new long[longKeys.size()];
+        long[] values2 = new long[longValues.size()];
+        long[] ids2 = new long[longIds.size()];
+
+        for (int i = 0; i < keys2.length; i++) {
+            keys2[i] = longKeys.get(i);
+            values2[i] = longValues.get(i);
+        }
+        for (int i = 0; i < ids2.length; i++) {
+            ids2[i] = longIds.get(i);
+        }
+
+        method1 -= System.nanoTime();
+        long[] newValues = IndexesUtil.getValuesFromKeysByIds(ids2, keys2, values2);
+        method1 += System.nanoTime();
+
+        for (int i = 0; i < newValues.length; i++) {
+            long valuesFromKeysById = newValues[i];
+            int index = Arrays.binarySearch(values2, valuesFromKeysById);
+            long id = ids2[i];
+            int index2 = Arrays.binarySearch(keys2, id);
+            Assert.assertEquals(index, index2);
+        }
     }
 
     @Test

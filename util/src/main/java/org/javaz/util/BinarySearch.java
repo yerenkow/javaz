@@ -151,13 +151,7 @@ public class BinarySearch {
         return complexMultiSearch(data, negative, DEFAULT_MAX_SIZE);
     }
 
-    public static int[] complexMultiSearch(final int[][][] data, final int[][] negative, int maxSize) {
-        // this is the list we'll return
-        int[] retValue = new int[maxSize];
-        int position = 0;
-
-        // this first array must be single-element array.
-        final int[][] firstArrayArray = data[0];
+    public static int[] complexMultiSearch(final int[][][] data, final int[][] negative, final int maxSize) {
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
@@ -171,6 +165,7 @@ public class BinarySearch {
             //let's find least filled array in single top-array
             if(data[i].length == 1 && minRecords > data[i][0].length) {
                 guessArrayIndex = i;
+                minRecords = data[i][0].length;
             }
             arraysNotCompleted[i] = data[i].length;
         }
@@ -181,8 +176,17 @@ public class BinarySearch {
         boolean allArrayHaveMoreElements = true;
 
         final int iterationIndex = guessArrayIndex;
+
+        // this first array must be single-element array.
+        final int[][] firstArrayArray = data[iterationIndex];
         //this is array, on which we'll iterate.
-        final int[] firstArray = firstArrayArray[iterationIndex];
+        final int[] firstArray = firstArrayArray[0];
+
+        final int exactMaxSize = firstArray.length > maxSize ? maxSize : firstArray.length;
+        final int[] retValue = new int[exactMaxSize];
+
+        // this is the list we'll return
+        int position = 0;
 
         for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
                 && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
@@ -238,12 +242,7 @@ public class BinarySearch {
         return complexMultiSearch(data, negative, DEFAULT_MAX_SIZE);
     }
 
-    public static long[] complexMultiSearch(final long[][][] data, final long[][] negative, int maxSize) {
-
-        // this is the list we'll return
-        long[] retValue = new long[maxSize];
-        int position = 0;
-
+    public static long[] complexMultiSearch(final long[][][] data, final long[][] negative, final int maxSize) {
 
         //this is indices for each array-array.
         final int[][] indices = new int[data.length][];
@@ -257,6 +256,7 @@ public class BinarySearch {
             //let's find least filled array in single top-array
             if(data[i].length == 1 && minRecords > data[i][0].length) {
                 guessArrayIndex = i;
+                minRecords = data[i][0].length;
             }
             arraysNotCompleted[i] = data[i].length;
         }
@@ -271,6 +271,12 @@ public class BinarySearch {
         final long[][] firstArrayArray = data[iterationIndex];
         //this is array, on which we'll iterate.
         final long[] firstArray = firstArrayArray[0];
+
+        final int exactMaxSize = firstArray.length > maxSize ? maxSize : firstArray.length;
+        final long[] retValue = new long[exactMaxSize];
+
+        // this is the list we'll return
+        int position = 0;
 
         for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
                 && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
