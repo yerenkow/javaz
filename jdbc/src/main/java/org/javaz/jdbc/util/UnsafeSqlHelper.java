@@ -1,5 +1,8 @@
 package org.javaz.jdbc.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 import java.util.*;
 
@@ -8,6 +11,8 @@ import java.util.*;
  */
 public class UnsafeSqlHelper implements JdbcConstants
 {
+    private static Logger logger = LogManager.getLogger(UnsafeSqlHelper.class);
+
     public static ArrayList runSqlUnsafe(ConnectionProviderI provider, String jdbcAddress, String query, int code, Map parameters)
     {
         Connection c = null;
@@ -18,8 +23,7 @@ public class UnsafeSqlHelper implements JdbcConstants
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            System.err.println("Problem with query: {" + query + "} code " + code + " and params: " + parameters);
+            logger.error("Problem with query: {" + query + "} code " + code + " and params: " + parameters, e);
         }
         finally
         {
@@ -31,7 +35,7 @@ public class UnsafeSqlHelper implements JdbcConstants
                 }
                 catch (SQLException e)
                 {
-                    e.printStackTrace();
+                    logger.error(e);
                 }
             }
         }
@@ -202,8 +206,7 @@ public class UnsafeSqlHelper implements JdbcConstants
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            System.err.println("Problem with query: {" + query + "} code " + code + " and params: " + parameters);
+            logger.error("Problem with query: {" + query + "} code " + code + " and params: " + parameters, e);
         }
         return listToReturn;
     }
@@ -238,13 +241,12 @@ public class UnsafeSqlHelper implements JdbcConstants
             catch (Exception e)
             {
                 //we are allowing partial update;
-                e.printStackTrace();
+                logger.error(e);
             }
         }
         catch (SQLException e)
         {
-            e.printStackTrace();
-            System.err.println("Problem with connection to " + jdbcAddress);
+            logger.error("Problem with connection to " + jdbcAddress, e);
         }
         finally
         {
@@ -256,7 +258,7 @@ public class UnsafeSqlHelper implements JdbcConstants
                 }
                 catch (SQLException e)
                 {
-                    e.printStackTrace();
+                    logger.error(e);
                 }
             }
         }

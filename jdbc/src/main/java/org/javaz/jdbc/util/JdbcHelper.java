@@ -1,5 +1,7 @@
 package org.javaz.jdbc.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javaz.cache.CacheI;
 import org.javaz.cache.CacheImpl;
 
@@ -10,6 +12,7 @@ import java.util.*;
  */
 public class JdbcHelper extends AbstractJdbcHelper
 {
+    private static Logger logger = LogManager.getLogger(JdbcHelper.class);
 
     private final CacheI jdbcCacheLists = new CacheImpl();
 
@@ -40,7 +43,7 @@ public class JdbcHelper extends AbstractJdbcHelper
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return 0;
@@ -54,7 +57,7 @@ public class JdbcHelper extends AbstractJdbcHelper
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 
@@ -97,7 +100,7 @@ public class JdbcHelper extends AbstractJdbcHelper
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
         return (List) o;

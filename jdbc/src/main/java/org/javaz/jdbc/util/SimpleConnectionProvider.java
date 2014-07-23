@@ -1,5 +1,8 @@
 package org.javaz.jdbc.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -13,6 +16,8 @@ import java.sql.SQLException;
  */
 public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConstants
 {
+    private static Logger logger = LogManager.getLogger(SimpleConnectionProvider.class);
+
     public Connection getConnection(String dsAddress) throws SQLException
     {
         if (dsAddress.startsWith(JDBC_MARKER))
@@ -30,7 +35,7 @@ public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConsta
                 }
                 catch (NamingException e)
                 {
-                    e.printStackTrace();
+                    logger.error(e);
                     return null;
                 }
                 DataSource ds = null;
@@ -40,7 +45,7 @@ public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConsta
                 }
                 catch (NamingException e)
                 {
-                    e.printStackTrace();
+                    logger.error(e);
                     return null;
                 }
                 return ds.getConnection();
