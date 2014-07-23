@@ -1,13 +1,12 @@
 package org.javaz.util;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.misc.Unsafe;
 
 /**
  * Created by user on 08.07.14.
+ * Utils to sort arrays by other arrays order
  */
 public class IndexesUtil {
 
@@ -18,7 +17,7 @@ public class IndexesUtil {
      * @param ids - thee keys MUST be sorted and all of them exists in keys
      * @param keys - sorted array of keys
      * @param values - values.
-     * @return
+     * @return array of requested values
      */
     public static long[] getValuesFromKeysByIds(long[] ids, long[] keys, long[] values) {
         final int idsLength = ids.length;
@@ -52,7 +51,7 @@ public class IndexesUtil {
     // that's means that our array should fit exactly in 4Mb of RAM. I hope :D
     public static final int MAX_TEMPLATE_ARRAY_SIZE =
             Integer.valueOf(System.getProperty("org.javaz.util.IndexesUtil.MAX_TEMPLATE_ARRAY_SIZE",
-                    DEFAULT_MAX_TEMPLATE_ARRAY_SIZE)).intValue();
+                    DEFAULT_MAX_TEMPLATE_ARRAY_SIZE));
 
     // that's means that our array should fit exactly in 256Kb of RAM. I hope :D
     public static final int ORIGINAL_TEMPLATE_ARRAY_SIZE = 65536 - 4;

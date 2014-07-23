@@ -22,7 +22,7 @@ public class JsonUtil
     public static String convertToJS(Object object, boolean newLine, boolean sort)
     {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (object instanceof Map)
         {
