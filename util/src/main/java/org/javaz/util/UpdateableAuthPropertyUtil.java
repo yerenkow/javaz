@@ -9,7 +9,7 @@ import java.util.Properties;
  * User.Password=*.*
  * User2.Password2=Service.*,Service2.method
  * User3.Password3=Service3.method2
- * <p/>
+ * <p>
  * Using UpdateableFilePropertyUtil beneath
  */
 public class UpdateableAuthPropertyUtil
