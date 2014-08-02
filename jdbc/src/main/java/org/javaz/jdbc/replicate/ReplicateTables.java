@@ -9,19 +9,19 @@ import java.util.*;
 /**
  * This class make data replication from tables from one DB to other tables in other DB.
  * As parameters, should be specified JSON with such structure:
- * <p/>
+ * <p>
  * // from - DS address of 1 server
  * // to - DS address of 2 server
  * // type2 - type of DB2, if mysql then column names will be `escaped`
- * <p/>
+ * <p>
  * // tables: array of:
  * name  - table name in DB1
  * name2 - table name in DB2, optional if name = name2
  * where1 - additional SQL condition ... for table 1, for select, must starts with " AND ..."
- * where2 - additional SQL condition ... for table 2, for delete & select, must starts with " AND ..."
- * <p/>
+ * where2 - additional SQL condition ... for table 2, for delete &amp; select, must starts with " AND ..."
+ * <p>
  * {"from":"java:/DBAddress1", "to":"java:/OtherJDBC_DS", "type2":"mysql", "":[{"name":"table_in_db_1", "name2":"table_in_other_db_other_name"}, ...] }
- * <p/>
+ * <p>
  * It's POC, but it's fully usable on less than hundreds of thousands rows.
  */
 public class ReplicateTables

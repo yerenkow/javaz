@@ -11,28 +11,29 @@ public interface JdbcHelperI extends JdbcConstants
 {
     /**
      * Getter + setter jdbcAddress
+     * @param address to be set
      */
-    public void setJdbcAddress(String c);
+    public void setJdbcAddress(String address);
 
     public String getJdbcAddress();
 
     /**
-     * How long lists will be in cache before expiration
+     * @return How long lists will be in cache before expiration
      */
     public long getListRecordsTtl();
 
     public void setListRecordsTtl(long listRecordsTtl);
 
     /**
-     * Helper, which can make out Connection from jdbcAddress
+     * @return Helper, which can make out Connection from jdbcAddress
      */
     public ConnectionProviderI getProvider();
 
     public void setProvider(ConnectionProviderI provider);
 
     /**
-     * @param query
-     * @param parameters
+     * @param query to execute
+     * @param parameters with
      * @return List of Maps, corresponding to this request.
      */
     public List getRecordList(String query, Map parameters);
@@ -42,9 +43,9 @@ public interface JdbcHelperI extends JdbcConstants
     /**
      * Update something in DB
      *
-     * @param query
-     * @param parameters
-     * @return
+     * @param query to execute
+     * @param parameters with
+     * @return count or id
      */
     public long runUpdate(String query, Map parameters);
 
@@ -52,9 +53,8 @@ public interface JdbcHelperI extends JdbcConstants
      * Update something in DB, but not expecting nothing back.
      * RETURNING not appended if DB supports this.
      *
-     * @param query
-     * @param parameters
-     * @return
+     * @param query to execute
+     * @param parameters with
      */
     public void runUpdateDataIgnore(String query, Map parameters);
 
@@ -62,8 +62,8 @@ public interface JdbcHelperI extends JdbcConstants
     /**
      * Run a lots of updates in single Connection
      *
-     * @param objects
-     * @return
+     * @param objects tuples for updates
+     * @return list with counts or ids
      */
     public ArrayList<List> runMassUpdate(ArrayList<Object[]> objects);
 }
