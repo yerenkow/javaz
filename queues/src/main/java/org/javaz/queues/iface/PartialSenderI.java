@@ -28,7 +28,7 @@ public interface PartialSenderI extends Runnable
     /**
      * @param o - to be added
      * @return if object allowed to be added
-     *         <p/>
+     *         <p>
      *         Used to prevent data doubling, for example
      */
     public boolean canBeAdded(Object o);
