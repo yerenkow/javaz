@@ -12,6 +12,7 @@
 package ${package}.iface;
 
 import ${excpackage}.*;
+import org.javaz.jdbc.base.*;
 import java.util.*;
 import java.io.Serializable;
 
@@ -23,22 +24,15 @@ import java.io.Serializable;
 <#assign beanName=beanName?substring(0, bean.name?index_of(":")) >
 </#if>
 
-public interface ${beanName}I extends Serializable, Cloneable ${impl}
+public interface ${beanName}I extends MapConvertibleI ${impl}
 {
 <#list attributes as attribute>
     public ${attribute.type} get${attribute.name?cap_first}();
     public void set${attribute.name?cap_first}(${attribute.type} ${attribute.name});
 
 </#list>
-    public ${beanName}I fromMap(Map h);
 
     public Map toStringMap();
-
-    <#if dbQuery == "true">
-    public Object[] getDbUpdateQuery();
-
-    public Object[] getDbUpdateQuery(String table_name);
-    </#if>
 
 <#list bean.methods as method>
     public ${method.type} ${method.name};

@@ -7,4 +7,13 @@
 <#if bean.methods?size != 0 >
     <#assign abs = "Abstract">
 </#if>
+<#assign pk = "">
+<#list bean.attributes as attribute>
+    <#if attribute.primary_key == "true" >
+        <#assign pk = "true">
+    </#if>
+</#list>
+<#if pk != "true" >
+    <#assign abs = "Abstract">
+</#if>
 ${abs}${beanName}.java
