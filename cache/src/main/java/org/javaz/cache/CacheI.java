@@ -24,7 +24,7 @@ public interface CacheI
     /**
      * Clear all expired values, only if needed (this provided by storing time of nearest object expiration)
      * After removal objects calls findNextExpireTime(), to set next time to clearExpired.
-     * <p/>
+     * <p>
      * This method should be called in almost all methods (containsKey, containsValue, get, isEmpty)
      */
     public void clearExpired();
