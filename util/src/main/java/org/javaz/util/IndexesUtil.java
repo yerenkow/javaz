@@ -14,7 +14,7 @@ public class IndexesUtil {
 
     /**
      *
-     * @param ids - thee keys MUST be sorted and all of them exists in keys
+     * @param ids - the ids MUST be sorted and all of them exists in keys
      * @param keys - sorted array of keys
      * @param values - values.
      * @return array of requested values
@@ -37,10 +37,68 @@ public class IndexesUtil {
         return vals;
     }
 
+    public static final long[][] EMPTY_TWO_D_ARRAY = new long[2][];
+
+    static {
+        EMPTY_TWO_D_ARRAY[0] = new long[0];
+        EMPTY_TWO_D_ARRAY[1] = new long[0];
+    }
+
+
+    /**
+     *
+     * @param ids - the keys MUST be sorted. Existence of them in keys is not guaranteed
+     * @param keys - sorted array of keys
+     * @param values - values.
+     * @param valuesByIds - whether values are corresponding ids[] or keys[]
+     * @return array of requested values
+     */
+    public static long[][] getIdsAndValuesFromKeysByIds(long[] ids, long[] keys, long[] values, boolean valuesByIds) {
+        final long[][] vals = new long[2][];
+
+        final int idsLength = ids.length;
+        vals[0] = new long[idsLength];
+        vals[1] = new long[idsLength];
+        final int keysLength = keys.length;
+        int pos = 0;
+        int outPos = 0;
+
+        for (int i = 0; pos < keysLength && i < idsLength; i++) {
+            final long id = ids[i];
+            while(pos < keysLength && id > keys[pos]) {
+                // iterate until we find it
+                pos++;
+            }
+            if(pos < keys.length && id == keys[pos]) {
+                vals[0][outPos] = id;
+                vals[1][outPos] = valuesByIds ? values[i] : values[pos];
+                outPos++;
+            }
+        }
+
+        if(outPos == 0 ) {
+            return EMPTY_TWO_D_ARRAY;
+        }
+
+        if(vals[0].length > outPos) {
+            vals[0] = Arrays.copyOfRange(vals[0], 0, outPos);
+            vals[1] = Arrays.copyOfRange(vals[1], 0, outPos);
+        }
+
+        return vals;
+    }
+
 
     public static Integer[] getOrderOfArrays(long[] values, boolean ascValues) {
         Integer[] indexes = getEmptyIndexes(values.length);
         Arrays.sort(indexes, new IntegerSortByOtherArray(values, ascValues));
+
+        return indexes;
+    }
+
+    public static Integer[] getOrderOfArrays(long[] values1, long[] values2, boolean ascValues) {
+        Integer[] indexes = getEmptyIndexes(values1.length);
+        Arrays.sort(indexes, new IntegerSortByTwoArrays(values1, values2, ascValues));
 
         return indexes;
     }

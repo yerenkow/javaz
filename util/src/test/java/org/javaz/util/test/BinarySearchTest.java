@@ -404,4 +404,41 @@ public class BinarySearchTest {
         long nano2 = System.nanoTime();
 //        System.out.println(" Nanos - " + (nano2 - nano));
     }
+
+    @Test
+    public void testArrayValuesSearch() {
+
+        long[] keys = {1L, 2L, 3L, 4L, 5L, 6L};
+        long[] values = {100L,200L,300L, -50L, -70L, -90L};
+        long[] ids = {1L, 2L, 5L, 6L};
+        long[][] idsAndValuesFromKeysByIds = IndexesUtil.getIdsAndValuesFromKeysByIds(ids, keys, values, false);
+        long[] valuesFromKeysByIds = idsAndValuesFromKeysByIds[1];
+
+        Assert.assertEquals(valuesFromKeysByIds.length, 4);
+        Assert.assertEquals(valuesFromKeysByIds[0], 100L);
+        Assert.assertEquals(valuesFromKeysByIds[1], 200L);
+        Assert.assertEquals(valuesFromKeysByIds[2], -70L);
+        Assert.assertEquals(valuesFromKeysByIds[3], -90L);
+
+
+        keys = new long[]{1L, 2L, 3L, 4L, 5L, 6L};
+        ids = new long[]{1L, 2L, 100L, 200L};
+        values = new long[]{100L,200L,300L, -50L};
+        idsAndValuesFromKeysByIds = IndexesUtil.getIdsAndValuesFromKeysByIds(ids, keys, values, true);
+        valuesFromKeysByIds = idsAndValuesFromKeysByIds[1];
+
+        Assert.assertEquals(valuesFromKeysByIds.length, 2);
+        Assert.assertEquals(valuesFromKeysByIds[0], 100L);
+        Assert.assertEquals(valuesFromKeysByIds[1], 200L);
+
+
+        keys = new long[]{1L, 2L, 3L, 4L, 5L, 6L};
+        ids = new long[]{44L, };
+        values = new long[]{55L};
+        idsAndValuesFromKeysByIds = IndexesUtil.getIdsAndValuesFromKeysByIds(ids, keys, values, true);
+        valuesFromKeysByIds = idsAndValuesFromKeysByIds[1];
+
+        Assert.assertEquals(valuesFromKeysByIds.length, 0);
+
+    }
 }
