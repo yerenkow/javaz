@@ -18,7 +18,7 @@ public class IntegerSortByOtherArray implements Comparator<Integer> {
 
     @Override
     public int compare(Integer o1, Integer o2) {
-        long compare = asc ? values[o1] - values[o2] : values[o2] - values[o1];
+        long compare = asc ? values[o2] - values[o1] : values[o1] - values[o2];
 
         if(compare > 0) {
             return -1;

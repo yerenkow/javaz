@@ -370,10 +370,10 @@ public class BinarySearchTest {
         long[] values = {100L,200L,300L, -50L, -70L, -90L};
 
         Integer[] ord = IndexesUtil.getOrderOfArrays(values, false);
-        Assert.assertTrue( values[ord[ord.length -1]] > values[ord[0]]);
+        Assert.assertTrue( values[ord[ord.length -1]] < values[ord[0]]);
 
         ord = IndexesUtil.getOrderOfArrays(values, true);
-        Assert.assertTrue( values[ord[ord.length -1]] < values[ord[0]]);
+        Assert.assertTrue( values[ord[ord.length -1]] > values[ord[0]]);
     }
 
     @Test
