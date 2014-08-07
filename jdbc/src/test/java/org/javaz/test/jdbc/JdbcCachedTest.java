@@ -70,6 +70,24 @@ public class JdbcCachedTest
     }
 
     @Test
+    public void testDumper() throws Exception
+    {
+        test.runUpdate("drop table test", null);
+
+        test.runUpdate("create table test (id integer, name varchar(250))", null);
+        test.runUpdate("insert into test values (1,'a'),(2,'b'),(3,'c')", null);
+
+        String tableInserts = TableDumper.getTableInserts("test", "id", test, TableDumper.DB_SQL);
+        String[] split = tableInserts.split("\n");
+        Assert.assertEquals(split[1], "('1', 'a'),");
+
+        tableInserts = TableDumper.getTableInserts("test", "name", test, TableDumper.DB_SQL);
+        split = tableInserts.split("\n");
+        Assert.assertEquals(split[1], "('1', 'a'),");
+
+    }
+
+    @Test
     public void testReplicateBlob() throws Exception
     {
         test.runUpdate("drop table blobtest", null);
