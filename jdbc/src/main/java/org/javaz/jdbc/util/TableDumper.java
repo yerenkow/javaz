@@ -15,18 +15,18 @@ public class TableDumper {
     public static final int DB_POSTGRESQL = 1;
     public static final int DB_MYSQL = 2;
 
-    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db) throws Exception
+    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db)
     {
         return getTableInserts(tableName, null, orderColumn, false, db, DB_POSTGRESQL);
     }
 
-    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db, int dbType) throws Exception
+    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db, int dbType)
     {
         return getTableInserts(tableName, null, orderColumn, false, db, dbType);
     }
 
     public static String getTableInserts(String tableName, String condition, String orderColumn, boolean skipId,
-                                         JdbcHelperI db, int dbType) throws Exception
+                                         JdbcHelperI db, int dbType)
     {
         StringBuilder answer = new StringBuilder();
         String query = "select * from " + tableName
