@@ -244,68 +244,72 @@ public class BinarySearch {
 
     public static long[] complexMultiSearch(final long[][][] data, final long[][] negative, final int maxSize) {
 
-        //this is indices for each array-array.
-        final int[][] indices = new int[data.length][];
+        final int dataLength = data.length;
+        final int negativeLength = negative.length;
 
-        int guessArrayIndex = 0;
+        //this is indices for each array-array.
+        final int[][] indices = new int[dataLength][];
+
+        int iterationIndex = 0;
         int minRecords = Integer.MAX_VALUE;
 
-        final int[] arraysNotCompleted = new int[data.length];
-        for (int i = 0; i < data.length; i++) {
+        final int[] arraysNotCompleted = new int[dataLength];
+        for (int i = 0; i < dataLength; i++) {
             indices[i] = new int[data[i].length];
             //let's find least filled array in single top-array
             if(data[i].length == 1 && minRecords > data[i][0].length) {
-                guessArrayIndex = i;
+                iterationIndex = i;
                 minRecords = data[i][0].length;
             }
             arraysNotCompleted[i] = data[i].length;
         }
-        final int[] negIndices = new int[negative.length];
+        final int[] negIndices = new int[negativeLength];
 
         // this should set to false when any sub-array will be depleted, so
         // there will be no sense in continuing.
         boolean allArrayHaveMoreElements = true;
-        final int iterationIndex = guessArrayIndex;
 
         // this first array must be single-element array.
-        final long[][] firstArrayArray = data[iterationIndex];
+        final long[][] firstArrayOfArray = data[iterationIndex];
         //this is array, on which we'll iterate.
-        final long[] firstArray = firstArrayArray[0];
+        final long[] iterationArray = firstArrayOfArray[0];
 
-        final int exactMaxSize = firstArray.length > maxSize ? maxSize : firstArray.length;
-        final long[] retValue = new long[exactMaxSize];
+        final int iterationArrayLength = iterationArray.length;
+        final int exactMaxSize = iterationArrayLength > maxSize ? maxSize : iterationArrayLength;
 
         // this is the list we'll return
+        final long[] retValue = new long[exactMaxSize];
+        // next position in retValue for found id
         int position = 0;
 
-        for (indices[iterationIndex][0] = 0; allArrayHaveMoreElements
-                && indices[iterationIndex][0] < firstArray.length; indices[iterationIndex][0]++) {
+        boolean anyFailed = false;
+        for (int mainIndex = 0; mainIndex < iterationArrayLength; mainIndex++) {
             // main loop based on first array.
             // what we do is step by step checking other arrays (or sets of arrays)
             // for same value present there.
-            boolean anyFailed = false;
-            final long val = firstArray[indices[iterationIndex][0]];
+            final long val = iterationArray[mainIndex];
+            anyFailed = false;
 
             //simple checks for negative
-            for (int i = 0; !anyFailed && i < negative.length; i++) {
+            for (int i = 0; !anyFailed && i < negativeLength; i++) {
                 while(negIndices[i] < negative[i].length && negative[i][negIndices[i]] <= val) {
                     anyFailed = val == negative[i][negIndices[i]++];
                 }
             }
 
             // note, that we starting from 0, but we skip index by which we are iterating.
-            for (int i = 0; !anyFailed && i < data.length; i++) {
-                if(i == iterationIndex) {
+            for (int i = 0; !anyFailed && i < dataLength; i++) {
+                if (i == iterationIndex) {
                     continue;
                 }
                 // scanned variant array
                 final long[][] sva = data[i];
                 boolean anyFound = false;
                 for (int j = 0; !anyFound && j < sva.length; j++) {
-                    while(indices[i][j] < sva[j].length && sva[j][indices[i][j]] <= val) {
+                    while (indices[i][j] < sva[j].length && sva[j][indices[i][j]] <= val) {
                         anyFound = val == sva[j][indices[i][j]++];
                         //this means we fully iterated through this array
-                        if(indices[i][j] == sva[j].length) {
+                        if (indices[i][j] == sva[j].length) {
                             // this set to true, if and only if ALL of arrays in level `i` is completed
                             // this means that there's no point in iterating, since there will be no values at all.
                             allArrayHaveMoreElements = --arraysNotCompleted[i] > 0;
@@ -320,9 +324,13 @@ public class BinarySearch {
 
             if(!anyFailed) {
                 retValue[position++] = val;
-                if(position >= maxSize) {
+                if(position == exactMaxSize) {
                     return retValue;
                 }
+            }
+
+            if (!allArrayHaveMoreElements) {
+                return Arrays.copyOf(retValue, position);
             }
         }
         return Arrays.copyOf(retValue, position);
