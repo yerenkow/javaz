@@ -12,6 +12,8 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI
     protected String jdbcAddress = null;
     protected long listRecordsTtl = DEFAULT_TTL_LISTS;
     protected ConnectionProviderI provider = new SimpleConnectionProvider();
+    protected Boolean defaultUseCache =
+        System.getProperty("org.javaz.jdbc.util.AbstractJdbcHelper.defaultUseCache", "FALSE").equalsIgnoreCase("TRUE");
 
     public void setJdbcAddress(String jdbcAddress)
     {
@@ -45,7 +47,7 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI
 
     public List getRecordList(String query, Map parameters)
     {
-        return getRecordList(query, parameters, true);
+        return getRecordList(query, parameters, defaultUseCache);
     }
 
     public abstract List getRecordList(String query, Map parameters, boolean useCache);

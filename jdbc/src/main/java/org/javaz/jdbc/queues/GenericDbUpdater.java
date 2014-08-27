@@ -173,7 +173,7 @@ public class GenericDbUpdater extends SimplePartialSender
                     if (!tmpList.isEmpty())
                     {
                         service.execute(new GenericDbUpdaterThread(db, queryUpdate, tmpList,
-                                factory == null ? ConnectionProviderFactory.instance.createProvider(db)
+                                factory == null ? JdbcCachedHelper.defaultFactory.createProvider(db)
                                         : factory.createProvider(db)));
                         noDataToUpdate = true;
                     }

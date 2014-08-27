@@ -14,26 +14,29 @@ public class JdbcCachedHelper
      */
     private static final HashMap<String, JdbcHelperI> jdbcHelperInstances = new HashMap<String, JdbcHelperI>();
 
+    public static final ConnectionProviderFactory defaultFactory = new ConnectionProviderFactory();
+
     public static JdbcHelperI getInstance(String address)
     {
-        return getInstance(address, ConnectionProviderFactory.instance);
+        return getInstance(address, defaultFactory);
     }
 
     public static JdbcHelperI getInstance(String address, ConnectionProviderFactory factory)
     {
-        if (!jdbcHelperInstances.containsKey(address))
+        final String key = factory + "_" + address;
+        if (!jdbcHelperInstances.containsKey(key))
         {
             synchronized (jdbcHelperInstances)
             {
-                if (!jdbcHelperInstances.containsKey(address))
+                if (!jdbcHelperInstances.containsKey(key))
                 {
                     JdbcHelper jdbcHelper = new JdbcHelper();
                     jdbcHelper.setJdbcAddress(address);
                     jdbcHelper.setProvider(factory.createProvider(address));
-                    jdbcHelperInstances.put(address, jdbcHelper);
+                    jdbcHelperInstances.put(key, jdbcHelper);
                 }
             }
         }
-        return jdbcHelperInstances.get(address);
+        return jdbcHelperInstances.get(key);
     }
 }

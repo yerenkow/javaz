@@ -22,34 +22,40 @@ public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConsta
     {
         if (dsAddress.startsWith(JDBC_MARKER))
         {
-            return DriverManager.getConnection(dsAddress);
+            return getPlainConnection(dsAddress);
         }
-        else
+
+        return getJndiConnection(dsAddress);
+    }
+
+    protected Connection getPlainConnection(String dsAddress) throws SQLException {
+        return DriverManager.getConnection(dsAddress);
+    }
+
+    protected Connection getJndiConnection(String dsAddress) throws SQLException {
+        if (dsAddress.startsWith(JAVA_MARKER))
         {
-            if (dsAddress.startsWith(JAVA_MARKER))
+            InitialContext context = null;
+            try
             {
-                InitialContext context = null;
-                try
-                {
-                    context = new InitialContext();
-                }
-                catch (NamingException e)
-                {
-                    logger.error(e);
-                    return null;
-                }
-                DataSource ds = null;
-                try
-                {
-                    ds = (DataSource) context.lookup(dsAddress);
-                }
-                catch (NamingException e)
-                {
-                    logger.error(e);
-                    return null;
-                }
-                return ds.getConnection();
+                context = new InitialContext();
             }
+            catch (NamingException e)
+            {
+                logger.error(e);
+                return null;
+            }
+            DataSource ds = null;
+            try
+            {
+                ds = (DataSource) context.lookup(dsAddress);
+            }
+            catch (NamingException e)
+            {
+                logger.error(e);
+                return null;
+            }
+            return ds.getConnection();
         }
         return null;
     }

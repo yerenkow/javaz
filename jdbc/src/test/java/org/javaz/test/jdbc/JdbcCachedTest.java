@@ -141,7 +141,7 @@ public class JdbcCachedTest
         UnsafeSqlHelper.addArrayParameters(params, id3);
 
         List list =
-                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params);
+                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params, true);
         Assert.assertEquals(list.size(), 3);
 
         ArrayList updates = new ArrayList();
@@ -160,7 +160,7 @@ public class JdbcCachedTest
         Assert.assertEquals(list.size(), 0);
 
         List list2 =
-                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params);
+                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params, true);
         Assert.assertEquals(list2.size(), 3);
     }
 

@@ -7,11 +7,47 @@ package org.javaz.jdbc.util;
  */
 public class ConnectionProviderFactory
 {
-    public static ConnectionProviderFactory instance = new ConnectionProviderFactory();
+    public static final String PROVIDER_BONECP = "BoneCpConnectionProvider";
+    public static final String PROVIDER_SIMPLE = "SimpleConnectionProvider";
+
+    private String connectionProviderClass = PROVIDER_BONECP;
+
+    public ConnectionProviderFactory() {
+    }
+
+    public ConnectionProviderFactory(String connectionProviderClass) {
+        this.connectionProviderClass = connectionProviderClass;
+    }
+
+    public String getConnectionProviderClass() {
+        return connectionProviderClass;
+    }
+
+    public void setConnectionProviderClass(String connectionProviderClass) {
+        this.connectionProviderClass = connectionProviderClass;
+    }
 
     public ConnectionProviderI createProvider(String dbAddress)
     {
-        return new SimpleConnectionProvider();
+        if (connectionProviderClass.equals(PROVIDER_SIMPLE)) {
+            return new SimpleConnectionProvider();
+        }
+
+        if (connectionProviderClass.equals(PROVIDER_BONECP)) {
+            return new BoneCpConnectionProvider();
+        }
+
+        try {
+            return (ConnectionProviderI) (Class.forName(connectionProviderClass).newInstance());
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
