@@ -39,6 +39,9 @@ public class BoneCpConnectionProvider extends SimpleConnectionProvider
     public int defaultMinConnectionsPerPartition = Integer.parseInt(
             System.getProperty("org.javaz.jdbc.util.BoneCpConnectionProvider.defaultMinConnectionsPerPartition", "1"));
 
+    public boolean disableConnectionTracking = Boolean.parseBoolean(
+            System.getProperty("org.javaz.jdbc.util.BoneCpConnectionProvider.disableConnectionTracking", "TRUE"));
+
     public int getDefaultAcquireIncrement() {
         return defaultAcquireIncrement;
     }
@@ -82,6 +85,7 @@ public class BoneCpConnectionProvider extends SimpleConnectionProvider
                 config.setMinConnectionsPerPartition(defaultMinConnectionsPerPartition);
                 config.setMaxConnectionsPerPartition(defaultMaxConnectionsPerPartition);
                 config.setAcquireIncrement(defaultAcquireIncrement);
+                config.setDisableConnectionTracking(disableConnectionTracking);
                 BoneCP connectionPool = new BoneCP(config);
                 pools.put(dsAddress, connectionPool);
             }
