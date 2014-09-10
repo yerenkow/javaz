@@ -37,6 +37,30 @@ public class IndexesUtil {
         return vals;
     }
 
+    /**
+     *
+     * @param ids - the ids MUST be sorted and all of them exists in keys
+     * @param keys - sorted array of keys
+     * @param values - values.
+     * @param overrideValues - values from which we need to get overridden value.
+     * @param valuesByIds - if overrideValues.length = ids.length, or overrideValues.length = keys.length
+     *
+     */
+    public static void setValuesByKeysByIds(long[] ids, long[] keys, long[] values, long[] overrideValues, boolean valuesByIds) {
+        final int idsLength = ids.length;
+        final int keysLength = keys.length;
+        int pos = 0;
+
+        for (int i = 0; pos < keysLength && i < idsLength; i++) {
+            final long id = ids[i];
+            while(pos < keysLength && id > keys[pos]) {
+                // iterate until we find it
+                pos++;
+            }
+            values[i] = valuesByIds ? overrideValues[i] : overrideValues[pos];
+        }
+    }
+
     public static final long[][] EMPTY_TWO_D_ARRAY = new long[2][];
 
     static {
