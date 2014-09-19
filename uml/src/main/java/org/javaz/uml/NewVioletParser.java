@@ -3,7 +3,8 @@ package org.javaz.uml;
 import org.javaz.util.JsonUtil;
 import org.javaz.xml.XpathSaxHandler;
 
-import javax.xml.parsers.*;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.nio.charset.Charset;

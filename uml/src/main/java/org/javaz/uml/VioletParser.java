@@ -7,7 +7,6 @@ import org.javaz.util.MapValueProducer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -46,6 +45,7 @@ public class VioletParser
         }
         File file = new File(DATATYPE_FILENAME);
         if(file.exists()) {
+            System.out.println("Found " + DATATYPE_FILENAME +", using...");
             try {
                 Properties properties = new Properties();
                 properties.load(new FileReader(file));

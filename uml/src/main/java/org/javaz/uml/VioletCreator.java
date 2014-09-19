@@ -1,8 +1,16 @@
 package org.javaz.uml;
 
 import org.reflections.Reflections;
+import sun.reflect.generics.parser.SignatureParser;
+import sun.reflect.generics.tree.MethodTypeSignature;
+import sun.reflect.generics.tree.ReturnType;
+import sun.reflect.generics.tree.SimpleClassTypeSignature;
+import sun.reflect.generics.tree.TypeArgument;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -131,7 +139,7 @@ public class VioletCreator {
             for (Iterator iterator1 = names.iterator(); iterator1.hasNext(); ) {
                 String attrName = (String) iterator1.next();
                 String typeName = (String) typesByNames.get(attrName);
-                sb.append(attrName).append(":").append(typeName).append("\n");
+                sb.append(attrName).append(":").append(makeSafe(typeName)).append("\n");
                 if (toAddWidth < lettersMargin + perLetter * (attrName.length() + typeName.length() + 1)) {
                     toAddWidth = lettersMargin + perLetter * (attrName.length() + typeName.length() + 1);
                 }
@@ -153,6 +161,10 @@ public class VioletCreator {
         return sb.toString().getBytes();
     }
 
+    private String makeSafe(String typeName) {
+        return typeName.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
     public static void main(String[] args) throws Exception {
         HashSet methodExceptions = new HashSet();
         methodExceptions.add("getClass");
@@ -167,6 +179,7 @@ public class VioletCreator {
             System.out.println("In properties file you should define such properties:");
             System.out.println("out.file=path to out violet file");
             System.out.println("package=to be parsed");
+            System.out.println("parentNames=lava.lang.Object,java.io.Serializable");
             System.out.println(classPrefix + "*=(Name or Regexp of class to be omitted)");
             System.out.println(methodPrefix + "*=(Name or Regexp of method to be omiited)");
             System.out.println("Omitted methods by default = " + methodExceptions);
@@ -197,7 +210,9 @@ public class VioletCreator {
         VioletCreator creator = new VioletCreator();
         String fileName = properties.getProperty("out.file", "out.class.violet.html");
         String packageName = properties.getProperty("package", "lava.lang");
-        ArrayList<HashMap> toDraw = creator.findAllClassesFromPackage(packageName, classExceptions, methodExceptions, ignoreInterfaces);
+        String[] parentNames = properties.getProperty("parentNames", "lava.lang.Object,java.io.Serializable").split(",");
+        ArrayList<HashMap> toDraw = creator.findAllClassesFromPackage(packageName, classExceptions, methodExceptions,
+                ignoreInterfaces, parentNames);
         normalizeInheritance(toDraw);
         creator.saveViolet(fileName, toDraw);
     }
@@ -244,14 +259,21 @@ public class VioletCreator {
     }
 
     private ArrayList<HashMap> findAllClassesFromPackage(String packageName, HashSet classExceptions,
-                                                         HashSet methodExceptions, HashSet ignoreInterfaces) {
+                                                         HashSet methodExceptions, HashSet ignoreInterfaces,
+                                                         String[] parentNames) {
 
         ArrayList<HashMap> list = new ArrayList<HashMap>();
         Reflections reflections = new Reflections(packageName);
 
         Set subTypes = new HashSet();
-        subTypes.addAll(reflections.getSubTypesOf(Serializable.class));
-        subTypes.addAll(reflections.getSubTypesOf(Object.class));
+        for (int i = 0; i < parentNames.length; i++) {
+            String parentName = parentNames[i];
+            try {
+                subTypes.addAll(reflections.getSubTypesOf(Class.forName(parentName)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         for (Iterator iterator = subTypes.iterator(); iterator.hasNext(); ) {
             Class next = (Class) iterator.next();
@@ -282,14 +304,14 @@ public class VioletCreator {
                 boolean setter = name.startsWith("set");
                 boolean getterBool = name.startsWith("is");
 
-                if (setter || getter) {
+                if ((setter || getter) && name.length() > 3) {
                     String propName = name.substring(3);
                     if (onceSeen.contains(propName)) {
                         properties.add(propName);
                     }
                     onceSeen.add(propName);
                     if (getter) {
-                        propertiesTypes.put(propName, method.getReturnType());
+                        propertiesTypes.put(propName, getReturnType(packageName, method));
                     }
                 }
                 if (getterBool) {
@@ -298,7 +320,7 @@ public class VioletCreator {
                         properties.add(propName);
                     }
                     onceSeen.add(propName);
-                    propertiesTypes.put(propName, method.getReturnType());
+                    propertiesTypes.put(propName, getReturnType(packageName, method));
                 }
             }
             HashMap bean = new HashMap();
@@ -319,23 +341,75 @@ public class VioletCreator {
             for (Iterator iterator1 = properties.iterator(); iterator1.hasNext(); ) {
                 String propName = (String) iterator1.next();
                 HashMap attr = new HashMap();
-                attr.put("name", propName.substring(0, 1).toLowerCase() + propName.substring(1));
-                String type;
-                Class c = (Class) propertiesTypes.get(propName);
-                String cName = c.getName();
-                if (cName.startsWith("[")) {
-                    type = c.getComponentType().getName() + "[]";
+                if(propName.length() > 1) {
+                    attr.put("name", propName.substring(0, 1).toLowerCase() + propName.substring(1));
                 } else {
-                    type = cName;
+                    attr.put("name", propName.toLowerCase());
                 }
-                if (type.startsWith(packageName + ".")) {
-                    type = type.substring(packageName.length() + 1);
-                }
+                String type = (String) propertiesTypes.get(propName);
                 attr.put("type", type);
                 beanAttributes.add(attr);
             }
             list.add(bean);
         }
         return list;
+    }
+
+    private String getReturnType(String thisPackage, Method method) {
+        String type;
+        Class<?> c = method.getReturnType();
+        String cName = c.getName();
+        if (cName.startsWith("[")) {
+            type = c.getComponentType().getName() + "[]";
+        } else {
+            type = cName;
+        }
+        if (type.startsWith(thisPackage + ".")) {
+            type = type.substring(thisPackage.length() + 1);
+        }
+        try {
+            Field signature = method.getClass().getDeclaredField("signature");
+            signature.setAccessible(true);
+            String sig = (String) signature.get(method);
+            if (sig != null) {
+                MethodTypeSignature methodSig = SignatureParser.make().parseMethodSig(sig);
+                ReturnType returnType = methodSig.getReturnType();
+                if (returnType != null) {
+                    Field path0 = returnType.getClass().getDeclaredField("path");
+                    path0.setAccessible(true);
+                    ArrayList path0List = (ArrayList) path0.get(returnType);
+                    if (path0List != null && !path0List.isEmpty()) {
+                        Object o = path0List.get(0);
+                        if (o instanceof SimpleClassTypeSignature) {
+                            SimpleClassTypeSignature ctSig = (SimpleClassTypeSignature) o;
+                            String name = ctSig.getName();
+                            TypeArgument[] typeArguments = ctSig.getTypeArguments();
+                            if (typeArguments != null && typeArguments.length > 0) {
+                                TypeArgument argument = typeArguments[0];
+                                Field path1 = argument.getClass().getDeclaredField("path");
+                                path1.setAccessible(true);
+                                ArrayList path1List = (ArrayList) path1.get(argument);
+                                if (path1List != null && !path1List.isEmpty()) {
+                                    Object o2 = path1List.get(0);
+                                    if (o2 instanceof SimpleClassTypeSignature) {
+                                        SimpleClassTypeSignature paramSig = (SimpleClassTypeSignature) o2;
+                                        String paramType = paramSig.getName();
+                                        if (paramType.startsWith(thisPackage + ".")) {
+                                            paramType = paramType.substring(thisPackage.length() + 1);
+                                        }
+                                        // at last
+                                        type = name + "<" + paramType + ">";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // in any case we still have original type
+            e.printStackTrace();
+        }
+        return type;
     }
 }
