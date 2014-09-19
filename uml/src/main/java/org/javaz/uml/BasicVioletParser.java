@@ -1,17 +1,6 @@
 package org.javaz.uml;
 
-import net.sf.json.JSONObject;
-import org.javaz.util.JsonUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -220,9 +209,13 @@ public abstract class BasicVioletParser
                 }
                 if (sqlType == null)
                 {
-                    System.out.println("Unknown type = " + type + " of attribute " + beanName + "." + attribute.get("name") + ", using " + DEFAULT_TYPE_JAVA + ".");
-                    type = DEFAULT_TYPE_JAVA;
-                    sqlType = (String) sqlTypes.get(type);
+                    if (!sqlTypes.containsKey("allow.unknown")) {
+                        System.out.println("Unknown type = " + type + " of attribute " + beanName + "." + attribute.get("name") + ", using " + DEFAULT_TYPE_JAVA + ".");
+                        type = DEFAULT_TYPE_JAVA;
+                        sqlType = (String) sqlTypes.get(type);
+                    } else {
+                        sqlType = type;
+                    }
                 }
                 sqlType = sqlType.replace("{size}", "" + length);
 
