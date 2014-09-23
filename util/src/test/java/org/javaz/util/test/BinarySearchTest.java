@@ -441,4 +441,14 @@ public class BinarySearchTest {
         Assert.assertEquals(valuesFromKeysByIds.length, 0);
 
     }
+    @Test
+    public void testExclusive2() {
+        long[] arr = {10L,11L,12L,13L};
+        int[] ints = BinarySearch.binaryRangeSearchExclusive(arr, 0L, 10L);
+        BinarySearch.binaryRangeSearchExclusive(arr, 0L, 9L);
+        BinarySearch.binaryRangeSearchExclusive(arr, 13L, 13L);
+        BinarySearch.binaryRangeSearchExclusive(arr, 13L, 14L);
+        BinarySearch.binaryRangeSearchExclusive(arr, 14L, 14L);
+    }
+
 }

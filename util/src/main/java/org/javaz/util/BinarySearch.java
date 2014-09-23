@@ -9,7 +9,13 @@ public class BinarySearch {
     
     public static int DEFAULT_MAX_SIZE = 16*1024;
 
+    public static final int[] NOT_FOUND_INDICES = new int[]{-1, -1};
+
     public static int[] binaryRangeSearchInclusive(int[] a, int keyMin, int keyMax) {
+        if (a.length == 0 || keyMax < a[0] || keyMin > a[a.length -1]) {
+            return NOT_FOUND_INDICES;
+        }
+
         int low1 = 0;
         int high1 = a.length - 1;
 
@@ -75,6 +81,10 @@ public class BinarySearch {
     }
 
     public static int[] binaryRangeSearchInclusive(long[] a, long keyMin, long keyMax) {
+        if (a.length == 0 || keyMax < a[0] || keyMin > a[a.length -1]) {
+            return NOT_FOUND_INDICES;
+        }
+
         int low1 = 0;
         int high1 = a.length - 1;
 
@@ -134,7 +144,7 @@ public class BinarySearch {
         }
 
         if(start > end) {
-            return new int[]{-1, -1};
+            return NOT_FOUND_INDICES;
         }
         return new int[]{start, end};
     }
