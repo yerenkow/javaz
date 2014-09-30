@@ -451,4 +451,19 @@ public class BinarySearchTest {
         BinarySearch.binaryRangeSearchExclusive(arr, 14L, 14L);
     }
 
+    @Test
+    public void testTwoArraysIntersect() {
+        long[] a = {10L,11L,12L,13L};
+        long[] b = {10L, 13L, 14L};
+        long[] c = BinarySearch.intersectSortedUniqueArrays(a, b);
+        Assert.assertEquals(c.length, 2);
+        Assert.assertEquals(c[0], b[0]);
+        Assert.assertEquals(c[1], b[1]);
+
+        b = new long[]{50L, 73L};
+        c = BinarySearch.intersectSortedUniqueArrays(a, b);
+        Assert.assertEquals(c.length, 0);
+
+    }
+
 }

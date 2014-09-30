@@ -248,6 +248,39 @@ public class BinarySearch {
         return Arrays.copyOf(retValue, position);
     }
 
+    public static final long[] EMPTY_ARRAY = new long[0];
+
+    public static long[] intersectSortedUniqueArrays(long[] arr1, long[] arr2) {
+        if (arr1.length == 0 || arr2.length == 0) {
+            return EMPTY_ARRAY;
+        }
+        final long[] a;
+        final long[] b;
+        if (arr1.length <= arr2.length) {
+            a = arr1;
+            b = arr2;
+        } else {
+            a = arr2;
+            b = arr1;
+        }
+        int bIndex = 0;
+        int cIndex = 0;
+        final long[] c = new long[a.length];
+
+        for (int i = 0; i < a.length; i++) {
+            long id = a[i];
+            while(bIndex < b.length && b[bIndex] <= id) {
+                if (id == b[bIndex++]) {
+                    c[cIndex++] = id;
+                }
+            }
+        }
+        if(c.length > cIndex) {
+            return Arrays.copyOf(c, cIndex);
+        }
+        return c;
+    }
+
     public static long[] complexMultiSearch(final long[][][] data, final long[][] negative) {
         return complexMultiSearch(data, negative, DEFAULT_MAX_SIZE);
     }
