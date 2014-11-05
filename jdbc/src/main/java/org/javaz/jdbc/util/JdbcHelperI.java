@@ -1,5 +1,6 @@
 package org.javaz.jdbc.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,16 @@ public interface JdbcHelperI extends JdbcConstants
      * @param parameters with
      * @return count or id
      */
-    public long runUpdate(String query, Map parameters);
+    public long runUpdate(String query, Map parameters) throws SQLException;
+
+    /**
+     * Update something in DB
+     *
+     * @param query to execute
+     * @param parameters with
+     * @return count or id
+     */
+    public long runUpdateNoError(String query, Map parameters);
 
     /**
      * Update something in DB, but not expecting nothing back.
@@ -56,7 +66,7 @@ public interface JdbcHelperI extends JdbcConstants
      * @param query to execute
      * @param parameters with
      */
-    public void runUpdateDataIgnore(String query, Map parameters);
+    public void runUpdateDataIgnore(String query, Map parameters) throws SQLException;
 
 
     /**

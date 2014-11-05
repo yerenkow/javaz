@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.javaz.cache.CacheI;
 import org.javaz.cache.CacheImpl;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -26,39 +27,34 @@ public class JdbcHelper extends AbstractJdbcHelper
         return UnsafeSqlHelper.runMassSqlUnsafe(getProvider(), jdbcAddress, objects);
     }
 
-    public long runUpdate(String query, Map parameters)
+    public long runUpdate(String query, Map parameters) throws SQLException
     {
-        ArrayList list = null;
-        try
+        ArrayList list = UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE, parameters);
+        if (list != null && !list.isEmpty())
         {
-            list = UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE, parameters);
-            if (list != null && !list.isEmpty())
+            Object object = list.get(0);
+            if (object != null && object instanceof Number)
             {
-                Object object = list.get(0);
-                if (object != null && object instanceof Number)
-                {
-                    return ((Number) object).longValue();
-                }
+                return ((Number) object).longValue();
             }
         }
-        catch (Exception e)
-        {
-            logger.error(e);
-        }
 
-        return 0;
+        return -1;
     }
 
-    public void runUpdateDataIgnore(String query, Map parameters)
+    public long runUpdateNoError(String query, Map parameters)
     {
-        try
-        {
-            UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
+        try {
+            runUpdate(query, parameters);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        catch (Exception e)
-        {
-            logger.error(e);
-        }
+        return -1;
+    }
+
+    public void runUpdateDataIgnore(String query, Map parameters) throws SQLException
+    {
+        UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
     }
 
     public List getRecordList(String query, Map parameters, boolean useCache)

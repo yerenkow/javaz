@@ -34,9 +34,14 @@ public class TableDumper {
                 + (orderColumn != null ? " order by " + orderColumn : "");
 
         int idIndex =  0;
-        ArrayList complexList = UnsafeSqlHelper.runSqlUnsafe(db.getProvider(), db.getJdbcAddress(), query,
-                UnsafeSqlHelper.ACTION_COMPLEX_LIST_METADATA, null);
-        if(complexList.size() > 1)
+        ArrayList complexList = null;
+        try {
+            complexList = UnsafeSqlHelper.runSqlUnsafe(db.getProvider(), db.getJdbcAddress(), query,
+                    UnsafeSqlHelper.ACTION_COMPLEX_LIST_METADATA, null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(complexList != null && complexList.size() > 1)
         {
             boolean first = true;
             String firstLine = "";

@@ -6,6 +6,7 @@ import org.javaz.jdbc.util.SimpleConnectionProvider;
 import org.javaz.jdbc.util.UnsafeSqlHelper;
 import org.javaz.queues.iface.RecordsFetcherI;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -84,7 +85,12 @@ public class SqlRecordsFetcher implements RecordsFetcherI
 
     public Collection getRecordsCollection(long offset, long limit)
     {
-        return UnsafeSqlHelper.runSqlUnsafe(providerI, dsAddress, getRecordsQuery(offset, limit), selectType, null);
+        try {
+            return UnsafeSqlHelper.runSqlUnsafe(providerI, dsAddress, getRecordsQuery(offset, limit), selectType, null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     protected String getMinMaxQuery()
