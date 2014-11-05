@@ -51,22 +51,13 @@ public interface JdbcHelperI extends JdbcConstants
     public long runUpdate(String query, Map parameters) throws SQLException;
 
     /**
-     * Update something in DB
-     *
-     * @param query to execute
-     * @param parameters with
-     * @return count or id
-     */
-    public long runUpdateNoError(String query, Map parameters);
-
-    /**
      * Update something in DB, but not expecting nothing back.
      * RETURNING not appended if DB supports this.
      *
      * @param query to execute
      * @param parameters with
      */
-    public void runUpdateDataIgnore(String query, Map parameters) throws SQLException;
+    public void runUpdateDataIgnore(String query, Map parameters);
 
 
     /**

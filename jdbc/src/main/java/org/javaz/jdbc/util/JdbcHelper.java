@@ -42,19 +42,13 @@ public class JdbcHelper extends AbstractJdbcHelper
         return -1;
     }
 
-    public long runUpdateNoError(String query, Map parameters)
+    public void runUpdateDataIgnore(String query, Map parameters)
     {
         try {
-            runUpdate(query, parameters);
+            UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
-        return -1;
-    }
-
-    public void runUpdateDataIgnore(String query, Map parameters) throws SQLException
-    {
-        UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
     }
 
     public List getRecordList(String query, Map parameters, boolean useCache)
