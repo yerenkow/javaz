@@ -1,7 +1,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaz-jdbc</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
     <packaging>jar</packaging>
     <name>Javaz JDBC utils</name>
     <description>JDBC utils and helpers</description>

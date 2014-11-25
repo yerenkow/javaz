@@ -5,13 +5,11 @@ import com.jolbox.bonecp.BoneCPConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -77,20 +75,37 @@ public class BoneCpConnectionProvider extends SimpleConnectionProvider
     @Override
     protected Connection getPlainConnection(String dsAddress) throws SQLException {
         if (!pools.containsKey(dsAddress)) {
-            lock.lock();
-            if (!pools.containsKey(dsAddress)) {
-                BoneCPConfig config = new BoneCPConfig();
-                config.setJdbcUrl(dsAddress);
-                config.setPartitionCount(defaultPartitionCount);
-                config.setMinConnectionsPerPartition(defaultMinConnectionsPerPartition);
-                config.setMaxConnectionsPerPartition(defaultMaxConnectionsPerPartition);
-                config.setAcquireIncrement(defaultAcquireIncrement);
-                config.setDisableConnectionTracking(disableConnectionTracking);
-                BoneCP connectionPool = new BoneCP(config);
-                pools.put(dsAddress, connectionPool);
+            try {
+                lock.lock();
+                if (!pools.containsKey(dsAddress)) {
+                    BoneCPConfig config = new BoneCPConfig();
+                    config.setJdbcUrl(dsAddress);
+                    config.setPartitionCount(defaultPartitionCount);
+                    config.setMinConnectionsPerPartition(defaultMinConnectionsPerPartition);
+                    config.setMaxConnectionsPerPartition(defaultMaxConnectionsPerPartition);
+                    config.setAcquireIncrement(defaultAcquireIncrement);
+                    config.setDisableConnectionTracking(disableConnectionTracking);
+                    BoneCP connectionPool = new BoneCP(config);
+                    pools.put(dsAddress, connectionPool);
+                }
+            } finally {
+                lock.unlock();
             }
-            lock.unlock();
         }
         return pools.get(dsAddress).getConnection();
+    }
+
+    public static void destroyPools() throws SQLException {
+        try {
+            lock.lock();
+            ArrayList<String> dsAddresses = new ArrayList<String>(pools.keySet());
+            for (Iterator<String> iterator = dsAddresses.iterator(); iterator.hasNext(); ) {
+                String dsAddress = iterator.next();
+                logger.debug("Closing connectionPool for " + dsAddress);
+                pools.get(dsAddress).close();
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }
