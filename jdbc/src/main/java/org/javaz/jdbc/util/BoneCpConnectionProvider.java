@@ -95,7 +95,7 @@ public class BoneCpConnectionProvider extends SimpleConnectionProvider
         return pools.get(dsAddress).getConnection();
     }
 
-    public static void destroyPools() throws SQLException {
+    public static void destroyPools() {
         try {
             lock.lock();
             ArrayList<String> dsAddresses = new ArrayList<String>(pools.keySet());
