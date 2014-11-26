@@ -102,7 +102,7 @@ public class BoneCpConnectionProvider extends SimpleConnectionProvider
             for (Iterator<String> iterator = dsAddresses.iterator(); iterator.hasNext(); ) {
                 String dsAddress = iterator.next();
                 logger.debug("Closing connectionPool for " + dsAddress);
-                pools.get(dsAddress).close();
+                pools.remove(dsAddress).close();
             }
         } finally {
             lock.unlock();
