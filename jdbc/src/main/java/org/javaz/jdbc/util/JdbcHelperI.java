@@ -44,6 +44,22 @@ public interface JdbcHelperI extends JdbcConstants
     /**
      * Update something in DB
      *
+     * @param pair - query to execute with map of params
+     * @return count or id
+     */
+    public long runUpdate(StringMapPair pair) throws SQLException;
+
+    /**
+     * Update something in DB, but not expecting nothing back.
+     * RETURNING not appended if DB supports this.
+     *
+     * @param pair - query to execute with map of params
+     */
+    public void runUpdateDataIgnore(StringMapPair pair);
+
+    /**
+     * Update something in DB
+     *
      * @param query to execute
      * @param parameters with
      * @return count or id
@@ -67,4 +83,13 @@ public interface JdbcHelperI extends JdbcConstants
      * @return list with counts or ids
      */
     public ArrayList<List> runMassUpdate(ArrayList<Object[]> objects);
+
+
+    /**
+     * Run a lots of updates in single Connection
+     *
+     * @param objects tuples for updates
+     * @return list with counts or ids
+     */
+    public ArrayList<List> runMassUpdatePairs(ArrayList<StringMapPair> objects);
 }

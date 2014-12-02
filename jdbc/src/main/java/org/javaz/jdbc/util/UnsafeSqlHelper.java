@@ -207,6 +207,7 @@ public class UnsafeSqlHelper implements JdbcConstants
         return s;
     }
 
+    @Deprecated
     public static ArrayList runMassSqlUnsafe(ConnectionProviderI provider, String jdbcAddress, ArrayList<Object[]> objects)
     {
         ArrayList<List> ret = new ArrayList<List>();
@@ -221,6 +222,53 @@ public class UnsafeSqlHelper implements JdbcConstants
                     Object[] next = iteratorX.next();
                     String query = (String) next[0];
                     Map parameters = (Map) next[1];
+
+                    ArrayList list = runSqlUnsafe(c, query, ACTION_EXECUTE_UPDATE, parameters);
+                    ret.add(list);
+                }
+            }
+            catch (Exception e)
+            {
+                //we are allowing partial update;
+                logger.error(e);
+            }
+        }
+        catch (SQLException e)
+        {
+            logger.error("Problem with connection to " + jdbcAddress, e);
+        }
+        finally
+        {
+            if (c != null)
+            {
+                try
+                {
+                    c.close();
+                }
+                catch (SQLException e)
+                {
+                    logger.error(e);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    public static ArrayList runMassSqlUnsafePairs(ConnectionProviderI provider, String jdbcAddress, ArrayList<StringMapPair> objects)
+    {
+        ArrayList<List> ret = new ArrayList<List>();
+        Connection c = null;
+        try
+        {
+            c = provider.getConnection(jdbcAddress);
+            try
+            {
+                for (Iterator<StringMapPair> iteratorX = objects.iterator(); iteratorX.hasNext(); )
+                {
+                    StringMapPair next = iteratorX.next();
+                    String query = next.getString();
+                    Map parameters = next.getMap();
 
                     ArrayList list = runSqlUnsafe(c, query, ACTION_EXECUTE_UPDATE, parameters);
                     ret.add(list);

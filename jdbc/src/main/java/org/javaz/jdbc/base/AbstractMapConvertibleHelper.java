@@ -1,5 +1,7 @@
 package org.javaz.jdbc.base;
 
+import org.javaz.jdbc.util.StringMapPair;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,26 +28,26 @@ public abstract class AbstractMapConvertibleHelper<T extends MapConvertibleI> {
         this.tableName = tableName;
     }
 
-    public Object[] getDbUpdateQuery(T obj) {
+    public StringMapPair getDbUpdateQuery(T obj) {
         return getDbUpdateQuery(tableName, obj, false);
     }
-    public Object[] getDbUpdateQuery(T obj, boolean forceInsert) {
+    public StringMapPair getDbUpdateQuery(T obj, boolean forceInsert) {
         return getDbUpdateQuery(tableName, obj, forceInsert);
     }
-    public Object[] getDbUpdateQuery(String tableName, T obj) {
+    public StringMapPair getDbUpdateQuery(String tableName, T obj) {
         return getDbUpdateQuery(tableName, obj, false );
     }
 
-    public Object[] getDbDeleteQuery(T obj) {
+    public StringMapPair getDbDeleteQuery(T obj) {
         return getDbDeleteQuery(tableName, obj);
     }
 
-    public Object[] getDbDeleteQuery(String tableName, T obj) {
+    public StringMapPair getDbDeleteQuery(String tableName, T obj) {
         HashMap<Integer, Object> params = new HashMap<Integer, Object>();
         params.put(params.size() + 1, obj.getPrimaryKey());
-        return new Object[] {"delete from " + tableName + " where " + idName + " = ?", params } ;
+        return new StringMapPair("delete from " + tableName + " where " + idName + " = ?", params);
     }
 
-    public abstract Object[] getDbUpdateQuery(String tableName, T obj, boolean forceInsert);
+    public abstract StringMapPair getDbUpdateQuery(String tableName, T obj, boolean forceInsert);
     public abstract T buildFromMap(Map h);
 }

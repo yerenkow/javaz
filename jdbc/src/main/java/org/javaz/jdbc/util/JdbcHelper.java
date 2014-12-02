@@ -22,11 +22,30 @@ public class JdbcHelper extends AbstractJdbcHelper
         jdbcCacheLists.setTimeToLive(DEFAULT_TTL_LISTS);
     }
 
+    @Override
+    @Deprecated
     public ArrayList<List> runMassUpdate(ArrayList<Object[]> objects)
     {
         return UnsafeSqlHelper.runMassSqlUnsafe(getProvider(), jdbcAddress, objects);
     }
 
+    @Override
+    public ArrayList<List> runMassUpdatePairs(ArrayList<StringMapPair> objects)
+    {
+        return UnsafeSqlHelper.runMassSqlUnsafePairs(getProvider(), jdbcAddress, objects);
+    }
+
+    @Override
+    public long runUpdate(StringMapPair pair) throws SQLException {
+        return runUpdate(pair.getString(), pair.getMap());
+    }
+
+    @Override
+    public void runUpdateDataIgnore(StringMapPair pair) {
+        runUpdateDataIgnore(pair.getString(), pair.getMap());
+    }
+
+    @Override
     public long runUpdate(String query, Map parameters) throws SQLException
     {
         ArrayList list = UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE, parameters);
@@ -42,6 +61,7 @@ public class JdbcHelper extends AbstractJdbcHelper
         return -1;
     }
 
+    @Override
     public void runUpdateDataIgnore(String query, Map parameters)
     {
         try {
@@ -51,6 +71,7 @@ public class JdbcHelper extends AbstractJdbcHelper
         }
     }
 
+    @Override
     public List getRecordList(String query, Map parameters, boolean useCache)
     {
         Object o = null;

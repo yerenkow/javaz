@@ -1,6 +1,7 @@
 package org.javaz.jdbc.base;
 
 import org.javaz.jdbc.util.JdbcCachedHelper;
+import org.javaz.jdbc.util.StringMapPair;
 
 import java.util.*;
 
@@ -24,8 +25,8 @@ public class GenericMapConvertibleDAO {
 
     private <T extends MapConvertibleI> void internalSave(T obj, AbstractMapConvertibleHelper<T> builder, boolean forceInsert) throws Exception {
         boolean idIsMissing = obj.getPrimaryKey() == null;
-        Object[] update = builder.getDbUpdateQuery(obj, forceInsert);
-        long newId = JdbcCachedHelper.getInstance(databaseAddress).runUpdate((String) update[0], (Map) update[1]);
+        StringMapPair update = builder.getDbUpdateQuery(obj, forceInsert);
+        long newId = JdbcCachedHelper.getInstance(databaseAddress).runUpdate(update);
         if (idIsMissing) {
             obj.setGeneratedPrimaryKey(newId);
         }
@@ -68,7 +69,7 @@ public class GenericMapConvertibleDAO {
     }
 
     public <T extends MapConvertibleI> void delete(T object, AbstractMapConvertibleHelper<T> builder) throws Exception {
-        Object[] delete = builder.getDbDeleteQuery(object);
-        JdbcCachedHelper.getInstance(databaseAddress).runUpdateDataIgnore((String) delete[0], (Map) delete[1]);
+        StringMapPair delete = builder.getDbDeleteQuery(object);
+        JdbcCachedHelper.getInstance(databaseAddress).runUpdateDataIgnore(delete);
     }
 }

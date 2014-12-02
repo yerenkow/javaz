@@ -57,7 +57,13 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI
 
     public abstract void runUpdateDataIgnore(String query, Map parameters);
 
+    public abstract long runUpdate(StringMapPair pair) throws SQLException;
+
+    public abstract void runUpdateDataIgnore(StringMapPair pair);
+
     public abstract ArrayList<List> runMassUpdate(ArrayList<Object[]> objects);
+
+    public abstract ArrayList<List> runMassUpdatePairs(ArrayList<StringMapPair> pairs);
 
 }
 
