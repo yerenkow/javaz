@@ -190,6 +190,7 @@ public class RepackArchive extends AbstractMojo {
                 }
                 inputStream.close();
             }
+            jin.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
