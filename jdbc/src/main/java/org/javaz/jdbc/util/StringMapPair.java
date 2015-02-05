@@ -8,9 +8,9 @@ import java.util.Map;
 public class StringMapPair {
 
     private String string;
-    private Map map;
+    private Map<Integer, Object> map;
 
-    public StringMapPair(String string, Map map) {
+    public StringMapPair(String string, Map<Integer, Object> map) {
         this.string = string;
         this.map = map;
     }
@@ -23,11 +23,11 @@ public class StringMapPair {
         this.string = string;
     }
 
-    public Map getMap() {
+    public Map<Integer, Object> getMap() {
         return map;
     }
 
-    public void setMap(Map map) {
+    public void setMap(Map<Integer, Object> map) {
         this.map = map;
     }
 }

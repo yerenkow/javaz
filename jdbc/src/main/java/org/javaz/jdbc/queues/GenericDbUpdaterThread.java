@@ -12,15 +12,13 @@ import java.util.List;
 
 /**
  */
-public class GenericDbUpdaterThread implements Runnable
-{
+public class GenericDbUpdaterThread implements Runnable {
     private String db;
     private String query;
     private List list;
     private ConnectionProviderI providerI;
 
-    public GenericDbUpdaterThread(String db, String query, List list, ConnectionProviderI providerI)
-    {
+    public GenericDbUpdaterThread(String db, String query, List list, ConnectionProviderI providerI) {
         this.db = db;
         this.query = query;
         this.list = list;
@@ -28,28 +26,21 @@ public class GenericDbUpdaterThread implements Runnable
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         updateManyObjects(db, query, list);
     }
 
-    public void updateManyObjects(String db, String queryPart, List dataForUpdateList)
-    {
+    public void updateManyObjects(String db, String queryPart, List dataForUpdateList) {
         List subList = null;
-        if (dataForUpdateList.size() > 0)
-        {
+        if (dataForUpdateList.size() > 0) {
             int steps = dataForUpdateList.size() / GenericDbUpdater.MAX_OBJECTS_PER_UPDATE + 1;
-            for (int currentStep = 0; currentStep < steps; currentStep++)
-            {
-                try
-                {
+            for (int currentStep = 0; currentStep < steps; currentStep++) {
+                try {
                     subList = dataForUpdateList.subList(currentStep * GenericDbUpdater.MAX_OBJECTS_PER_UPDATE, Math.min((currentStep + 1) * GenericDbUpdater.MAX_OBJECTS_PER_UPDATE, dataForUpdateList.size()));
                     HashMap queryParamsMap = new HashMap(subList.size() + 1, 1.0f);
                     UnsafeSqlHelper.addArrayParameters(queryParamsMap, subList);
                     UnsafeSqlHelper.runSqlUnsafe(providerI, db, queryPart + " in (" + UnsafeSqlHelper.repeatQuestionMark(subList.size()) + ")", JdbcConstants.ACTION_EXECUTE_UPDATE_DATA_IGNORE, queryParamsMap);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -58,8 +49,7 @@ public class GenericDbUpdaterThread implements Runnable
         String subQ = query;
 
         int whereIndex = subQ.toLowerCase().indexOf("where");
-        if (whereIndex > -1)
-        {
+        if (whereIndex > -1) {
             subQ = subQ.substring(0, whereIndex).trim();
         }
 

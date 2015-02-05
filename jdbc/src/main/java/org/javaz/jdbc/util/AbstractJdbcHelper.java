@@ -8,46 +8,38 @@ import java.util.Map;
 /**
  * Default behavior is to use the cache.
  */
-public abstract class AbstractJdbcHelper implements JdbcHelperI
-{
+public abstract class AbstractJdbcHelper implements JdbcHelperI {
     protected String jdbcAddress = null;
     protected long listRecordsTtl = DEFAULT_TTL_LISTS;
     protected ConnectionProviderI provider = new SimpleConnectionProvider();
     protected Boolean defaultUseCache =
-        System.getProperty("org.javaz.jdbc.util.AbstractJdbcHelper.defaultUseCache", "FALSE").equalsIgnoreCase("TRUE");
+            System.getProperty("org.javaz.jdbc.util.AbstractJdbcHelper.defaultUseCache", "FALSE").equalsIgnoreCase("TRUE");
 
-    public void setJdbcAddress(String jdbcAddress)
-    {
+    public void setJdbcAddress(String jdbcAddress) {
         this.jdbcAddress = jdbcAddress;
     }
 
-    public String getJdbcAddress()
-    {
+    public String getJdbcAddress() {
         return jdbcAddress;
     }
 
-    public ConnectionProviderI getProvider()
-    {
+    public ConnectionProviderI getProvider() {
         return provider;
     }
 
-    public void setProvider(ConnectionProviderI provider)
-    {
+    public void setProvider(ConnectionProviderI provider) {
         this.provider = provider;
     }
 
-    public long getListRecordsTtl()
-    {
+    public long getListRecordsTtl() {
         return listRecordsTtl;
     }
 
-    public void setListRecordsTtl(long listRecordsTtl)
-    {
+    public void setListRecordsTtl(long listRecordsTtl) {
         this.listRecordsTtl = listRecordsTtl;
     }
 
-    public List getRecordList(String query, Map parameters)
-    {
+    public List getRecordList(String query, Map parameters) {
         return getRecordList(query, parameters, defaultUseCache);
     }
 
@@ -60,8 +52,6 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI
     public abstract long runUpdate(StringMapPair pair) throws SQLException;
 
     public abstract void runUpdateDataIgnore(StringMapPair pair);
-
-    public abstract ArrayList<List> runMassUpdate(ArrayList<Object[]> objects);
 
     public abstract ArrayList<List> runMassUpdatePairs(ArrayList<StringMapPair> pairs);
 

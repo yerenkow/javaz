@@ -17,8 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * This class provides java.sqlConnection based on some String.
  * This implementation supports jdbc:... and java:... URLs for SQL.
  */
-public class BoneCpConnectionProvider extends SimpleConnectionProvider
-{
+public class BoneCpConnectionProvider extends SimpleConnectionProvider {
     private static Logger logger = LogManager.getLogger(BoneCpConnectionProvider.class);
 
     private static HashMap<String, BoneCP> pools = new HashMap<String, BoneCP>();

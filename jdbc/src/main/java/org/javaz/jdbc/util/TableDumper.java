@@ -15,25 +15,22 @@ public class TableDumper {
     public static final int DB_POSTGRESQL = 1;
     public static final int DB_MYSQL = 2;
 
-    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db)
-    {
+    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db) {
         return getTableInserts(tableName, null, orderColumn, false, db, DB_POSTGRESQL);
     }
 
-    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db, int dbType)
-    {
+    public static String getTableInserts(String tableName, String orderColumn, JdbcHelperI db, int dbType) {
         return getTableInserts(tableName, null, orderColumn, false, db, dbType);
     }
 
     public static String getTableInserts(String tableName, String condition, String orderColumn, boolean skipId,
-                                         JdbcHelperI db, int dbType)
-    {
+                                         JdbcHelperI db, int dbType) {
         StringBuilder answer = new StringBuilder();
         String query = "select * from " + tableName
                 + " WHERE TRUE " + (condition != null ? condition : "")
                 + (orderColumn != null ? " order by " + orderColumn : "");
 
-        int idIndex =  0;
+        int idIndex = 0;
         ArrayList complexList = null;
         try {
             complexList = UnsafeSqlHelper.runSqlUnsafe(db.getProvider(), db.getJdbcAddress(), query,
@@ -41,28 +38,22 @@ public class TableDumper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(complexList != null && complexList.size() > 1)
-        {
+        if (complexList != null && complexList.size() > 1) {
             boolean first = true;
             String firstLine = "";
             String zpt = "";
-            for (Iterator iterator = complexList.iterator(); iterator.hasNext();)
-            {
-                if(first)
-                {
+            for (Iterator iterator = complexList.iterator(); iterator.hasNext(); ) {
+                if (first) {
                     ArrayList sets = (ArrayList) iterator.next();
                     firstLine += "INSERT INTO " + tableName + "(";
-                    String  zpt2 = "";
+                    String zpt2 = "";
                     int i = 0;
-                    for (Iterator iterator1 = sets.iterator(); iterator1.hasNext();)
-                    {
+                    for (Iterator iterator1 = sets.iterator(); iterator1.hasNext(); ) {
                         String s = (String) iterator1.next();
-                        if(s.equalsIgnoreCase("id"))
-                        {
+                        if (s.equalsIgnoreCase("id")) {
                             idIndex = i;
                         }
-                        if(idIndex == i && skipId)
-                        {
+                        if (idIndex == i && skipId) {
                             i++;
                             continue;
                         }
@@ -74,51 +65,44 @@ public class TableDumper {
                     firstLine += ") VALUES ";
                     first = false;
                     answer.append(firstLine);
-                }
-                else
-                {
+                } else {
                     ArrayList sets = (ArrayList) iterator.next();
                     answer.append(zpt).append("\n");
                     answer.append("(");
-                    String  zpt2 = "";
+                    String zpt2 = "";
                     int i = 0;
-                    for (Iterator iterator1 = sets.iterator(); iterator1.hasNext();)
-                    {
+                    for (Iterator iterator1 = sets.iterator(); iterator1.hasNext(); ) {
                         Object s = (Object) iterator1.next();
-                        if(idIndex == i && skipId)
-                        {
+                        if (idIndex == i && skipId) {
                             i++;
                             continue;
                         }
                         i++;
                         answer.append(zpt2);
-                        if(s != null)
-                        {
+                        if (s != null) {
                             s = ("" + s).replaceAll("\\\\", "\\\\\\\\").replaceAll("\\\'", "''").replaceAll("\\n", "\\\\\\n").replaceAll("\\r", "\\\\\\r");
-                            if(dbType == DB_POSTGRESQL) {
+                            if (dbType == DB_POSTGRESQL) {
                                 answer.append("E'");
                             }
-                            if(dbType == DB_SQL) {
+                            if (dbType == DB_SQL) {
                                 answer.append("'");
                             }
-                            if(dbType == DB_MYSQL) {
+                            if (dbType == DB_MYSQL) {
                                 answer.append("\"");
                             }
 
                             answer.append(s);
 
-                            if(dbType == DB_POSTGRESQL) {
+                            if (dbType == DB_POSTGRESQL) {
                                 answer.append("'");
                             }
-                            if(dbType == DB_SQL) {
+                            if (dbType == DB_SQL) {
                                 answer.append("'");
                             }
-                            if(dbType == DB_MYSQL) {
+                            if (dbType == DB_MYSQL) {
                                 answer.append("\"");
                             }
-                        }
-                        else
-                        {
+                        } else {
                             answer.append("NULL");
                         }
                         zpt2 = ", ";

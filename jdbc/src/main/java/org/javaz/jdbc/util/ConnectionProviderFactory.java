@@ -5,8 +5,7 @@ package org.javaz.jdbc.util;
  * You should extend this factory and implement own ConnectionProviderI
  * If you need use pools or do something else
  */
-public class ConnectionProviderFactory
-{
+public class ConnectionProviderFactory {
     public static final String PROVIDER_BONECP = "BoneCpConnectionProvider";
     public static final String PROVIDER_SIMPLE = "SimpleConnectionProvider";
 
@@ -27,8 +26,7 @@ public class ConnectionProviderFactory
         this.connectionProviderClass = connectionProviderClass;
     }
 
-    public ConnectionProviderI createProvider(String dbAddress)
-    {
+    public ConnectionProviderI createProvider(String dbAddress) {
         if (connectionProviderClass.equals(PROVIDER_SIMPLE)) {
             return new SimpleConnectionProvider();
         }

@@ -14,12 +14,10 @@ import java.util.Collection;
  * Implementation of RecordsFetcherI using SQL.
  * Can be used to form queue of given size, when table is huge.
  */
-public class SqlRecordsFetcher implements RecordsFetcherI
-{
+public class SqlRecordsFetcher implements RecordsFetcherI {
     public static long dbErrorDelay = 10000;
 
-    public SqlRecordsFetcher(String dsAddress, String fieldsClause, String fromClause, String whereClause)
-    {
+    public SqlRecordsFetcher(String dsAddress, String fieldsClause, String fromClause, String whereClause) {
         this.dsAddress = dsAddress;
         this.fieldsClause = fieldsClause;
         this.fromClause = fromClause;
@@ -34,38 +32,28 @@ public class SqlRecordsFetcher implements RecordsFetcherI
     private int selectType = JdbcConstants.ACTION_MAP_RESULTS_SET;
     private ConnectionProviderI providerI = new SimpleConnectionProvider();
 
-    public Object[] getMinMaxBounds()
-    {
+    public Object[] getMinMaxBounds() {
         Object min = null;
         Object max = null;
         Object count = null;
         boolean ok = false;
-        while (!ok)
-        {
-            try
-            {
+        while (!ok) {
+            try {
                 ArrayList list = UnsafeSqlHelper.runSqlUnsafe(providerI, dsAddress, getMinMaxQuery(), JdbcConstants.ACTION_COMPLEX_LIST_NO_METADATA, null);
-                if (!list.isEmpty())
-                {
+                if (!list.isEmpty()) {
                     ArrayList record = (ArrayList) list.get(0);
                     min = record.get(0);
                     max = record.get(1);
-                    if (record.size() > 2)
-                    {
+                    if (record.size() > 2) {
                         count = record.get(2);
                     }
                 }
                 ok = true;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
-                try
-                {
+                try {
                     Thread.sleep(dbErrorDelay);
-                }
-                catch (Exception e1)
-                {
+                } catch (Exception e1) {
                     e1.printStackTrace();
                 }
             }
@@ -73,18 +61,15 @@ public class SqlRecordsFetcher implements RecordsFetcherI
         return count != null ? new Object[]{min, max, count} : new Object[]{min, max};
     }
 
-    public Object[] getRecordsArray(long offset, long limit)
-    {
+    public Object[] getRecordsArray(long offset, long limit) {
         Collection collection = getRecordsCollection(offset, limit);
-        if (collection != null)
-        {
+        if (collection != null) {
             return collection.toArray(new Object[collection.size()]);
         }
         return null;
     }
 
-    public Collection getRecordsCollection(long offset, long limit)
-    {
+    public Collection getRecordsCollection(long offset, long limit) {
         try {
             return UnsafeSqlHelper.runSqlUnsafe(providerI, dsAddress, getRecordsQuery(offset, limit), selectType, null);
         } catch (SQLException e) {
@@ -93,83 +78,67 @@ public class SqlRecordsFetcher implements RecordsFetcherI
         return null;
     }
 
-    protected String getMinMaxQuery()
-    {
+    protected String getMinMaxQuery() {
         return "select min(" + getIdColumn() + "), max(" + getIdColumn() + "), count(" + getIdColumn() + ") from " + getFromClause() + " where (" + getQueryWhere() + ") and " + getIdColumn() + " is not null";
     }
 
-    protected String getRecordsQuery(long offset, long limit)
-    {
+    protected String getRecordsQuery(long offset, long limit) {
         return "select " + getFieldsClause() + " from " + getFromClause() + " where (" + getQueryWhere() + ") and " + getIdColumn() + " >= " + offset + " and " + getIdColumn() + " < " + (offset + limit);
     }
 
-    protected String getQueryWhere()
-    {
+    protected String getQueryWhere() {
         return (getWhereClause().isEmpty() ? "true" : getWhereClause());
     }
 
-    public ConnectionProviderI getProviderI()
-    {
+    public ConnectionProviderI getProviderI() {
         return providerI;
     }
 
-    public void setProviderI(ConnectionProviderI providerI)
-    {
+    public void setProviderI(ConnectionProviderI providerI) {
         this.providerI = providerI;
     }
 
-    public String getFieldsClause()
-    {
+    public String getFieldsClause() {
         return fieldsClause;
     }
 
-    public void setFieldsClause(String fieldsClause)
-    {
+    public void setFieldsClause(String fieldsClause) {
         this.fieldsClause = fieldsClause;
     }
 
-    public String getFromClause()
-    {
+    public String getFromClause() {
         return fromClause;
     }
 
-    public void setFromClause(String fromClause)
-    {
+    public void setFromClause(String fromClause) {
         this.fromClause = fromClause;
     }
 
-    public String getWhereClause()
-    {
+    public String getWhereClause() {
         return whereClause;
     }
 
-    public void setWhereClause(String whereClause)
-    {
+    public void setWhereClause(String whereClause) {
         this.whereClause = whereClause;
     }
 
-    public String getIdColumn()
-    {
+    public String getIdColumn() {
         return idColumn;
     }
 
-    public void setIdColumn(String idColumn)
-    {
+    public void setIdColumn(String idColumn) {
         this.idColumn = idColumn;
     }
 
-    public int getSelectType()
-    {
+    public int getSelectType() {
         return selectType;
     }
 
-    public void setSelectType(int selectType)
-    {
+    public void setSelectType(int selectType) {
         this.selectType = selectType;
     }
 
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -185,8 +154,7 @@ public class SqlRecordsFetcher implements RecordsFetcherI
         return true;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = dsAddress != null ? dsAddress.hashCode() : 0;
         result = 31 * result + (fieldsClause != null ? fieldsClause.hashCode() : 0);
         result = 31 * result + (fromClause != null ? fromClause.hashCode() : 0);
@@ -196,8 +164,7 @@ public class SqlRecordsFetcher implements RecordsFetcherI
         return result;
     }
 
-    public String getDescriptiveName()
-    {
+    public String getDescriptiveName() {
         return "{SqlRecordsFetcher (" + dsAddress + " // " + getFieldsClause() + " @ " + getFromClause() + " where={" + getWhereClause() + "}  id={" + getIdColumn() + "})}";
     }
 

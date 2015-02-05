@@ -7,5 +7,6 @@ import java.io.Serializable;
  */
 public interface MapConvertibleI extends Serializable, Cloneable {
     Comparable getPrimaryKey();
+
     void setGeneratedPrimaryKey(Comparable key);
 }

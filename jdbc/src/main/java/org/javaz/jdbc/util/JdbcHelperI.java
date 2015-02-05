@@ -8,10 +8,10 @@ import java.util.Map;
 /**
  *
  */
-public interface JdbcHelperI extends JdbcConstants
-{
+public interface JdbcHelperI extends JdbcConstants {
     /**
      * Getter + setter jdbcAddress
+     *
      * @param address to be set
      */
     public void setJdbcAddress(String address);
@@ -33,7 +33,7 @@ public interface JdbcHelperI extends JdbcConstants
     public void setProvider(ConnectionProviderI provider);
 
     /**
-     * @param query to execute
+     * @param query      to execute
      * @param parameters with
      * @return List of Maps, corresponding to this request.
      */
@@ -46,6 +46,7 @@ public interface JdbcHelperI extends JdbcConstants
      *
      * @param pair - query to execute with map of params
      * @return count or id
+     * @throws SQLException in case something wrong
      */
     public long runUpdate(StringMapPair pair) throws SQLException;
 
@@ -60,9 +61,10 @@ public interface JdbcHelperI extends JdbcConstants
     /**
      * Update something in DB
      *
-     * @param query to execute
+     * @param query      to execute
      * @param parameters with
      * @return count or id
+     * @throws SQLException in case something wrong
      */
     public long runUpdate(String query, Map parameters) throws SQLException;
 
@@ -70,19 +72,10 @@ public interface JdbcHelperI extends JdbcConstants
      * Update something in DB, but not expecting nothing back.
      * RETURNING not appended if DB supports this.
      *
-     * @param query to execute
+     * @param query      to execute
      * @param parameters with
      */
     public void runUpdateDataIgnore(String query, Map parameters);
-
-
-    /**
-     * Run a lots of updates in single Connection
-     *
-     * @param objects tuples for updates
-     * @return list with counts or ids
-     */
-    public ArrayList<List> runMassUpdate(ArrayList<Object[]> objects);
 
 
     /**

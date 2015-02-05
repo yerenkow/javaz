@@ -31,11 +31,13 @@ public abstract class AbstractMapConvertibleHelper<T extends MapConvertibleI> {
     public StringMapPair getDbUpdateQuery(T obj) {
         return getDbUpdateQuery(tableName, obj, false);
     }
+
     public StringMapPair getDbUpdateQuery(T obj, boolean forceInsert) {
         return getDbUpdateQuery(tableName, obj, forceInsert);
     }
+
     public StringMapPair getDbUpdateQuery(String tableName, T obj) {
-        return getDbUpdateQuery(tableName, obj, false );
+        return getDbUpdateQuery(tableName, obj, false);
     }
 
     public StringMapPair getDbDeleteQuery(T obj) {
@@ -49,5 +51,6 @@ public abstract class AbstractMapConvertibleHelper<T extends MapConvertibleI> {
     }
 
     public abstract StringMapPair getDbUpdateQuery(String tableName, T obj, boolean forceInsert);
+
     public abstract T buildFromMap(Map h);
 }

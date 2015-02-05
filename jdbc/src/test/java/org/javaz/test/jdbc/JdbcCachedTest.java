@@ -146,11 +146,11 @@ public class JdbcCachedTest
         Assert.assertEquals(list.size(), 3);
 
         ArrayList updates = new ArrayList();
-        updates.add(new Object[]{"insert into test values (101,'a')", null});
-        updates.add(new Object[]{"insert into test values (102,'b')", null});
-        updates.add(new Object[]{"insert into test values (103,'c')", null});
+        updates.add(new StringMapPair("insert into test values (101,'a')", null));
+        updates.add(new StringMapPair("insert into test values (102,'b')", null));
+        updates.add(new StringMapPair("insert into test values (103,'c')", null));
 
-        test.runMassUpdate(updates);
+        test.runMassUpdatePairs(updates);
 
         list = test.getRecordList("select * from test", null, false);
         Assert.assertEquals(list.size(), 6);
@@ -171,11 +171,11 @@ public class JdbcCachedTest
 
         ArrayList updates = new ArrayList();
         updates.clear();
-        updates.add(new Object[]{"insert into test2 (dt) values (?)", params});
-        updates.add(new Object[]{"insert into test2 (dt) values (?)", params});
-        updates.add(new Object[]{"insert into test2 (dt) values (?)", params});
+        updates.add(new StringMapPair("insert into test2 (dt) values (?)", params));
+        updates.add(new StringMapPair("insert into test2 (dt) values (?)", params));
+        updates.add(new StringMapPair("insert into test2 (dt) values (?)", params));
 
-        ArrayList<List> massUpdate = test.runMassUpdate(updates);
+        ArrayList<List> massUpdate = test.runMassUpdatePairs(updates);
         Assert.assertEquals(massUpdate.size(), 3);
         Assert.assertEquals(((List) massUpdate.get(0)).size(), 2);
 

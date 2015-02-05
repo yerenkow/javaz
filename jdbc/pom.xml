@@ -1,7 +1,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaz-jdbc</artifactId>
-    <version>1.6.2</version>
+    <version>1.7.0</version>
     <packaging>jar</packaging>
     <name>Javaz JDBC utils</name>
     <description>JDBC utils and helpers</description>
@@ -16,18 +16,13 @@
     <dependencies>
         <dependency>
             <groupId>org.javaz</groupId>
-            <artifactId>javaz-cache</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javaz</groupId>
             <artifactId>javaz-queues</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -38,7 +33,7 @@
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
-            <version>0.8.0.RELEASE</version>
+            <version>0.8.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

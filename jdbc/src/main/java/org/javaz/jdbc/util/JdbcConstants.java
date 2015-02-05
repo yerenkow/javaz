@@ -3,8 +3,7 @@ package org.javaz.jdbc.util;
 /**
  *
  */
-public interface JdbcConstants
-{
+public interface JdbcConstants {
     /**
      * Marker, so ConnectionProviderI can guess that it's JDBC URL
      */

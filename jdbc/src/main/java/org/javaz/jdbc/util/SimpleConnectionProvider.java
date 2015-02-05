@@ -14,14 +14,11 @@ import java.sql.SQLException;
  * This class provides java.sqlConnection based on some String.
  * This implementation supports jdbc:... and java:... URLs for SQL.
  */
-public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConstants
-{
+public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConstants {
     private static Logger logger = LogManager.getLogger(SimpleConnectionProvider.class);
 
-    public Connection getConnection(String dsAddress) throws SQLException
-    {
-        if (dsAddress.startsWith(JDBC_MARKER))
-        {
+    public Connection getConnection(String dsAddress) throws SQLException {
+        if (dsAddress.startsWith(JDBC_MARKER)) {
             return getPlainConnection(dsAddress);
         }
 
@@ -33,25 +30,18 @@ public class SimpleConnectionProvider implements ConnectionProviderI, JdbcConsta
     }
 
     protected Connection getJndiConnection(String dsAddress) throws SQLException {
-        if (dsAddress.startsWith(JAVA_MARKER))
-        {
+        if (dsAddress.startsWith(JAVA_MARKER)) {
             InitialContext context = null;
-            try
-            {
+            try {
                 context = new InitialContext();
-            }
-            catch (NamingException e)
-            {
+            } catch (NamingException e) {
                 logger.error(e);
                 return null;
             }
-            DataSource ds = null;
-            try
-            {
+            DataSource ds;
+            try {
                 ds = (DataSource) context.lookup(dsAddress);
-            }
-            catch (NamingException e)
-            {
+            } catch (NamingException e) {
                 logger.error(e);
                 return null;
             }

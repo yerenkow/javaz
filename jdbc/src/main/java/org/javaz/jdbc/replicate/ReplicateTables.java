@@ -24,14 +24,12 @@ import java.util.*;
  * <p>
  * It's POC, but it's fully usable on less than hundreds of thousands rows.
  */
-public class ReplicateTables
-{
+public class ReplicateTables {
     public static String TYPE_MYSQL = "mysql";
     public static String TYPE_POSTGRESQL = "postgresql";
     public static HashMap dbQuotes = new HashMap();
 
-    static
-    {
+    static {
         dbQuotes.put(TYPE_MYSQL, "`");
     }
 
@@ -50,18 +48,15 @@ public class ReplicateTables
     //todo specified fields
     //todo fields-marks of success replicate
 
-    public String getLog()
-    {
+    public String getLog() {
         return log.toString();
     }
 
-    public void clearLog()
-    {
+    public void clearLog() {
         log = new StringBuffer();
     }
 
-    public void init(Object parameters)
-    {
+    public void init(Object parameters) {
 /*
         Example init from JSON
 
@@ -129,15 +124,12 @@ public class ReplicateTables
 */
     }
 
-    public boolean equalRecords(Object a, Object b)
-    {
-        if (a instanceof java.sql.Timestamp && b instanceof java.sql.Timestamp)
-        {
+    public boolean equalRecords(Object a, Object b) {
+        if (a instanceof java.sql.Timestamp && b instanceof java.sql.Timestamp) {
             //hack here, since different DB realization;
             long diff = ((Timestamp) a).getTime() - ((Timestamp) b).getTime();
             //if more than N milliseconds;
-            if (Math.abs(diff) < stampPrecision)
-            {
+            if (Math.abs(diff) < stampPrecision) {
                 return true;
             }
         }
@@ -145,24 +137,20 @@ public class ReplicateTables
         return a.equals(b);
     }
 
-    public void runReplicate() throws InterruptedException
-    {
+    public void runReplicate() throws InterruptedException {
         if (verbose)
             log.append("Started at " + Calendar.getInstance().getTime() + "\r\n");
         Connection connectionFrom = null;
         Connection connectionTo = null;
-        try
-        {
+        try {
             connectionFrom = providerI.getConnection(dbFrom);
             connectionTo = providerI.getConnection(dbTo);
             PreparedStatement preparedStatementFrom = null;
             PreparedStatement preparedStatementTo = null;
             ResultSet resultSet = null;
 
-            for (Iterator<HashMap<String, String>> HashMapIterator = tables.iterator(); HashMapIterator.hasNext(); )
-            {
-                try
-                {
+            for (Iterator<HashMap<String, String>> HashMapIterator = tables.iterator(); HashMapIterator.hasNext(); ) {
+                try {
                     HashMap<String, String> h = HashMapIterator.next();
                     String name = h.get("name");
                     String name2 = h.get("name2");
@@ -178,36 +166,27 @@ public class ReplicateTables
                     //1. find all ids from DB1
                     ArrayList db1 = new ArrayList();
                     String nullMark = "____NULL";
-                    if (b)
-                    {
+                    if (b) {
                         resultSet = preparedStatementFrom.getResultSet();
                         ResultSetMetaData setMetaData = resultSet.getMetaData();
-                        for (int i = 1; i <= setMetaData.getColumnCount(); i++)
-                        {
+                        for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
                             meta.put(setMetaData.getColumnLabel(i).toLowerCase(), setMetaData.getColumnClassName(i));
                         }
-                        while (resultSet.next())
-                        {
+                        while (resultSet.next()) {
                             HashMap results = new HashMap();
-                            for (int i = 1; i <= setMetaData.getColumnCount(); i++)
-                            {
+                            for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
                                 String columnName = setMetaData.getColumnLabel(i).toLowerCase();
                                 Object o = resultSet.getObject(i);
-                                if (o != null)
-                                {
+                                if (o != null) {
                                     results.put(columnName, o);
-                                }
-                                else
-                                {
+                                } else {
                                     results.put(columnName + nullMark, nullMark);
                                 }
                             }
                             db1.add(results);
                         }
                         resultSet.close();
-                    }
-                    else
-                    {
+                    } else {
                         log.append("Couldn't execute select from " + dbFrom + "/" + name + " /r/n");
                         return;
                     }
@@ -216,11 +195,9 @@ public class ReplicateTables
                     HashMap records1 = new HashMap();
                     HashMap toInsert = new HashMap();
                     HashMap toUpdate = new HashMap();
-                    for (Iterator iterator = db1.iterator(); iterator.hasNext(); )
-                    {
+                    for (Iterator iterator = db1.iterator(); iterator.hasNext(); ) {
                         HashMap record = (HashMap) iterator.next();
-                        if (allIds.length() != 0)
-                        {
+                        if (allIds.length() != 0) {
                             allIds.append(",");
                         }
                         allIds.append(record.get("id"));
@@ -230,14 +207,11 @@ public class ReplicateTables
                     toInsert.putAll(records1);
 
                     //2. find all ids to delete in DB2;
-                    if (allIds.length() > 0)
-                    {
+                    if (allIds.length() > 0) {
                         preparedStatementTo = connectionTo.prepareStatement("delete from " + name2 + " where id not in (" + allIds.toString() + ")" + where2);
                         if (verbose)
                             log.append("deleted from " + dbTo + "/" + name2 + " " + preparedStatementTo.executeUpdate() + " records;\r\n");
-                    }
-                    else
-                    {
+                    } else {
                         if (verbose)
                             log.append("No records in " + dbFrom + "/" + name + ", nothing to delete in " + dbTo + "/" + name2 + " ;\r\n");
                     }
@@ -247,35 +221,26 @@ public class ReplicateTables
                     b = preparedStatementTo.execute();
                     HashMap meta2 = new HashMap();
                     ArrayList db2 = new ArrayList();
-                    if (b)
-                    {
+                    if (b) {
                         resultSet = preparedStatementTo.getResultSet();
                         ResultSetMetaData setMetaData = resultSet.getMetaData();
-                        for (int i = 1; i <= setMetaData.getColumnCount(); i++)
-                        {
+                        for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
                             meta2.put(setMetaData.getColumnLabel(i).toLowerCase(), setMetaData.getColumnClassName(i));
                         }
-                        while (resultSet.next())
-                        {
+                        while (resultSet.next()) {
                             HashMap results = new HashMap();
-                            for (int i = 1; i <= setMetaData.getColumnCount(); i++)
-                            {
+                            for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
                                 String columnName = setMetaData.getColumnLabel(i).toLowerCase();
                                 Object o = resultSet.getObject(i);
-                                if (o != null)
-                                {
+                                if (o != null) {
                                     results.put(columnName, o);
-                                }
-                                else
-                                {
+                                } else {
                                     results.put(columnName + nullMark, nullMark);
                                 }
                             }
                             db2.add(results);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         log.append("Couldn't execute select from " + dbTo + "/" + name2 + " /r/n");
                         return;
                     }
@@ -287,29 +252,22 @@ public class ReplicateTables
                             temp.putAll(meta);
 
                             Set set = meta2.keySet();
-                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); )
-                            {
+                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
                                 Object o = iteratorSet.next();
-                                if (meta.containsKey(o))
-                                {
-                                    if (meta.get(o).equals(meta2.get(o)))
-                                    {
+                                if (meta.containsKey(o)) {
+                                    if (meta.get(o).equals(meta2.get(o))) {
                                         temp.remove(o);
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     log.append("ERROR: Meta data not equals! \r\n");
                                     log.append(o + "\t" + temp.get(o) + " not present in table " + name + "\r\n");
                                 }
                             }
                         }
-                        if (!temp.isEmpty())
-                        {
+                        if (!temp.isEmpty()) {
                             log.append("ERROR: Meta data not equals! \r\n");
                             Set set = temp.keySet();
-                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); )
-                            {
+                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
                                 Object o = iteratorSet.next();
                                 log.append(o + "\t" + temp.get(o) + " != " + meta2.get(o) + "\r\n");
                             }
@@ -318,36 +276,27 @@ public class ReplicateTables
                         }
                     }
 
-                    for (Iterator iterator = db2.iterator(); iterator.hasNext(); )
-                    {
+                    for (Iterator iterator = db2.iterator(); iterator.hasNext(); ) {
                         HashMap db2Record = (HashMap) iterator.next();
-                        if (toInsert.containsKey(db2Record.get("id")))
-                        {
+                        if (toInsert.containsKey(db2Record.get("id"))) {
                             HashMap db1Record = (HashMap) toInsert.get(db2Record.get("id"));
                             boolean equal = true;
                             Set set = meta2.keySet();
-                            for (Iterator iteratorSet = set.iterator(); equal && iteratorSet.hasNext(); )
-                            {
+                            for (Iterator iteratorSet = set.iterator(); equal && iteratorSet.hasNext(); ) {
                                 String columnName2 = (String) iteratorSet.next();
                                 if (db2Record.containsKey(columnName2 + nullMark) ||
-                                        db1Record.containsKey(columnName2 + nullMark))
-                                {
+                                        db1Record.containsKey(columnName2 + nullMark)) {
                                     equal = db2Record.containsKey(columnName2 + nullMark) && db1Record.containsKey(columnName2 + nullMark);
-                                }
-                                else
-                                {
+                                } else {
                                     //checking not-null;
                                     equal = equalRecords(db1Record.get(columnName2), db2Record.get(columnName2));
                                 }
                             }
-                            if (!equal)
-                            {
+                            if (!equal) {
                                 toUpdate.put(db2Record.get("id"), toInsert.get(db2Record.get("id")));
                             }
                             toInsert.remove(db2Record.get("id"));
-                        }
-                        else
-                        {
+                        } else {
                             //this case shouldn't happen at all, since we've deleted all such records
 
                         }
@@ -356,11 +305,9 @@ public class ReplicateTables
                     log.append("Found " + toUpdate.size() + " to update, and " + toInsert.size() + " to insert.\r\n");
                     int totalUpdated = 0;
                     //4. calculate all to update in DB2
-                    if (!toUpdate.isEmpty())
-                    {
+                    if (!toUpdate.isEmpty()) {
                         Set set = toUpdate.keySet();
-                        for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); )
-                        {
+                        for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
                             StringBuffer sql = new StringBuffer();
                             Object id = iteratorSet.next();
                             HashMap r = (HashMap) toUpdate.get(id);
@@ -368,18 +315,14 @@ public class ReplicateTables
                             StringBuffer values = new StringBuffer();
 
                             Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); )
-                            {
+                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
                                 Object o = iteratorSetEn.next();
-                                if (!o.equals("id"))
-                                {
-                                    if (values.length() != 0)
-                                    {
+                                if (!o.equals("id")) {
+                                    if (values.length() != 0) {
                                         values.append(",");
                                     }
                                     Object quote = dbQuotes.get(dbToType);
-                                    if (quote == null)
-                                    {
+                                    if (quote == null) {
                                         quote = "";
                                     }
                                     values.append(quote).append(o).append(quote);
@@ -390,21 +333,16 @@ public class ReplicateTables
                             PreparedStatement statement = connectionTo.prepareStatement(sql.toString() + values.toString());
                             en = meta2.keySet();
                             int i = 0;
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); )
-                            {
+                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
                                 Object o = iteratorSetEn.next();
-                                if (!o.equals("id"))
-                                {
+                                if (!o.equals("id")) {
                                     i++;
                                     statement.setObject(i, r.get(o));
                                 }
                             }
-                            try
-                            {
+                            try {
                                 totalUpdated += statement.executeUpdate();
-                            }
-                            catch (SQLException e)
-                            {
+                            } catch (SQLException e) {
                                 e.printStackTrace();
                                 log.append("Error occured: " + e + "\r\n");
                             }
@@ -414,25 +352,20 @@ public class ReplicateTables
                         log.append("Updated " + totalUpdated + " records.\r\n");
 
                     //4. calculate all to insert to DB2
-                    if (!toInsert.isEmpty())
-                    {
+                    if (!toInsert.isEmpty()) {
                         StringBuffer header = new StringBuffer();
-                        if (header.length() == 0)
-                        {
+                        if (header.length() == 0) {
                             header.append(" INSERT INTO " + name2 + " (");
                             StringBuffer columns = new StringBuffer();
                             Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); )
-                            {
+                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
                                 Object o = iteratorSetEn.next();
-                                if (columns.length() != 0)
-                                {
+                                if (columns.length() != 0) {
                                     columns.append(",");
                                 }
 
                                 Object quote = dbQuotes.get(dbToType);
-                                if (quote == null)
-                                {
+                                if (quote == null) {
                                     quote = "";
                                 }
                                 columns.append(quote).append(o).append(quote);
@@ -442,24 +375,20 @@ public class ReplicateTables
                         }
 
                         Set enumeration = toInsert.keySet();
-                        for (Iterator iteratorSetX = enumeration.iterator(); iteratorSetX.hasNext(); )
-                        {
+                        for (Iterator iteratorSetX = enumeration.iterator(); iteratorSetX.hasNext(); ) {
                             Object id = iteratorSetX.next();
                             HashMap r = (HashMap) toInsert.get(id);
                             StringBuffer values = new StringBuffer();
-                            if (values.length() != 0)
-                            {
+                            if (values.length() != 0) {
                                 values.append(",");
                             }
                             values.append("(");
 
                             StringBuffer columns = new StringBuffer();
                             Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); )
-                            {
+                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
                                 Object o = iteratorSetEn.next();
-                                if (columns.length() != 0)
-                                {
+                                if (columns.length() != 0) {
                                     columns.append(",");
                                 }
                                 columns.append(" ? ");
@@ -470,8 +399,7 @@ public class ReplicateTables
                             PreparedStatement statement = connectionTo.prepareStatement(header.toString() + values.toString());
                             en = meta2.keySet();
                             int i = 0;
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); )
-                            {
+                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
                                 Object o = iteratorSetEn.next();
                                 i++;
                                 statement.setObject(i, r.get(o));
@@ -482,43 +410,29 @@ public class ReplicateTables
 
                     if (verbose)
                         log.append("Replication finished OK.\r\n");
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     log.append("Some error occured: " + e + "\r\n");
                     log.append(e.getMessage() + "\r\n");
                     e.printStackTrace();
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.append("Error with query = " + e);
             log.append(e.getMessage());
             return;
-        }
-        finally
-        {
-            try
-            {
-                if (connectionFrom != null && !connectionFrom.isClosed())
-                {
+        } finally {
+            try {
+                if (connectionFrom != null && !connectionFrom.isClosed()) {
                     connectionFrom.close();
                 }
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
-            try
-            {
-                if (connectionTo != null && !connectionTo.isClosed())
-                {
+            try {
+                if (connectionTo != null && !connectionTo.isClosed()) {
                     connectionTo.close();
                 }
-            }
-            catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }

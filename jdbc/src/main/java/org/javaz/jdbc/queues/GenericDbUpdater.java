@@ -11,8 +11,7 @@ import java.util.concurrent.Executors;
 /**
  *
  */
-public class GenericDbUpdater extends SimplePartialSender
-{
+public class GenericDbUpdater extends SimplePartialSender {
 
     public static String DEFAULT_MAX_UPDATE_THREADS = "16";
     public static String DEFAULT_SHORT_SEND_PERIOD = "100";
@@ -54,28 +53,22 @@ public class GenericDbUpdater extends SimplePartialSender
 
     private ExecutorService service = null;
 
-    private GenericDbUpdater(PartialSenderFeedI senderFeedI)
-    {
+    private GenericDbUpdater(PartialSenderFeedI senderFeedI) {
         //no super(); call, since super is auto start Thread with itself
         this.senderFeedI = senderFeedI;
     }
 
-    private void initPool()
-    {
+    private void initPool() {
         service = Executors.newFixedThreadPool(MAX_UPDATE_THREADS);
     }
 
     //NOT running by thread, just here to hold DB ID AND query.
     private static final HashMap<String, GenericDbUpdater> fakes = new HashMap<String, GenericDbUpdater>();
 
-    public static GenericDbUpdater getInstance(String query, String db)
-    {
-        if (!running)
-        {
-            synchronized (queryQueues)
-            {
-                if (!running)
-                {
+    public static GenericDbUpdater getInstance(String query, String db) {
+        if (!running) {
+            synchronized (queryQueues) {
+                if (!running) {
                     running = true;
                     GenericDbUpdater instance = new GenericDbUpdater(null);
                     instance.setSendPeriod(SHORT_SEND_PERIOD);
@@ -87,8 +80,7 @@ public class GenericDbUpdater extends SimplePartialSender
         }
 
         String keyCalculated = db + "#" + query.hashCode();
-        if (fakes.containsKey(keyCalculated))
-        {
+        if (fakes.containsKey(keyCalculated)) {
             return fakes.get(keyCalculated);
         }
         GenericDbUpdater fake = new GenericDbUpdater(null);
@@ -99,18 +91,14 @@ public class GenericDbUpdater extends SimplePartialSender
         return fake;
     }
 
-    public void addToQueue(Object o)
-    {
-        synchronized (queryQueues)
-        {
-            if (!queryQueues.containsKey(db))
-            {
+    public void addToQueue(Object o) {
+        synchronized (queryQueues) {
+            if (!queryQueues.containsKey(db)) {
                 queryQueues.put(db, new HashMap());
             }
 
             HashMap map = queryQueues.get(db);
-            if (!map.containsKey(query))
-            {
+            if (!map.containsKey(query)) {
                 map.put(query, new ArrayList());
             }
 
@@ -118,18 +106,14 @@ public class GenericDbUpdater extends SimplePartialSender
         }
     }
 
-    public void addToQueueAll(Collection c)
-    {
-        synchronized (queryQueues)
-        {
-            if (!queryQueues.containsKey(db))
-            {
+    public void addToQueueAll(Collection c) {
+        synchronized (queryQueues) {
+            if (!queryQueues.containsKey(db)) {
                 queryQueues.put(db, new HashMap());
             }
 
             HashMap map = queryQueues.get(db);
-            if (!map.containsKey(query))
-            {
+            if (!map.containsKey(query)) {
                 map.put(query, new ArrayList());
             }
 
@@ -137,41 +121,31 @@ public class GenericDbUpdater extends SimplePartialSender
         }
     }
 
-    public void run()
-    {
-        while (running)
-        {
+    public void run() {
+        while (running) {
             runDbUpdates();
-            try
-            {
+            try {
                 Thread.sleep(getSendPeriod());
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
 
-    public void runDbUpdates()
-    {
+    public void runDbUpdates() {
         boolean noDataToUpdate = false;
         //this synchronized code blocks only for brief time - when thread tries to find something to update
-        synchronized (queryQueues)
-        {
+        synchronized (queryQueues) {
             Set<String> dbs = queryQueues.keySet();
-            for (Iterator<String> iterator = dbs.iterator(); iterator.hasNext(); )
-            {
+            for (Iterator<String> iterator = dbs.iterator(); iterator.hasNext(); ) {
                 String db = iterator.next();
                 HashMap queryObject = queryQueues.get(db);
                 ArrayList queriesIterator = new ArrayList(queryObject.keySet());
-                for (Iterator iterator1 = queriesIterator.iterator(); iterator1.hasNext(); )
-                {
+                for (Iterator iterator1 = queriesIterator.iterator(); iterator1.hasNext(); ) {
                     String queryUpdate = (String) iterator1.next();
                     List tmpList = (List) queryObject.remove(queryUpdate);
-                    if (!tmpList.isEmpty())
-                    {
+                    if (!tmpList.isEmpty()) {
                         service.execute(new GenericDbUpdaterThread(db, queryUpdate, tmpList,
                                 factory == null ? JdbcCachedHelper.defaultFactory.createProvider(db)
                                         : factory.createProvider(db)));
@@ -181,8 +155,7 @@ public class GenericDbUpdater extends SimplePartialSender
             }
         }
 
-        if (noDataToUpdate)
-        {
+        if (noDataToUpdate) {
             //if there really nothing to update - let's sleep for a bit more.
             setSendPeriod(LONG_SEND_PERIOD);
             return;
@@ -194,23 +167,19 @@ public class GenericDbUpdater extends SimplePartialSender
     private String query = null;
     private String db = null;
 
-    public String getQuery()
-    {
+    public String getQuery() {
         return query;
     }
 
-    public void setQuery(String query)
-    {
+    public void setQuery(String query) {
         this.query = query;
     }
 
-    public String getDb()
-    {
+    public String getDb() {
         return db;
     }
 
-    public void setDb(String db)
-    {
+    public void setDb(String db) {
         this.db = db;
     }
 }
