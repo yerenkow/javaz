@@ -1,1 +1,1 @@
-<#include 'test.include.child.ftl'>
+<#include '*/1/test.include.child.ftl'>

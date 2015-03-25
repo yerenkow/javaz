@@ -111,11 +111,11 @@ public class RenderFtl
             {
                 simpleHash.put("beans", newModel.get("beans"));
                 StringWriter writer = new StringWriter();
-                proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + "-name.ftl", writer);
+                proceedTemplate(simpleHash, templatePath, template + "-name.ftl", writer);
                 String fileName = writer.getBuffer().toString().trim();
                 File fileOut = new File(outPath, fileName);
                 fileOut.getParentFile().mkdirs();
-                proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + ".ftl", fileOut);
+                proceedTemplate(simpleHash, templatePath, template + ".ftl", fileOut);
             }
             if (parseType == RENDER_NEW_BEAN_BY_ONE)
             {
@@ -125,11 +125,11 @@ public class RenderFtl
                     Object bean = iterator.next();
                     simpleHash.put("bean", bean);
                     StringWriter writer = new StringWriter();
-                    proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + "-name.ftl", writer);
+                    proceedTemplate(simpleHash, templatePath, template + "-name.ftl", writer);
                     String fileName = writer.getBuffer().toString().trim();
                     File fileOut = new File(outPath, fileName);
                     fileOut.getParentFile().mkdirs();
-                    proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + ".ftl", fileOut);
+                    proceedTemplate(simpleHash, templatePath, template + ".ftl", fileOut);
                 }
             }
             if (parseType == RENDER_DIFFERENCE)
@@ -156,11 +156,11 @@ public class RenderFtl
                     simpleHash.put("v2", "new");
 
                 StringWriter writer = new StringWriter();
-                proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + "-name.ftl", writer);
+                proceedTemplate(simpleHash, templatePath, template + "-name.ftl", writer);
                 String fileName = writer.getBuffer().toString().trim();
                 File fileOut = new File(outPath, fileName);
                 fileOut.getParentFile().mkdirs();
-                proceedTemplate(simpleHash, templatePath + (templatePath.endsWith("/") ? "" : "/") + template + ".ftl", fileOut);
+                proceedTemplate(simpleHash, templatePath, template + ".ftl", fileOut);
             }
         }
         catch (Exception e)
@@ -201,11 +201,11 @@ public class RenderFtl
         }
     }
 
-    public static void proceedTemplate(SimpleHash simpleHash, String template, File fileOut)
+    public static void proceedTemplate(SimpleHash simpleHash, String templatePath, String template, File fileOut)
     {
         try
         {
-            proceedTemplate(simpleHash, template, new OutputStreamWriter(new FileOutputStream(fileOut)));
+            proceedTemplate(simpleHash, templatePath, template, new OutputStreamWriter(new FileOutputStream(fileOut)));
         }
         catch (Exception e)
         {
@@ -214,19 +214,13 @@ public class RenderFtl
 
     }
 
-    public static void proceedTemplate(SimpleHash simpleHash, String template, Writer output)
+    public static void proceedTemplate(SimpleHash simpleHash, String templatePath, String template, Writer output)
     {
         try
         {
-            Configuration cfg = new Configuration();
-            File topParent = new File(template).getCanonicalFile();
-            if (topParent.getParentFile() != null)
-            {
-                topParent = topParent.getParentFile();
-            }
-            cfg.setDirectoryForTemplateLoading(topParent);
-            //very ugly hack due to dumb freemarker!!!
-            Template tpl = cfg.getTemplate(new File(template).getCanonicalPath().substring(topParent.getCanonicalPath().length()));
+            Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+            cfg.setDirectoryForTemplateLoading(new File(templatePath));
+            Template tpl = cfg.getTemplate(template);
             tpl.process(simpleHash, output);
             output.close();
         }
