@@ -220,7 +220,7 @@ public class RenderFtl
         {
             Configuration cfg = new Configuration();
             File topParent = new File(template).getCanonicalFile();
-            while (topParent.getParentFile() != null)
+            if (topParent.getParentFile() != null)
             {
                 topParent = topParent.getParentFile();
             }
