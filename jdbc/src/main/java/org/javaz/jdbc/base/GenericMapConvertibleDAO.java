@@ -3,6 +3,7 @@ package org.javaz.jdbc.base;
 import org.javaz.jdbc.util.JdbcCachedHelper;
 import org.javaz.jdbc.util.StringMapPair;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -23,7 +24,7 @@ public class GenericMapConvertibleDAO {
         this.databaseAddress = databaseAddress;
     }
 
-    private <T extends MapConvertibleI> void internalSave(T obj, AbstractMapConvertibleHelper<T> builder, boolean forceInsert) throws Exception {
+    private <T extends MapConvertibleI> void internalSave(T obj, AbstractMapConvertibleHelper<T> builder, boolean forceInsert) throws SQLException {
         boolean idIsMissing = obj.getPrimaryKey() == null;
         StringMapPair update = builder.getDbUpdateQuery(obj, forceInsert);
         long newId = JdbcCachedHelper.getInstance(databaseAddress).runUpdate(update);
@@ -32,19 +33,19 @@ public class GenericMapConvertibleDAO {
         }
     }
 
-    public <T extends MapConvertibleI> void add(T obj, AbstractMapConvertibleHelper<T> builder) throws Exception {
+    public <T extends MapConvertibleI> void add(T obj, AbstractMapConvertibleHelper<T> builder) throws SQLException {
         internalSave(obj, builder, !(obj.getPrimaryKey() == null));
     }
 
-    public <T extends MapConvertibleI> void saveOrUpdate(T obj, AbstractMapConvertibleHelper<T> builder) throws Exception {
+    public <T extends MapConvertibleI> void saveOrUpdate(T obj, AbstractMapConvertibleHelper<T> builder) throws SQLException {
         internalSave(obj, builder, false);
     }
 
-    public <T extends MapConvertibleI> List<T> all(AbstractMapConvertibleHelper<T> builder) throws Exception {
+    public <T extends MapConvertibleI> List<T> all(AbstractMapConvertibleHelper<T> builder) {
         return findByConditions(null, null, builder);
     }
 
-    public <T extends MapConvertibleI> T findById(Comparable id, AbstractMapConvertibleHelper<T> builder) throws Exception {
+    public <T extends MapConvertibleI> T findById(Comparable id, AbstractMapConvertibleHelper<T> builder) {
         HashMap<Integer, Object> params = new HashMap<Integer, Object>();
         params.put(params.size() + 1, id);
         List<T> objects = findByConditions("where " + builder.getIdName() + " = ?", params, builder);
@@ -68,7 +69,7 @@ public class GenericMapConvertibleDAO {
         return list;
     }
 
-    public <T extends MapConvertibleI> void delete(T object, AbstractMapConvertibleHelper<T> builder) throws Exception {
+    public <T extends MapConvertibleI> void delete(T object, AbstractMapConvertibleHelper<T> builder) {
         StringMapPair delete = builder.getDbDeleteQuery(object);
         JdbcCachedHelper.getInstance(databaseAddress).runUpdateDataIgnore(delete);
     }
