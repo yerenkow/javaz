@@ -18,22 +18,17 @@ public class JdbcHelper extends AbstractJdbcHelper {
     }
 
     @Override
-    public long runUpdate(StringMapPair pair) throws SQLException {
-        return runUpdate(pair.getString(), pair.getMap());
-    }
-
-    @Override
-    public void runUpdateDataIgnore(StringMapPair pair) {
-        runUpdateDataIgnore(pair.getString(), pair.getMap());
-    }
-
-    @Override
-    public long runUpdate(String query, Map parameters) throws SQLException {
-        ArrayList list = UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE, parameters);
+    public Number runUpdate(String query, Map<Integer, Object> parameters) {
+        ArrayList list = null;
+        try {
+            list = UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE, parameters);
+        } catch (SQLException e) {
+            logger.error(e);
+        }
         if (list != null && !list.isEmpty()) {
             Object object = list.get(0);
             if (object != null && object instanceof Number) {
-                return ((Number) object).longValue();
+                return (Number) object;
             }
         }
 
@@ -41,16 +36,13 @@ public class JdbcHelper extends AbstractJdbcHelper {
     }
 
     @Override
-    public void runUpdateDataIgnore(String query, Map parameters) {
-        try {
-            UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_EXECUTE_UPDATE_DATA_IGNORE, parameters);
-        } catch (SQLException e) {
-            logger.error(e);
-        }
+    @Deprecated
+    public void runUpdateDataIgnore(String query, Map<Integer, Object> parameters) {
+        runUpdate(query, parameters);
     }
 
     @Override
-    public List getRecordList(String query, Map parameters, boolean useCache) {
+    public List getRecordList(String query, Map<Integer, Object> parameters) {
         try {
             return UnsafeSqlHelper.runSqlUnsafe(getProvider(), jdbcAddress, query, ACTION_MAP_RESULTS_SET, parameters);
         } catch (SQLException e) {

@@ -10,10 +10,7 @@ import java.util.Map;
  */
 public abstract class AbstractJdbcHelper implements JdbcHelperI {
     protected String jdbcAddress = null;
-    protected long listRecordsTtl = DEFAULT_TTL_LISTS;
     protected ConnectionProviderI provider = new SimpleConnectionProvider();
-    protected Boolean defaultUseCache =
-            System.getProperty("org.javaz.jdbc.util.AbstractJdbcHelper.defaultUseCache", "FALSE").equalsIgnoreCase("TRUE");
 
     public void setJdbcAddress(String jdbcAddress) {
         this.jdbcAddress = jdbcAddress;
@@ -31,27 +28,17 @@ public abstract class AbstractJdbcHelper implements JdbcHelperI {
         this.provider = provider;
     }
 
-    public long getListRecordsTtl() {
-        return listRecordsTtl;
+    public abstract Number runUpdate(String query, Map<Integer, Object> parameters);
+
+    public abstract void runUpdateDataIgnore(String query, Map<Integer, Object> parameters);
+
+    public Number runUpdate(StringMapPair pair) {
+        return runUpdate(pair.getString(), pair.getMap());
     }
 
-    public void setListRecordsTtl(long listRecordsTtl) {
-        this.listRecordsTtl = listRecordsTtl;
+    public void runUpdateDataIgnore(StringMapPair pair) {
+        runUpdateDataIgnore(pair.getString(), pair.getMap());
     }
-
-    public List getRecordList(String query, Map parameters) {
-        return getRecordList(query, parameters, defaultUseCache);
-    }
-
-    public abstract List getRecordList(String query, Map parameters, boolean useCache);
-
-    public abstract long runUpdate(String query, Map parameters) throws SQLException;
-
-    public abstract void runUpdateDataIgnore(String query, Map parameters);
-
-    public abstract long runUpdate(StringMapPair pair) throws SQLException;
-
-    public abstract void runUpdateDataIgnore(StringMapPair pair);
 
     public abstract ArrayList<List> runMassUpdatePairs(ArrayList<StringMapPair> pairs);
 

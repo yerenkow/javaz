@@ -58,6 +58,4 @@ public interface JdbcConstants {
      */
     public static final int ACTION_EXECUTE_UPDATE_DATA_IGNORE = 5;
 
-    public static final long DEFAULT_TTL_LISTS = 300000l;
-
 }

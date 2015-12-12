@@ -43,8 +43,6 @@ public class JdbcCachedTest
         Assert.assertEquals(address, test.getJdbcAddress());
         provider = test.getProvider();
         test.setProvider(provider);
-        long ttl = test.getListRecordsTtl();
-        test.setListRecordsTtl(ttl);
 
         Server server = new Server();
         server.setAddress("localhost");
@@ -114,11 +112,11 @@ public class JdbcCachedTest
         replicator.runReplicate();
 
 
-        List recordList = test.getRecordList("select * from  blobtest", null, false);
+        List recordList = test.getRecordList("select * from  blobtest", null);
         Assert.assertEquals(recordList.size(), 1);
         Object bb = ((Map) recordList.iterator().next()).get("bb");
 
-        recordList = test2.getRecordList("select * from  blobtest2", null, false);
+        recordList = test2.getRecordList("select * from  blobtest2", null);
         Assert.assertEquals(recordList.size(), 1);
         Object bb2 = ((Map) recordList.iterator().next()).get("bb");
 
@@ -142,7 +140,7 @@ public class JdbcCachedTest
         UnsafeSqlHelper.addArrayParameters(params, id3);
 
         List list =
-                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params, true);
+                test.getRecordList("select * from test where id in (" + UnsafeSqlHelper.repeatQuestionMark(params.size()) + ")", params);
         Assert.assertEquals(list.size(), 3);
 
         ArrayList updates = new ArrayList();
@@ -152,7 +150,7 @@ public class JdbcCachedTest
 
         test.runMassUpdatePairs(updates);
 
-        list = test.getRecordList("select * from test", null, false);
+        list = test.getRecordList("select * from test", null);
         Assert.assertEquals(list.size(), 6);
 
         test.runUpdateDataIgnore("drop table test", null);
@@ -210,7 +208,7 @@ public class JdbcCachedTest
         dbUpdater.addToQueue(1);
         Thread.sleep(GenericDbUpdater.LONG_SEND_PERIOD);
 
-        List list = test.getRecordList("select * from test3 where name='x'", null, false);
+        List list = test.getRecordList("select * from test3 where name='x'", null);
         Assert.assertEquals(list.size(), 1);
 
         ArrayList collection = new ArrayList();
@@ -220,11 +218,11 @@ public class JdbcCachedTest
         dbUpdater.addToQueueAll(collection);
         int tries = 3;
 
-        list = test.getRecordList("select * from test3 where name='x'", null, false);
+        list = test.getRecordList("select * from test3 where name='x'", null);
         while (tries-- > 0 && list.size() != 3)
         {
             Thread.sleep(GenericDbUpdater.LONG_SEND_PERIOD);
-            list = test.getRecordList("select * from test3 where name='x'", null, false);
+            list = test.getRecordList("select * from test3 where name='x'", null);
         }
         Assert.assertEquals(list.size(), 3);
         test.runUpdate("drop table test3", null);
@@ -300,10 +298,10 @@ public class JdbcCachedTest
         test.runUpdate("insert into test5 values (0,'X', NULL), (1, 'a', '2013-01-01 00:06:00.101'), (2, NULL, '2011-01-01 00:06:00.103'),(300000,'c', '2011-01-01 00:06:00')", null);
         test2.runUpdate("insert into test6 values (0,'Y', NULL), (1, 'not A', '2013-01-01 00:06:00.103'), (2, NULL, '2013-01-01 00:06:00.103'),(40,'b', '2013-01-01 00:06:00')", null);
 
-        List list = test.getRecordList("select * from test5 order by id", null, false);
+        List list = test.getRecordList("select * from test5 order by id", null);
         Assert.assertEquals(list.size(), 4);
 
-        List list2 = test2.getRecordList("select * from test6", null, false);
+        List list2 = test2.getRecordList("select * from test6", null);
         Assert.assertEquals(list2.size(), 4);
 
         ReplicateTables replicator = new ReplicateTables();
@@ -321,7 +319,7 @@ public class JdbcCachedTest
 
         replicator.runReplicate();
 
-        list2 = test2.getRecordList("select * from test6 order by id", null, false);
+        list2 = test2.getRecordList("select * from test6 order by id", null);
         Assert.assertEquals(list2.size(), 4);
 
         for (int i = 0; i < list.size(); i++)
@@ -346,7 +344,7 @@ public class JdbcCachedTest
         test2.runUpdate("delete from test6", null);
         replicator.runReplicate();
 
-        list2 = test2.getRecordList("select * from test6 order by id", null, false);
+        list2 = test2.getRecordList("select * from test6 order by id", null);
         Assert.assertEquals(list2.size(), 3);
 
         test.runUpdateDataIgnore("drop table test5", null);

@@ -18,12 +18,6 @@ public interface JdbcHelperI extends JdbcConstants {
 
     public String getJdbcAddress();
 
-    /**
-     * @return How long lists will be in cache before expiration
-     */
-    public long getListRecordsTtl();
-
-    public void setListRecordsTtl(long listRecordsTtl);
 
     /**
      * @return Helper, which can make out Connection from jdbcAddress
@@ -37,18 +31,15 @@ public interface JdbcHelperI extends JdbcConstants {
      * @param parameters with
      * @return List of Maps, corresponding to this request.
      */
-    public List getRecordList(String query, Map parameters);
-
-    public List getRecordList(String query, Map parameters, boolean useCache);
+    public List getRecordList(String query, Map<Integer, Object> parameters);
 
     /**
      * Update something in DB
      *
      * @param pair - query to execute with map of params
      * @return count or id
-     * @throws SQLException in case something wrong
      */
-    public long runUpdate(StringMapPair pair) throws SQLException;
+    public Number runUpdate(StringMapPair pair);
 
     /**
      * Update something in DB, but not expecting nothing back.
@@ -64,9 +55,8 @@ public interface JdbcHelperI extends JdbcConstants {
      * @param query      to execute
      * @param parameters with
      * @return count or id
-     * @throws SQLException in case something wrong
      */
-    public long runUpdate(String query, Map parameters) throws SQLException;
+    public Number runUpdate(String query, Map<Integer, Object> parameters);
 
     /**
      * Update something in DB, but not expecting nothing back.
@@ -75,7 +65,7 @@ public interface JdbcHelperI extends JdbcConstants {
      * @param query      to execute
      * @param parameters with
      */
-    public void runUpdateDataIgnore(String query, Map parameters);
+    public void runUpdateDataIgnore(String query, Map<Integer, Object> parameters);
 
 
     /**

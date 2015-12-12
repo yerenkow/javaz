@@ -27,9 +27,9 @@ public class GenericMapConvertibleDAO {
     private <T extends MapConvertibleI> void internalSave(T obj, AbstractMapConvertibleHelper<T> builder, boolean forceInsert) throws SQLException {
         boolean idIsMissing = obj.getPrimaryKey() == null;
         StringMapPair update = builder.getDbUpdateQuery(obj, forceInsert);
-        long newId = JdbcCachedHelper.getInstance(databaseAddress).runUpdate(update);
+        Number newId = JdbcCachedHelper.getInstance(databaseAddress).runUpdate(update);
         if (idIsMissing) {
-            obj.setGeneratedPrimaryKey(newId);
+            obj.setGeneratedPrimaryKey(newId.longValue());
         }
     }
 
@@ -60,7 +60,7 @@ public class GenericMapConvertibleDAO {
     }
 
     public <T extends MapConvertibleI> List<T> findByFullQuery(String query, Map<Integer, Object> objects, AbstractMapConvertibleHelper<T> builder) {
-        List mapList = JdbcCachedHelper.getInstance(databaseAddress).getRecordList(query, objects, false);
+        List mapList = JdbcCachedHelper.getInstance(databaseAddress).getRecordList(query, objects);
         ArrayList<T> list = new ArrayList<T>();
         for (Object aMapList : mapList) {
             Map map = (Map) aMapList;
