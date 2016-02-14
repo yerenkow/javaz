@@ -147,7 +147,7 @@ public abstract class BasicVioletParser
             String[] nameTypePair = s.split(":");
             if (nameTypePair.length < 2)
             {
-                System.out.println("Error with: " + nameTypePair + "." + s + ", ignoring");
+                System.out.println("Error with: " + Arrays.toString(nameTypePair) + "." + s + ", ignoring");
             }
             else
             {
@@ -172,7 +172,7 @@ public abstract class BasicVioletParser
             String[] nameTypePair = s.split(":");
             if (nameTypePair.length < 2)
             {
-                System.out.println("Error with: " + nameTypePair + "." + s + ", ignoring");
+                System.out.println("Error with: " + Arrays.toString(nameTypePair) + "." + s + ", ignoring");
             }
             else
             {
