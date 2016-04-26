@@ -2,11 +2,9 @@ package org.javaz.jdbc.util;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
- * Created by user on 07.08.14.
  * Handy tool to convert DB content into bunch of INSERT's
  */
 public class TableDumper {
@@ -29,7 +27,7 @@ public class TableDumper {
         String query = "select * from " + tableName
                 + " WHERE TRUE " + (condition != null ? condition : "")
                 + (orderColumn != null ? " order by " + orderColumn : "");
-
+        int paging = 512;
         int idIndex = 0;
         ArrayList complexList = null;
         try {
@@ -42,7 +40,8 @@ public class TableDumper {
             boolean first = true;
             String firstLine = "";
             String zpt = "";
-            for (Iterator iterator = complexList.iterator(); iterator.hasNext(); ) {
+            int cnt = 0;
+            for (Iterator iterator = complexList.iterator(); iterator.hasNext(); cnt++) {
                 if (first) {
                     ArrayList sets = (ArrayList) iterator.next();
                     firstLine += "INSERT INTO " + tableName + "(";
@@ -67,7 +66,14 @@ public class TableDumper {
                     answer.append(firstLine);
                 } else {
                     ArrayList sets = (ArrayList) iterator.next();
-                    answer.append(zpt).append("\n");
+                    if (cnt > paging) {
+                        cnt = 0;
+                        answer.append(";\n");
+                        answer.append(firstLine);
+                        answer.append("\n");
+                    } else {
+                        answer.append(zpt).append("\n");
+                    }
                     answer.append("(");
                     String zpt2 = "";
                     int i = 0;
