@@ -1,5 +1,6 @@
 package org.javaz.jdbc.util;
 
+import java.io.Writer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,11 +25,49 @@ public class TableDumper {
     public static String getTableInserts(String tableName, String condition, String orderColumn, boolean skipId,
                                          JdbcHelperI db, int dbType) {
         StringBuilder answer = new StringBuilder();
+
+        int perPage = 512;
+        if (orderColumn == null) {
+            perPage = 100000000;
+        }
+        try {
+            int offset = 0;
+            while (true) {
+                answer.append(getTableInsertsPaged(tableName, condition, orderColumn, skipId, db, dbType, perPage, offset));
+                offset += perPage;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return answer.toString();
+    }
+
+    public static void writeTableInserts(Writer writer, String tableName, String condition, String orderColumn, boolean skipId,
+                                       JdbcHelperI db, int dbType) {
+        int perPage = 1024;
+        if (orderColumn == null) {
+            perPage = 100000000;
+        }
+        try {
+            int offset = 0;
+            while (true) {
+                writer.append(getTableInsertsPaged(tableName, condition, orderColumn, skipId, db, dbType, perPage, offset));
+                offset += perPage;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getTableInsertsPaged(String tableName, String condition, String orderColumn, boolean skipId,
+                                         JdbcHelperI db, int dbType, int limit, int offset) throws Exception {
+        StringBuilder answer = new StringBuilder();
         String query = "select * from " + tableName
                 + " WHERE TRUE " + (condition != null ? condition : "")
-                + (orderColumn != null ? " order by " + orderColumn : "");
-        int paging = 512;
-        int idIndex = 0;
+                + (orderColumn != null ? " order by " + orderColumn : "")
+                + " LIMIT " + limit + " OFFSET " + offset;
+
         ArrayList complexList = null;
         try {
             complexList = UnsafeSqlHelper.runSqlUnsafe(db.getProvider(), db.getJdbcAddress(), query,
@@ -36,6 +75,7 @@ public class TableDumper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        int idIndex = -1;
         if (complexList != null && complexList.size() > 1) {
             boolean first = true;
             String firstLine = "";
@@ -66,14 +106,7 @@ public class TableDumper {
                     answer.append(firstLine);
                 } else {
                     ArrayList sets = (ArrayList) iterator.next();
-                    if (cnt > paging) {
-                        cnt = 0;
-                        answer.append(";\n");
-                        answer.append(firstLine);
-                        answer.append("\n");
-                    } else {
-                        answer.append(zpt).append("\n");
-                    }
+                    answer.append(zpt).append("\n");
                     answer.append("(");
                     String zpt2 = "";
                     int i = 0;
@@ -118,6 +151,8 @@ public class TableDumper {
                 }
             }
             answer.append(";").append("\n");
+        } else {
+            throw new Exception("No data");
         }
 
         return answer.toString();

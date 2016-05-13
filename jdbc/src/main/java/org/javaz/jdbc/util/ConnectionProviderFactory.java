@@ -8,8 +8,9 @@ package org.javaz.jdbc.util;
 public class ConnectionProviderFactory {
     public static final String PROVIDER_BONECP = "BoneCpConnectionProvider";
     public static final String PROVIDER_SIMPLE = "SimpleConnectionProvider";
+    public static final String PROVIDER_HIKARI = "HikariCpConnectionProvider";
 
-    private String connectionProviderClass = PROVIDER_BONECP;
+    private String connectionProviderClass = PROVIDER_HIKARI;
 
     public ConnectionProviderFactory() {
     }
@@ -27,6 +28,10 @@ public class ConnectionProviderFactory {
     }
 
     public ConnectionProviderI createProvider(String dbAddress) {
+        if (connectionProviderClass.equals(PROVIDER_HIKARI)) {
+            return new HikariCpConnectionProvider();
+        }
+
         if (connectionProviderClass.equals(PROVIDER_SIMPLE)) {
             return new SimpleConnectionProvider();
         }

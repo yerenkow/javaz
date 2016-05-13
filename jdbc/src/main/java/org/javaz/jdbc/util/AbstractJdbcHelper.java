@@ -1,6 +1,5 @@
 package org.javaz.jdbc.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

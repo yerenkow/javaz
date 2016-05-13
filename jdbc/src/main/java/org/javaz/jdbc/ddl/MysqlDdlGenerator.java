@@ -132,16 +132,19 @@ public class MysqlDdlGenerator {
             String extra = (String) column.get("extra");
             String isNullable = (String) column.get("is_nullable");
             if (columnType.contains("bigint")) {
-                columnType = columnType.replace("bigint", "decimal");
+                columnType = columnType.replaceAll("bigint\\(\\d+\\)", "bigint");
             }
-            if (columnType.contains("tinyint")) {
-                columnType = columnType.replace("tinyint", "decimal");
+            if (columnType.contains("datetime")) {
+                columnType = columnType.replace("datetime", "timestamp");
             }
             if (columnType.contains("smallint")) {
-                columnType = columnType.replace("smallint", "decimal");
+                columnType = columnType.replaceAll("smallint\\(\\d+\\)", "integer");
             }
-            if (columnType.contains("int")) {
-                columnType = columnType.replace("int", "decimal");
+            if (columnType.contains("tinyint")) {
+                columnType = columnType.replaceAll("tinyint\\(\\d+\\)", "integer");
+            }
+            if (columnType.startsWith("int(") || columnType.equals("int")) {
+                columnType = "integer";
             }
             builder.append(columnName).append(" ").append(columnType).append(" ");
             if (extra != null && !extra.isEmpty()) {
@@ -156,7 +159,6 @@ public class MysqlDdlGenerator {
                     builder.append("DEFAULT ").append(columnDefault).append(" ");
                 } else if (columnDefault.equals("0000-00-00 00:00:00")) {
                     //this is mysql-only compatible timestamp, ignore it
-//                    builder.append("DEFAULT ").append(columnDefault).append(" ");
                 } else {
                     builder.append("DEFAULT '").append(columnDefault).append("' ");
                 }

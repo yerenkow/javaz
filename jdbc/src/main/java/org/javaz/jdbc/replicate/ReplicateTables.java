@@ -27,6 +27,7 @@ import java.util.*;
 public class ReplicateTables {
     public static String TYPE_MYSQL = "mysql";
     public static String TYPE_POSTGRESQL = "postgresql";
+    public static String NULL_MARK = "____NULL";
     public static HashMap dbQuotes = new HashMap();
 
     static {
@@ -43,7 +44,6 @@ public class ReplicateTables {
     public int stampPrecision = 3000;
     public ConnectionProviderI providerI = new SimpleConnectionProvider();
 
-    //todo id specify
     //todo ignore fields
     //todo specified fields
     //todo fields-marks of success replicate
@@ -145,276 +145,10 @@ public class ReplicateTables {
         try {
             connectionFrom = providerI.getConnection(dbFrom);
             connectionTo = providerI.getConnection(dbTo);
-            PreparedStatement preparedStatementFrom = null;
-            PreparedStatement preparedStatementTo = null;
-            ResultSet resultSet = null;
 
             for (Iterator<HashMap<String, String>> HashMapIterator = tables.iterator(); HashMapIterator.hasNext(); ) {
-                try {
-                    HashMap<String, String> h = HashMapIterator.next();
-                    String name = h.get("name");
-                    String name2 = h.get("name2");
-                    String where1 = h.get("where1");
-                    String where2 = h.get("where2");
-
-                    if (verbose)
-                        log.append("Replicating " + dbFrom + "/" + name + " to " + dbTo + "/" + name2 + "\r\n");
-
-                    preparedStatementFrom = connectionFrom.prepareStatement("select * from " + name + " WHERE 1=1 " + where1);
-                    boolean b = preparedStatementFrom.execute();
-                    HashMap meta = new HashMap();
-                    //1. find all ids from DB1
-                    ArrayList db1 = new ArrayList();
-                    String nullMark = "____NULL";
-                    if (b) {
-                        resultSet = preparedStatementFrom.getResultSet();
-                        ResultSetMetaData setMetaData = resultSet.getMetaData();
-                        for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
-                            meta.put(setMetaData.getColumnLabel(i).toLowerCase(), setMetaData.getColumnClassName(i));
-                        }
-                        while (resultSet.next()) {
-                            HashMap results = new HashMap();
-                            for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
-                                String columnName = setMetaData.getColumnLabel(i).toLowerCase();
-                                Object o = resultSet.getObject(i);
-                                if (o != null) {
-                                    results.put(columnName, o);
-                                } else {
-                                    results.put(columnName + nullMark, nullMark);
-                                }
-                            }
-                            db1.add(results);
-                        }
-                        resultSet.close();
-                    } else {
-                        log.append("Couldn't execute select from " + dbFrom + "/" + name + " /r/n");
-                        return;
-                    }
-
-                    StringBuffer allIds = new StringBuffer();
-                    HashMap records1 = new HashMap();
-                    HashMap toInsert = new HashMap();
-                    HashMap toUpdate = new HashMap();
-                    for (Iterator iterator = db1.iterator(); iterator.hasNext(); ) {
-                        HashMap record = (HashMap) iterator.next();
-                        if (allIds.length() != 0) {
-                            allIds.append(",");
-                        }
-                        allIds.append(record.get("id"));
-                        records1.put(record.get("id"), record);
-                    }
-
-                    toInsert.putAll(records1);
-
-                    //2. find all ids to delete in DB2;
-                    if (allIds.length() > 0) {
-                        preparedStatementTo = connectionTo.prepareStatement("delete from " + name2 + " where id not in (" + allIds.toString() + ")" + where2);
-                        if (verbose)
-                            log.append("deleted from " + dbTo + "/" + name2 + " " + preparedStatementTo.executeUpdate() + " records;\r\n");
-                    } else {
-                        if (verbose)
-                            log.append("No records in " + dbFrom + "/" + name + ", nothing to delete in " + dbTo + "/" + name2 + " ;\r\n");
-                    }
-
-                    //3. find all ids from DB2;
-                    preparedStatementTo = connectionTo.prepareStatement("select * from " + name2 + " WHERE 1=1 " + where2);
-                    b = preparedStatementTo.execute();
-                    HashMap meta2 = new HashMap();
-                    ArrayList db2 = new ArrayList();
-                    if (b) {
-                        resultSet = preparedStatementTo.getResultSet();
-                        ResultSetMetaData setMetaData = resultSet.getMetaData();
-                        for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
-                            meta2.put(setMetaData.getColumnLabel(i).toLowerCase(), setMetaData.getColumnClassName(i));
-                        }
-                        while (resultSet.next()) {
-                            HashMap results = new HashMap();
-                            for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
-                                String columnName = setMetaData.getColumnLabel(i).toLowerCase();
-                                Object o = resultSet.getObject(i);
-                                if (o != null) {
-                                    results.put(columnName, o);
-                                } else {
-                                    results.put(columnName + nullMark, nullMark);
-                                }
-                            }
-                            db2.add(results);
-                        }
-                    } else {
-                        log.append("Couldn't execute select from " + dbTo + "/" + name2 + " /r/n");
-                        return;
-                    }
-
-                    //compare meta-data;
-                    {
-                        HashMap temp = new HashMap();
-                        {
-                            temp.putAll(meta);
-
-                            Set set = meta2.keySet();
-                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
-                                Object o = iteratorSet.next();
-                                if (meta.containsKey(o)) {
-                                    if (meta.get(o).equals(meta2.get(o))) {
-                                        temp.remove(o);
-                                    }
-                                } else {
-                                    log.append("ERROR: Meta data not equals! \r\n");
-                                    log.append(o + "\t" + temp.get(o) + " not present in table " + name + "\r\n");
-                                }
-                            }
-                        }
-                        if (!temp.isEmpty()) {
-                            log.append("ERROR: Meta data not equals! \r\n");
-                            Set set = temp.keySet();
-                            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
-                                Object o = iteratorSet.next();
-                                log.append(o + "\t" + temp.get(o) + " != " + meta2.get(o) + "\r\n");
-                            }
-
-                            return;
-                        }
-                    }
-
-                    for (Iterator iterator = db2.iterator(); iterator.hasNext(); ) {
-                        HashMap db2Record = (HashMap) iterator.next();
-                        if (toInsert.containsKey(db2Record.get("id"))) {
-                            HashMap db1Record = (HashMap) toInsert.get(db2Record.get("id"));
-                            boolean equal = true;
-                            Set set = meta2.keySet();
-                            for (Iterator iteratorSet = set.iterator(); equal && iteratorSet.hasNext(); ) {
-                                String columnName2 = (String) iteratorSet.next();
-                                if (db2Record.containsKey(columnName2 + nullMark) ||
-                                        db1Record.containsKey(columnName2 + nullMark)) {
-                                    equal = db2Record.containsKey(columnName2 + nullMark) && db1Record.containsKey(columnName2 + nullMark);
-                                } else {
-                                    //checking not-null;
-                                    equal = equalRecords(db1Record.get(columnName2), db2Record.get(columnName2));
-                                }
-                            }
-                            if (!equal) {
-                                toUpdate.put(db2Record.get("id"), toInsert.get(db2Record.get("id")));
-                            }
-                            toInsert.remove(db2Record.get("id"));
-                        } else {
-                            //this case shouldn't happen at all, since we've deleted all such records
-
-                        }
-                    }
-
-                    log.append("Found " + toUpdate.size() + " to update, and " + toInsert.size() + " to insert.\r\n");
-                    int totalUpdated = 0;
-                    //4. calculate all to update in DB2
-                    if (!toUpdate.isEmpty()) {
-                        Set set = toUpdate.keySet();
-                        for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
-                            StringBuffer sql = new StringBuffer();
-                            Object id = iteratorSet.next();
-                            HashMap r = (HashMap) toUpdate.get(id);
-                            sql.append("UPDATE " + name2 + " SET ");
-                            StringBuffer values = new StringBuffer();
-
-                            Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
-                                Object o = iteratorSetEn.next();
-                                if (!o.equals("id")) {
-                                    if (values.length() != 0) {
-                                        values.append(",");
-                                    }
-                                    Object quote = dbQuotes.get(dbToType);
-                                    if (quote == null) {
-                                        quote = "";
-                                    }
-                                    values.append(quote).append(o).append(quote);
-                                    values.append(" =  ? ");
-                                }
-                            }
-                            values.append(" WHERE id = '" + r.get("id") + "';");
-                            PreparedStatement statement = connectionTo.prepareStatement(sql.toString() + values.toString());
-                            en = meta2.keySet();
-                            int i = 0;
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
-                                Object o = iteratorSetEn.next();
-                                if (!o.equals("id")) {
-                                    i++;
-                                    statement.setObject(i, r.get(o));
-                                }
-                            }
-                            try {
-                                totalUpdated += statement.executeUpdate();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                                log.append("Error occured: " + e + "\r\n");
-                            }
-                        }
-                    }
-                    if (verbose)
-                        log.append("Updated " + totalUpdated + " records.\r\n");
-
-                    //4. calculate all to insert to DB2
-                    if (!toInsert.isEmpty()) {
-                        StringBuffer header = new StringBuffer();
-                        if (header.length() == 0) {
-                            header.append(" INSERT INTO " + name2 + " (");
-                            StringBuffer columns = new StringBuffer();
-                            Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
-                                Object o = iteratorSetEn.next();
-                                if (columns.length() != 0) {
-                                    columns.append(",");
-                                }
-
-                                Object quote = dbQuotes.get(dbToType);
-                                if (quote == null) {
-                                    quote = "";
-                                }
-                                columns.append(quote).append(o).append(quote);
-                            }
-                            header.append(columns.toString());
-                            header.append(") VALUES ");
-                        }
-
-                        Set enumeration = toInsert.keySet();
-                        for (Iterator iteratorSetX = enumeration.iterator(); iteratorSetX.hasNext(); ) {
-                            Object id = iteratorSetX.next();
-                            HashMap r = (HashMap) toInsert.get(id);
-                            StringBuffer values = new StringBuffer();
-                            if (values.length() != 0) {
-                                values.append(",");
-                            }
-                            values.append("(");
-
-                            StringBuffer columns = new StringBuffer();
-                            Set en = meta2.keySet();
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
-                                Object o = iteratorSetEn.next();
-                                if (columns.length() != 0) {
-                                    columns.append(",");
-                                }
-                                columns.append(" ? ");
-                            }
-                            values.append(columns.toString());
-                            values.append(");");
-
-                            PreparedStatement statement = connectionTo.prepareStatement(header.toString() + values.toString());
-                            en = meta2.keySet();
-                            int i = 0;
-                            for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
-                                Object o = iteratorSetEn.next();
-                                i++;
-                                statement.setObject(i, r.get(o));
-                            }
-                            statement.execute();
-                        }
-                    }
-
-                    if (verbose)
-                        log.append("Replication finished OK.\r\n");
-                } catch (Exception e) {
-                    log.append("Some error occured: " + e + "\r\n");
-                    log.append(e.getMessage() + "\r\n");
-                    e.printStackTrace();
-                }
+                HashMap<String, String> h = HashMapIterator.next();
+                proceedTable(h, connectionFrom, connectionTo);
             }
         } catch (Exception e) {
             log.append("Error with query = " + e);
@@ -438,5 +172,335 @@ public class ReplicateTables {
         }
         if (verbose)
             log.append("Ended at " + Calendar.getInstance().getTime());
+    }
+
+    protected void proceedTable(Map<String, String> h, Connection connectionFrom, Connection connectionTo) {
+        try {
+            String name1 = h.get("name");
+            String name2 = h.get("name2");
+            String where1 = h.get("where1");
+            String where2 = h.get("where2");
+            String pk = h.get("id");
+            if (pk == null) {
+                pk = "id";
+            }
+            if (verbose)
+                log.append("Replicating " + dbFrom + "/" + name1 + " to " + dbTo + "/" + name2 + "\r\n");
+            HashMap meta1 = new HashMap();
+            ArrayList db1 = new ArrayList();
+            getTableResults(connectionFrom, name1, where1, meta1, db1);
+
+            StringBuffer allIds = new StringBuffer();
+            HashMap toInsert = new HashMap();
+            for (Iterator iterator = db1.iterator(); iterator.hasNext(); ) {
+                HashMap record = (HashMap) iterator.next();
+                if (allIds.length() != 0) {
+                    allIds.append(",");
+                }
+                String pkIdExtracted = extractId(record, pk);
+                allIds.append(pkIdExtracted);
+                toInsert.put(pkIdExtracted, record);
+            }
+
+            //2. find all ids to delete in DB2;
+            deleteRecords(connectionTo, name1, name2, where2, pk, allIds);
+            HashMap meta2 = new HashMap();
+            ArrayList db2 = new ArrayList();
+            getTableResults(connectionTo, name2, where2, meta2, db2);
+            compareMetaData(name1, meta1, meta2);
+            HashMap toUpdate = new HashMap();
+            findToUpdateRecords(pk, toInsert, toUpdate, meta2, db2);
+            log.append("Found " + toUpdate.size() + " to update, and " + toInsert.size() + " to insert.\r\n");
+            updateRecords(connectionTo, name2, pk, toUpdate, meta2);
+            insertRecords(connectionTo, name2, toInsert, meta2);
+
+            if (verbose)
+                log.append("Replication finished OK.\r\n");
+        } catch (Exception e) {
+            log.append("Some error occured: " + e + "\r\n");
+            log.append(e.getMessage() + "\r\n");
+            e.printStackTrace();
+        }
+
+    }
+
+    private void deleteRecords(Connection connectionTo, String name1, String name2, String where2, String pk,
+                               StringBuffer allIds) throws SQLException {
+        PreparedStatement preparedStatementTo;
+        if (allIds.length() > 0) {
+            String deleteSql = "delete from " + name2 + " where " + pkExpression(pk, dbToType) + " not in (" + allIds.toString() + ")" + where2;
+            preparedStatementTo = connectionTo.prepareStatement(deleteSql);
+            int updateCount = preparedStatementTo.executeUpdate();
+            if (verbose)
+                log.append("deleted from " + dbTo + "/" + name2 + " " + updateCount + " records;\r\n");
+        } else {
+            if (verbose)
+                log.append("No records in " + dbFrom + "/" + name1 + ", nothing to delete in " + dbTo + "/" + name2 + " ;\r\n");
+        }
+    }
+
+    private void insertRecords(Connection connectionTo, String name2, HashMap toInsert, HashMap meta2) throws SQLException {
+        //4. calculate all to insert to DB2
+        if (!toInsert.isEmpty()) {
+            StringBuffer header = new StringBuffer();
+            if (header.length() == 0) {
+                header.append(" INSERT INTO " + name2 + " (");
+                StringBuffer columns = new StringBuffer();
+                Set en = meta2.keySet();
+                for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
+                    Object o = iteratorSetEn.next();
+                    if (columns.length() != 0) {
+                        columns.append(",");
+                    }
+
+                    Object quote = dbQuotes.get(dbToType);
+                    if (quote == null) {
+                        quote = "";
+                    }
+                    columns.append(quote).append(o).append(quote);
+                }
+                header.append(columns.toString());
+                header.append(") VALUES ");
+            }
+
+            Set enumeration = toInsert.keySet();
+            for (Iterator iteratorSetX = enumeration.iterator(); iteratorSetX.hasNext(); ) {
+                Object id = iteratorSetX.next();
+                HashMap r = (HashMap) toInsert.get(id);
+                StringBuffer values = new StringBuffer();
+                if (values.length() != 0) {
+                    values.append(",");
+                }
+                values.append("(");
+
+                StringBuffer columns = new StringBuffer();
+                Set en = meta2.keySet();
+                for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
+                    Object o = iteratorSetEn.next();
+                    if (columns.length() != 0) {
+                        columns.append(",");
+                    }
+                    columns.append(" ? ");
+                }
+                values.append(columns.toString());
+                values.append(");");
+
+                PreparedStatement statement = connectionTo.prepareStatement(header.toString() + values.toString());
+                en = meta2.keySet();
+                int i = 0;
+                for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
+                    Object o = iteratorSetEn.next();
+                    i++;
+                    statement.setObject(i, r.get(o));
+                }
+                statement.execute();
+            }
+        }
+    }
+
+    private void updateRecords(Connection connectionTo, String name2, String pk, HashMap toUpdate, HashMap meta2) throws SQLException {
+        int totalUpdated = 0;
+        ArrayList pks = splitPk(pk);
+        //4. calculate all to update in DB2
+        if (!toUpdate.isEmpty()) {
+            Set set = toUpdate.keySet();
+            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
+                StringBuffer sql = new StringBuffer();
+                Object id = iteratorSet.next();
+                HashMap r = (HashMap) toUpdate.get(id);
+                sql.append("UPDATE " + name2 + " SET ");
+                StringBuffer values = new StringBuffer();
+
+                Set en = meta2.keySet();
+                for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
+                    Object columnName = iteratorSetEn.next();
+                    if (!pks.contains(columnName)) {
+                        if (values.length() != 0) {
+                            values.append(",");
+                        }
+                        Object quote = dbQuotes.get(dbToType);
+                        if (quote == null) {
+                            quote = "";
+                        }
+                        values.append(quote).append(columnName).append(quote);
+                        values.append(" =  ? ");
+                    }
+                }
+                values.append(" WHERE " + pkExpression(pk, dbToType) + " = ?");
+                PreparedStatement statement = connectionTo.prepareStatement(sql.toString() + values.toString());
+                en = meta2.keySet();
+                int i = 0;
+                for (Iterator iteratorSetEn = en.iterator(); iteratorSetEn.hasNext(); ) {
+                    Object columnName = iteratorSetEn.next();
+                    if (!pks.contains(columnName)) {
+                        i++;
+                        statement.setObject(i, r.get(columnName));
+                    }
+                }
+                statement.setObject(++i, extractId(r, pk));
+                try {
+                    totalUpdated += statement.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    log.append("Error occured: " + e + "\r\n");
+                }
+            }
+        }
+        if (verbose)
+            log.append("Updated " + totalUpdated + " records.\r\n");
+    }
+
+    private ArrayList splitPk(String pk) {
+        ArrayList list = new ArrayList();
+        if (pk != null) {
+            String[] split = pk.split(",");
+            for (int i = 0; i < split.length; i++) {
+                String s = split[i];
+                list.add(s);
+            }
+        }
+        return list;
+    }
+
+    private void findToUpdateRecords(String pk, HashMap toInsert, HashMap toUpdate, HashMap meta2, ArrayList db2) {
+        for (Iterator iterator = db2.iterator(); iterator.hasNext(); ) {
+            HashMap db2Record = (HashMap) iterator.next();
+            String pkIdExpression = extractId(db2Record, pk);
+            if (toInsert.containsKey(pkIdExpression)) {
+                HashMap db1Record = (HashMap) toInsert.get(pkIdExpression);
+                boolean equal = true;
+                Set set = meta2.keySet();
+                for (Iterator iteratorSet = set.iterator(); equal && iteratorSet.hasNext(); ) {
+                    String columnName2 = (String) iteratorSet.next();
+                    if (db2Record.containsKey(columnName2 + NULL_MARK) ||
+                            db1Record.containsKey(columnName2 + NULL_MARK)) {
+                        equal = db2Record.containsKey(columnName2 + NULL_MARK) && db1Record.containsKey(columnName2 + NULL_MARK);
+                    } else {
+                        //checking not-null;
+                        equal = equalRecords(db1Record.get(columnName2), db2Record.get(columnName2));
+                    }
+                }
+                if (!equal) {
+                    toUpdate.put(pkIdExpression, toInsert.get(pkIdExpression));
+                }
+                toInsert.remove(pkIdExpression);
+            } else {
+                //this case shouldn't happen at all, since we've deleted all such records
+            }
+        }
+    }
+
+    private void compareMetaData(String name, HashMap meta, HashMap meta2) {
+        HashMap temp = new HashMap();
+        {
+            temp.putAll(meta);
+
+            Set set = meta2.keySet();
+            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
+                Object o = iteratorSet.next();
+                if (meta.containsKey(o)) {
+                    if (meta.get(o).equals(meta2.get(o))) {
+                        temp.remove(o);
+                    }
+                } else {
+                    log.append("ERROR: Meta data not equals! \r\n");
+                    log.append(o + "\t" + temp.get(o) + " not present in table " + name + "\r\n");
+                }
+            }
+        }
+        if (!temp.isEmpty()) {
+            log.append("ERROR: Meta data not equals! \r\n");
+            Set set = temp.keySet();
+            for (Iterator iteratorSet = set.iterator(); iteratorSet.hasNext(); ) {
+                Object o = iteratorSet.next();
+                log.append(o + "\t" + temp.get(o) + " != " + meta2.get(o) + "\r\n");
+            }
+        }
+    }
+
+    private void getTableResults(Connection connectionFrom, String tableName, String where, HashMap meta, ArrayList db1) throws SQLException {
+        PreparedStatement preparedStatementFrom = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatementFrom = connectionFrom.prepareStatement("select * from " + tableName + " WHERE 1=1 " + where);
+            boolean b = preparedStatementFrom.execute();
+            if (b) {
+                resultSet = preparedStatementFrom.getResultSet();
+                ResultSetMetaData setMetaData = resultSet.getMetaData();
+                for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
+                    meta.put(setMetaData.getColumnLabel(i).toLowerCase(), setMetaData.getColumnClassName(i));
+                }
+                while (resultSet.next()) {
+                    HashMap results = new HashMap();
+                    for (int i = 1; i <= setMetaData.getColumnCount(); i++) {
+                        String columnName = setMetaData.getColumnLabel(i).toLowerCase();
+                        Object o = resultSet.getObject(i);
+                        if (o != null) {
+                            results.put(columnName, o);
+                        } else {
+                            results.put(columnName + NULL_MARK, NULL_MARK);
+                        }
+                    }
+                    db1.add(results);
+                }
+            } else {
+                log.append("Couldn't execute select from " + dbFrom + "/" + tableName + " /r/n");
+            }
+        } finally {
+            try {
+                if (resultSet != null && !resultSet.isClosed()) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                log.append(e.getMessage());
+            }
+            try {
+                if (preparedStatementFrom != null && !preparedStatementFrom.isClosed()) {
+                    preparedStatementFrom.close();
+                }
+            } catch (SQLException e) {
+                log.append(e.getMessage());
+            }
+        }
+    }
+
+    private String pkExpression(String pk, String dbToType) {
+        if (pk.contains(",")) {
+            return " concat_ws('_', " + pk + ") ";
+        } else {
+            return " " + pk + " ";
+        }
+    }
+
+    private String extractId(HashMap record, String pk) {
+        String result = "";
+        if (pk != null) {
+            String[] split = pk.split(",");
+            if (split.length > 1) {
+                result += "'";
+            }
+            for (int i = 0; i < split.length; i++) {
+                if (i > 0) {
+                    result += "_";
+                }
+                String pkName = split[i];
+                Object o = record.get(pkName);
+                if (o instanceof Timestamp) {
+                    String ts = "" + o;
+                    if (ts.contains(".")) {
+                        result += ts.substring(0, ts.lastIndexOf("."));
+                    } else {
+                        result += ts;
+                    }
+                } else {
+                    result += o;
+                }
+            }
+            if (split.length > 1) {
+                result += "'";
+            }
+            return result;
+        }
+        return null;
     }
 }
