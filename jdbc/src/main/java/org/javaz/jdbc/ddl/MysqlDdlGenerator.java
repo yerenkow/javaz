@@ -40,7 +40,11 @@ public class MysqlDdlGenerator {
         List<Map> recordList = instance.getRecordList("select TABLE_NAME, TABLE_TYPE, ENGINE from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = ? order by lower(TABLE_NAME);",
                 Collections.singletonMap(1, (Object) schema));
         for (Map record : recordList) {
-            buildDdl(record, instance);
+            try {
+                buildDdl(record, instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -58,6 +62,9 @@ public class MysqlDdlGenerator {
                 " where t.NAME = ? and i.TYPE = 3 group by i.name, t.name, i.TYPE";
 
         List<Map> innoKeys = instance.getRecordList(innodDbIndexes, Collections.singletonMap(1, (Object) (schema + "/" + tableName)));
+        if (innoKeys == null) {
+            return null;
+        }
         for (Map innoKey : innoKeys) {
             String keyContent = (String) innoKey.get("key_content");
             return keyContent;

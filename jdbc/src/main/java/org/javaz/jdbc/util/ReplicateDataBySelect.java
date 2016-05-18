@@ -33,6 +33,10 @@ public class ReplicateDataBySelect {
     public void processSelect(String select) {
         String lowered = select.toLowerCase();
         int fromIndex = lowered.indexOf(FROM_MARKER);
+        if (fromIndex == -1) {
+            // select not from, ignore it.
+            return;
+        }
         String fromAndWhere = lowered.substring(fromIndex + FROM_MARKER.length());
 
         ArrayList<Aliased> aliaseds = parseJoinedTables(detectFrom(fromAndWhere));
@@ -119,20 +123,25 @@ public class ReplicateDataBySelect {
     }
 
     public void dumpTables(String filePath, boolean removePrefix) throws IOException {
-        String allTables = "SELECT table_name FROM information_schema.TABLES WHERE table_schema = ?" +
-                " AND table_name like ? order by table_name";
-        HashMap<Integer, Object> params = new HashMap<>();
-        params.put(1, schema);
-        params.put(2, prefix2 + "%");
-
         List<String> tableNames = new ArrayList<>();
-        List recordList = helper.getRecordList(allTables, params);
-        for (Iterator iterator = recordList.iterator(); iterator.hasNext(); ) {
+        List tablesByPrefix = getTablesByPrefix(prefix2);
+        for (Iterator iterator = tablesByPrefix.iterator(); iterator.hasNext(); ) {
             Map next = (Map) iterator.next();
             String tableName = (String) next.get("table_name");
             tableNames.add(tableName);
         }
         dumpTables(filePath, removePrefix, tableNames);
+    }
+
+    private List getTablesByPrefix(String prefix) {
+        // todo check what should be changed for non-mysql;
+        String allTables = "SELECT table_name FROM information_schema.TABLES WHERE table_schema = ?" +
+                " AND table_name like ? order by table_name";
+        HashMap<Integer, Object> params = new HashMap<>();
+        params.put(1, schema);
+        params.put(2, prefix + "%");
+
+        return helper.getRecordList(allTables, params);
     }
 
     public void dumpTables(String filePath, boolean removePrefix, List<String> tableNames) throws IOException {
@@ -155,5 +164,14 @@ public class ReplicateDataBySelect {
 
     public void setMysql(boolean mysql) {
         this.mysql = mysql;
+    }
+
+    public void clearTempTables() {
+        List tablesByPrefix = getTablesByPrefix(prefix1);
+        for (Iterator iterator = tablesByPrefix.iterator(); iterator.hasNext(); ) {
+            Map next = (Map) iterator.next();
+            String tableName = (String) next.get("table_name");
+            helper.runUpdateDataIgnore("delete from " + tableName, null);
+        }
     }
 }
