@@ -37,7 +37,7 @@ public class ReplicateDataBySelect {
             // select not from, ignore it.
             return;
         }
-        String fromAndWhere = lowered.substring(fromIndex + FROM_MARKER.length());
+        String fromAndWhere = select.substring(fromIndex + FROM_MARKER.length());
 
         ArrayList<Aliased> aliaseds = parseJoinedTables(detectFrom(fromAndWhere));
         for (Aliased aliased : aliaseds) {
@@ -46,11 +46,13 @@ public class ReplicateDataBySelect {
     }
 
     private String detectFrom(String fromAndWhere) {
-        int index = fromAndWhere.toLowerCase().indexOf(WHERE_MARKER);
+        String lowered = fromAndWhere.toLowerCase();
+        int index = lowered.indexOf(WHERE_MARKER);
         if (index != -1) {
             fromAndWhere = fromAndWhere.substring(0, index).trim();
         }
-        index = fromAndWhere.toLowerCase().indexOf(ORDER_MARKER);
+        lowered = fromAndWhere.toLowerCase();
+        index = lowered.indexOf(ORDER_MARKER);
         if (index != -1) {
             fromAndWhere = fromAndWhere.substring(0, index).trim();
         }
