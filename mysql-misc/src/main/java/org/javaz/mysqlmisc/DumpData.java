@@ -114,6 +114,9 @@ public class DumpData extends AbstractBaseSql {
             replicateDataBySelect.processSelect(query);
         }
         try {
+            if (!outputDirectory.exists() || !outputDirectory.isDirectory()) {
+                outputDirectory.mkdirs();
+            }
             replicateDataBySelect.dumpTables(new File(outputDirectory, singleName + sqlSuffix).getCanonicalPath(), true);
         } catch (IOException e) {
             throw new MojoExecutionException("Error dumping", e);
