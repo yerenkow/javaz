@@ -144,6 +144,9 @@ public class MysqlDdlGenerator {
             if (columnType.contains("datetime")) {
                 columnType = columnType.replace("datetime", "timestamp");
             }
+            if (columnType.startsWith("char(")) {
+                columnType = columnType.replaceAll("char", "varchar");
+            }
             if (columnType.contains("smallint")) {
                 columnType = columnType.replaceAll("smallint\\(\\d+\\)", "integer");
             }
