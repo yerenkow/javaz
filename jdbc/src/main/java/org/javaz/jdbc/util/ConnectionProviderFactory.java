@@ -6,7 +6,6 @@ package org.javaz.jdbc.util;
  * If you need use pools or do something else
  */
 public class ConnectionProviderFactory {
-    public static final String PROVIDER_BONECP = "BoneCpConnectionProvider";
     public static final String PROVIDER_SIMPLE = "SimpleConnectionProvider";
     public static final String PROVIDER_HIKARI = "HikariCpConnectionProvider";
 
@@ -34,10 +33,6 @@ public class ConnectionProviderFactory {
 
         if (connectionProviderClass.equals(PROVIDER_SIMPLE)) {
             return new SimpleConnectionProvider();
-        }
-
-        if (connectionProviderClass.equals(PROVIDER_BONECP)) {
-            return new BoneCpConnectionProvider();
         }
 
         try {
