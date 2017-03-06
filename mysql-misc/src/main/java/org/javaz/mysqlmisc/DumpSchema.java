@@ -136,4 +136,36 @@ public class DumpSchema extends AbstractBaseSql {
         }
         return toRemove;
     }
+
+    public String getTableSubdir() {
+        return tableSubdir;
+    }
+
+    public void setTableSubdir(String tableSubdir) {
+        this.tableSubdir = tableSubdir;
+    }
+
+    public String getViewSubdir() {
+        return viewSubdir;
+    }
+
+    public void setViewSubdir(String viewSubdir) {
+        this.viewSubdir = viewSubdir;
+    }
+
+    public String getIndexFile() {
+        return indexFile;
+    }
+
+    public void setIndexFile(String indexFile) {
+        this.indexFile = indexFile;
+    }
+
+    public boolean isDeleteOld() {
+        return deleteOld;
+    }
+
+    public void setDeleteOld(boolean deleteOld) {
+        this.deleteOld = deleteOld;
+    }
 }

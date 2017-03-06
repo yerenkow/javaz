@@ -1,12 +1,15 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaz-jdbc</artifactId>
-    <version>1.9.3</version>
+    <version>1.9.4</version>
     <packaging>jar</packaging>
     <name>Javaz JDBC utils</name>
     <description>JDBC utils and helpers</description>
     <url>https://github.com/yerenkow/javaz/tree/master/jdbc</url>
 
+    <properties>
+        <mariadb.version>1.5.8</mariadb.version>
+    </properties>
     <parent>
         <groupId>org.javaz</groupId>
         <artifactId>javaz-parent</artifactId>
@@ -14,6 +17,12 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${mariadb.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.javaz</groupId>
             <artifactId>javaz-queues</artifactId>

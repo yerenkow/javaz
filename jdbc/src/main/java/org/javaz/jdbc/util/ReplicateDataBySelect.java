@@ -100,7 +100,7 @@ public class ReplicateDataBySelect {
         return parseJoinedTables(detectFrom(fromAndWhere));
     }
 
-    private ArrayList<Aliased> parseJoinedTables(String from) {
+    public static ArrayList<Aliased> parseJoinedTables(String from) {
         from = from.toLowerCase().replace(" join ", ",").replace(" as ", "  ").replace(";", " ");
         String[] split = from.split(",");
         ArrayList<Aliased> aliases = new ArrayList<>();
