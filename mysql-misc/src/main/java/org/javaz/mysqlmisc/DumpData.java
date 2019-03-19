@@ -1,15 +1,14 @@
 package org.javaz.mysqlmisc;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.javaz.jdbc.util.ReplicateDataBySelect;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Goal which dumps database content as inserts
@@ -21,6 +20,8 @@ public class DumpData extends AbstractBaseSql {
     public static final String P_6_SPY = "p6spy";
     public static final int P_6_FULL_LENGTH = 6;
     public static final int P_6_SMALL_LENGTH = 5;
+    public static final String CHECKING_TABLE_NOT_EMPTY_CASE = "(case when count(.*)>0)";
+    public static final String TABLE_NAME_MATCHER = "((\\()(\\w)+)";
 
     /**
      * Filename for single file.
@@ -29,6 +30,14 @@ public class DumpData extends AbstractBaseSql {
      * @required
      */
     private String singleName;
+
+    /**
+     * Filename for log files with parsing errors.
+     *
+     * @parameter default-value="selectParseErrors.log"
+     */
+    private String selectErrorsFile;
+
 
     /**
      * Suffix for sql.
@@ -75,7 +84,7 @@ public class DumpData extends AbstractBaseSql {
     private String sqlLogFormat;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         ArrayList<String> selectList = new ArrayList();
         if (selects != null) {
             for (String select : selects) {
@@ -110,18 +119,46 @@ public class DumpData extends AbstractBaseSql {
         }
         ReplicateDataBySelect replicateDataBySelect = new ReplicateDataBySelect(schemaName, jdbcUrl);
         replicateDataBySelect.clearTempTables();
+        Map<String, Exception> selectsWithParsingErrors = new LinkedHashMap<>();
         for (String query : selectList) {
-            replicateDataBySelect.processSelect(query);
+            Matcher caseCountMatcher = Pattern.compile(CHECKING_TABLE_NOT_EMPTY_CASE).matcher(query);
+            if(caseCountMatcher.find()){
+                String theGroup = caseCountMatcher.group(1);
+                Matcher tableNameMatcher = Pattern.compile(TABLE_NAME_MATCHER).matcher(theGroup);
+                if(tableNameMatcher.find()){
+                    String tableName = tableNameMatcher.group(1).substring(1);
+                    query = query.replaceAll(CHECKING_TABLE_NOT_EMPTY_CASE,
+                            "case when exists (select 1 from "+ tableName + ")");
+                }
+            }
+            try {
+                replicateDataBySelect.processSelect(query);
+            } catch (Exception e) {
+                selectsWithParsingErrors.put(query, e);
+            }
         }
         try {
             if (!outputDirectory.exists() || !outputDirectory.isDirectory()) {
                 outputDirectory.mkdirs();
             }
+            dumpSelectsWithErrors(new File(outputDirectory, selectErrorsFile ), selectsWithParsingErrors);
             replicateDataBySelect.dumpTables(new File(outputDirectory, singleName + sqlSuffix).getCanonicalPath(), true);
         } catch (IOException e) {
             throw new MojoExecutionException("Error dumping", e);
         }
         replicateDataBySelect.clearTempTables();
+    }
+
+    private void dumpSelectsWithErrors(File file, Map<String, Exception> selectsWithErrors) throws IOException {
+        try (PrintWriter parseErrors = new PrintWriter(file)) {
+            for (Map.Entry<String, Exception> entry : selectsWithErrors.entrySet()) {
+                parseErrors.write(entry.getKey());
+                if (entry.getValue().getMessage() != null) {
+                    parseErrors.write(entry.getValue().getMessage());
+                }
+                entry.getValue().printStackTrace(parseErrors);
+            }
+        }
     }
 
     private String filter(String line) {
@@ -190,5 +227,13 @@ public class DumpData extends AbstractBaseSql {
 
     public void setSqlLogFormat(String sqlLogFormat) {
         this.sqlLogFormat = sqlLogFormat;
+    }
+
+    public String getSelectErrorsFile() {
+        return selectErrorsFile;
+    }
+
+    public void setSelectErrorsFile(String selectErrorsFile) {
+        this.selectErrorsFile = selectErrorsFile;
     }
 }
