@@ -1,14 +1,18 @@
 package org.javaz.mysqlmisc;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.javaz.jdbc.util.ReplicateDataBySelect;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.javaz.jdbc.util.ReplicateDataBySelect;
 
 /**
  * Goal which dumps database content as inserts
